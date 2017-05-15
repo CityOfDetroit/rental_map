@@ -1,0 +1,277 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto");
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif; }
+
+main {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden; }
+
+#map {
+  width: 100%;
+  height: 100vh; }
+
+#info {
+  width: 25em;
+  height: 100vh;
+  background-color: #fff;
+  position: absolute;
+  top: 0;
+  left: -29em;
+  z-index: 5;
+  padding: 0 0 2em 0;
+  transition: all 0.2s ease-in-out; }
+
+#geocoder, .info-container > .parcel-data {
+  padding: 0 2em; }
+
+.info-container > .parcel-data > div {
+  border: 1px solid #000;
+  padding: .5em;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s ease-in-out; }
+
+.info-container > .parcel-data > div:hover {
+  border: 1px solid #000;
+  background-color: #000;
+  color: #fff;
+  transition: all .2s ease-in-out; }
+
+.info-container > article {
+  padding: 0 1em;
+  margin-bottom: 1em; }
+
+.info-container > .street-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #EB002B;
+  border-bottom: 1px solid #cdcac7;
+  text-align: center;
+  padding: 1em; }
+
+.info-container > .building-view {
+  width: 100%;
+  height: 10em;
+  padding: 0;
+  overflow: hidden; }
+
+.info-container > .building-view > img {
+  width: 100%; }
+
+.overall-number > .garbage, .overall-number > .cofc, .overall-number > .initial, .overall-number > .renewal, .parcel-info > .info-items {
+  border: 1px solid #cdcac7;
+  margin: 1em;
+  position: relative;
+  padding: 1em; }
+
+.parcel-info.display-section {
+  overflow-y: auto;
+  max-height: 25em; }
+
+.overall-number > .garbage > span {
+  color: #BD0019; }
+
+.overall-number > .cofc > span, .info-items > cofc {
+  color: #068A24; }
+
+.overall-number > .initial > span, .info-items > initial {
+  color: #114BC7; }
+
+.overall-number > .renewal > span, .info-items > renewal {
+  color: #DF5800; }
+
+.overall-number > .initial > span, .overall-number > .cofc > span, .overall-number > .garbage > span, .parcel-info > .info-items > span, .overall-number > .renewal > span, .overall-number > .district > span {
+  position: absolute;
+  top: -.75em;
+  left: 1em;
+  background-color: #fff;
+  padding: 0 .5em;
+  font-weight: bold; }
+
+.total-rentals > h4 {
+  font-size: 1.25em;
+  text-align: center;
+  margin: 0;
+  font-weight: bold; }
+
+.total-rentals > p {
+  text-align: center;
+  font-size: 2.5em;
+  margin: 0; }
+
+#close-emergency-modal-btn:hover {
+  -webkit-animation: animation-close-btn 1s ease forwards;
+  animation: animation-close-btn 1s ease forwards; }
+
+.info-container > .rental, .info-container > .not-rental {
+  padding: 0 2em; }
+
+.info-container > .rental > a, .info-container > .not-rental > a {
+  text-decoration: none; }
+
+.info-container > .rental > a > .form-btn, .info-container > .not-rental > a > .form-btn {
+  padding: .75em;
+  background-color: #EB002B;
+  color: #fff;
+  text-align: center; }
+
+.info-container > .rental > a > .form-btn:hover, .info-container > .not-rental > a > .form-btn:hover {
+  -webkit-animation: animation-form-btn 1s ease forwards;
+  animation: animation-form-btn 1s ease forwards; }
+
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+  border-radius: 0; }
+
+.mapboxgl-ctrl-geocoder {
+  box-shadow: 0 0 0 2px rgba(0, 97, 144, 0.5); }
+
+.mapboxgl-ctrl-geocoder input[type='text'] {
+  color: #000; }
+
+.mapboxgl-ctrl-top-left {
+  width: 25em; }
+
+.mapboxgl-ctrl-geocoder {
+  width: 100%; }
+
+.mapboxgl-ctrl-top-left > .mapboxgl-ctrl-geocoder.mapboxgl-ctrl > input[type='text'] {
+  font-size: 16px; }
+
+#basemap-toggle {
+  position: absolute;
+  bottom: 2em;
+  right: 2em;
+  display: flex; }
+
+#basemap-toggle > article {
+  width: 3em;
+  height: 3em;
+  background-color: #EB002B;
+  border-radius: 50%;
+  padding: .5em;
+  cursor: pointer;
+  transition: all .2s ease-in-out; }
+
+#basemap-toggle > article:hover {
+  background-color: #000;
+  transition: all .2s ease-in-out; }
+
+#basemap-toggle > article:first-child {
+  margin-right: .5em; }
+
+#basemap-toggle > article > img {
+  width: 100%; }
+
+::-webkit-input-placeholder {
+  /* Chrome */
+  color: #000; }
+
+:-ms-input-placeholder {
+  /* IE 10+ */
+  color: #000; }
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #000;
+  opacity: 1; }
+
+:-moz-placeholder {
+  /* Firefox 4 - 18 */
+  color: #000;
+  opacity: 1; }
+
+@-webkit-keyframes animation-form-btn {
+  0% {
+    padding: .75em; }
+  50% {
+    padding: 1em; }
+  100% {
+    padding: .75em; } }
+
+@-webkit-keyframes animation-close-btn {
+  0%, 50% {
+    -webkit-transform: rotate(0deg); }
+  75% {
+    -webkit-transform: rotate(450deg); }
+  100% {
+    -webkit-transform: rotate(405deg); } }
+
+@keyframes animation-close-btn {
+  0%, 50% {
+    -webkit-transform: rotate(0deg); }
+  75% {
+    -webkit-transform: rotate(360deg); }
+  100% {
+    -webkit-transform: rotate(360deg); } }
+
+#close-emergency-modal-btn > img {
+  width: 100%; }
+
+@keyframes bounce {
+  22.2% {
+    transform: rotate(90deg);
+    padding: .75em 1em; }
+  55.5% {
+    transform: rotate(90deg);
+    padding: 1em 1em; }
+  88.8% {
+    transform: rotate(90deg);
+    padding: .75em 1em; }
+  100% {
+    transform: rotate(90deg);
+    padding: .5em 1em; } }
+
+@media (min-width: 401px) {
+  #info.active {
+    width: 25em;
+    height: 100vh;
+    background-color: #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    padding: 0 0 2em 0;
+    transition: all 0.2s ease-in-out;
+    -webkit-box-shadow: 2px 0px 5px -1px rgba(0, 0, 0, 0.6);
+    -moz-box-shadow: 2px 0px 5px -1px rgba(0, 0, 0, 0.6);
+    box-shadow: 2px 0px 5px -1px rgba(0, 0, 0, 0.6); }
+  #close-emergency-modal-btn {
+    cursor: pointer;
+    position: absolute;
+    right: -2.5em;
+    top: calc((100vh - 3em)/2);
+    width: 3em;
+    height: 3em; } }
+
+@media (max-width: 400px) {
+  #back-to-infor-btn {
+    position: absolute;
+    right: -1em;
+    top: 80%;
+    cursor: pointer;
+    z-index: 4; }
+  #info.active {
+    width: 100%;
+    height: 100vh;
+    background-color: #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    padding: 0 0 2em 0;
+    transition: all 0.2s ease-in-out;
+    overflow-y: scroll; }
+  #close-emergency-modal-btn {
+    cursor: pointer;
+    position: absolute;
+    right: -.5em;
+    top: .5em;
+    width: 2em;
+    height: 2em; }
+  #legend {
+    width: 20em; } }

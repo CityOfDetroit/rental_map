@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>RENTAL MAP</title>
+  <meta name="description" content="Rental map for the City of Detroit.">
+  <meta name="author" content="Edgar Montes & Dexter Slursarski">
+  <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0' />
+  <!--build:css css/styles.min.css-->
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.css' rel='stylesheet' />
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
+  <link href='css/styles.css' rel='stylesheet' />
+  <!--endbuild-->
+</head>
+<body>
+  <main>
+    <section id="info">
+      <section class="info-container">
+        <input type="hidden" name="route-id" value="">
+        <input type="hidden" name="lng" value="">
+        <input type="hidden" name="lat" value="">
+        <!-- <article class="building-view">
+          <img src="img/building-sample.jpg" alt="building">
+        </article> -->
+        <article class="street-name"></article>
+        <article class="not-rental"></article>
+        <article class="rental"></article>
+        <article id='geocoder' class='geocoder'></article>
+        <article class="parcel-info rental-info"></article>
+        <article class="parcel-data btn-type owner"></article>
+        <article class="parcel-data btn-type building"></article>
+        <article class="parcel-info display-section"></article>
+        <article class="total-rentals"></article>
+        <article class="overall-number"></article>
+        <article id="close-emergency-modal-btn">
+          <img src="img/error.png" alt="close"></img>
+        </article>
+      </section>
+    </section>
+    <section id='map'></section>
+    <section id='mobile-geocoder'></section>
+    <section id="basemap-toggle">
+      <article class="map-view" title="Map view">
+        <img src="img/map.png" alt="map view">
+      </article>
+      <article class="satellite-view" title="Satellite view">
+        <img src="img/satellites.png" alt="satellite view">
+      </article>
+    </section>
+  </main>
+  <!--build:js js/main.min.js -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.js"></script>
+  <script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
+  <script src='https://unpkg.com/terraformer@1.0.7'></script>
+  <script src='https://unpkg.com/terraformer-arcgis-parser@1.0.5'></script>
+  <script src='js/moment.min.js'></script>
+  <script src='js/map.js'></script>
+  <script src='js/map_section_click_module.js'></script>
+  <!--endbuild -->
+</body>
+</html>

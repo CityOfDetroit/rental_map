@@ -12,6 +12,12 @@
   <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
   <link href='css/styles.css' rel='stylesheet' />
   <!--endbuild-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.js"></script>
+  <script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
+  <script src='https://unpkg.com/terraformer@1.0.7'></script>
+  <script src='https://unpkg.com/terraformer-arcgis-parser@1.0.5'></script>
 </head>
 <body>
   <main>
@@ -48,15 +54,19 @@
         <img src="img/satellites.png" alt="satellite view">
       </article>
     </section>
+    <div id='legend'>
+      <strong>RENTAL PROPERTIES</strong>
+      <nav class='legend clearfix'>
+        <span style='background:#114BC7;'></span>
+        <span style='background:#DF5800;'></span>
+        <span style='background:#068A24;'></span>
+        <label>Initial Registration</label>
+        <label>Renewal Registration</label>
+        <label>Registered Rental</label>
+      </nav>
+    </div>
   </main>
   <!--build:js js/main.min.js -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
-  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.js"></script>
-  <script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
-  <script src='https://unpkg.com/terraformer@1.0.7'></script>
-  <script src='https://unpkg.com/terraformer-arcgis-parser@1.0.5'></script>
-  <script src='js/moment.min.js'></script>
   <script src='js/map.js'></script>
   <script src='js/map_section_click_module.js'></script>
   <!--endbuild -->

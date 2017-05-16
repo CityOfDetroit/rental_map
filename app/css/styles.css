@@ -124,6 +124,9 @@ main {
   -webkit-animation: animation-form-btn 1s ease forwards;
   animation: animation-form-btn 1s ease forwards; }
 
+.mapboxgl-ctrl-top-left, .mapboxgl-ctrl-top-right, .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right {
+  z-index: 4; }
+
 .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
   border-radius: 0; }
 
@@ -275,3 +278,33 @@ main {
     height: 2em; }
   #legend {
     width: 20em; } }
+
+#legend {
+  position: absolute;
+  top: 4em;
+  left: 1em;
+  width: 25em;
+  z-index: 2; }
+
+#legend > strong {
+  background-color: rgba(255, 255, 255, 0.7); }
+
+.legend label,
+.legend span {
+  background-color: rgba(255, 255, 255, 0.7);
+  display: block;
+  float: left;
+  height: 15px;
+  width: 33.33333%;
+  text-align: center;
+  font-size: .75em; }
+
+.legend.roads label,
+.legend.roads span {
+  background-color: rgba(255, 255, 255, 0.7);
+  display: block;
+  float: left;
+  height: 15px;
+  width: 50%;
+  text-align: center;
+  font-size: .75em; }

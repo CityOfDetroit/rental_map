@@ -147,7 +147,7 @@ main {
 
 #basemap-toggle {
   position: absolute;
-  bottom: 2em;
+  bottom: 4em;
   right: 2em;
   display: flex; }
 
@@ -281,9 +281,9 @@ main {
 
 #legend {
   position: absolute;
-  top: 4em;
-  left: 1em;
-  width: 25em;
+  top: .6em;
+  right: 1em;
+  width: 20em;
   z-index: 2; }
 
 #legend > strong {
@@ -295,7 +295,7 @@ main {
   display: block;
   float: left;
   height: 15px;
-  width: 33.33333%;
+  width: 50%;
   text-align: center;
   font-size: .75em; }
 

@@ -11,14 +11,75 @@ var parcelData = {
   'rental-status'     : null,
   'parcel-data'       : null
 };
+var currentURLParams = {
+  'zoom'        : 0,
+  'lat'         : 0,
+  'lng'         : 0
+};
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2x1c2Fyc2tpZGRldHJvaXRtaSIsImEiOiJjaXZsNXlwcXQwYnY5MnlsYml4NTJ2Mno4In0.8wKUnlMPIlxq-eWH0d10-Q';
 var map = new mapboxgl.Map({
   container: 'map', // container id
   style: 'mapbox://styles/slusarskiddetroitmi/' + baseMapStyles[0], //stylesheet location
-  center: [-83.1, 42.36], // starting position
-  zoom: 11.5 // starting zoom
+  center: [-83.15, 42.36], // starting position
+  zoom: 11.5, // starting zoom
+  keyboard : true
 });
 // ================== functions =====================
+// var updateURLParams = function updateURLParams(params){
+//   console.log(params);
+//   if(params.length > 1){
+//     currentURLParams.lat = params[0];
+//     currentURLParams.lng = params[1];
+//   }else{
+//     currentURLParams.zoom = params[0];
+//   }
+//   console.log(currentURLParams);
+//   if (history.pushState) {
+//       var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?para=hello';
+//       window.history.pushState({path:newurl},'',newurl);
+//   }
+// };
+var loadCityNumbers = function loadCityNumbers(){
+  // clearing panel data
+  document.querySelector('.overall-number').innerHTML = '';
+  document.querySelector('.parcel-info').innerHTML = '';
+  document.querySelector('.info-container > .not-rental').innerHTML = '';
+  document.querySelector('.info-container > .rental').innerHTML = '';
+  document.querySelector('.info-container > .total-rentals').innerHTML = '';
+  document.querySelector('.parcel-data.owner').innerHTML = '';
+  document.querySelector('.parcel-data.building').innerHTML = '';
+  document.querySelector('.parcel-info.display-section').innerHTML = '';
+  let tempDataHTML = '';
+  let certRegistration = 0;
+  let totalRentals = 0;
+  document.querySelector('.info-container > .street-name').innerHTML = 'CITY OF DETROIT';
+  document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
+  document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTALS</h4><p>0</p>";
+  $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Initial+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=true&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=json&token=", function( data ) {
+    //console.log(data.count);
+    // tempDataHTML += '<article class="initial"><span>INITIAL CERT. OF REGISTRATION</span> ' + data.count + '</article>';
+    // document.querySelector('.overall-number').innerHTML = tempDataHTML;
+    totalRentals += data.count;
+    certRegistration += data.count;
+    // document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
+    $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Renewal+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=true&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=json&token=", function( data ) {
+      //console.log(data.count);
+      certRegistration += data.count;
+      tempDataHTML += '<article class="initial"><span>CERTIFICATE OF REGISTRATION</span> ' + certRegistration + '</article>';
+      document.querySelector('.overall-number').innerHTML = tempDataHTML;
+      totalRentals += data.count;
+      document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
+    });
+  });
+  $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+City+C+of+C+-++Ord+18-03%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=true&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=json&token=", function( data ) {
+    //console.log(data.count);
+    tempDataHTML += '<article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + data.count + '</article>';
+    document.querySelector('.overall-number').innerHTML = tempDataHTML;
+    totalRentals += data.count;
+    document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
+  });
+  (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
+};
 var switchParcelDataViews = function switchParcelDataViews(e){
   //cons.log(e.getAttribute('data-view'));
   switch (e.getAttribute('data-view')) {
@@ -80,6 +141,7 @@ var startGeocoderResults = function startGeocoderResults(ev){
           return t;
       }
   });
+  // updateURLParams([ev.result.geometry.coordinates[0],ev.result.geometry.coordinates[1]]);
   let tempInputList = document.querySelectorAll('.mapboxgl-ctrl-geocoder.mapboxgl-ctrl > input');
   let tempAddr = '';
   for (var i = 0; i < tempInputList.length; i++) {
@@ -103,10 +165,22 @@ var startGeocoderResults = function startGeocoderResults(ev){
   $.getJSON('http://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine='+ newTempAddr +'&category=&outFields=User_fld&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=pjson' , function( data ) {
     //console.log(data.candidates[0].attributes.User_fld);
     map.setFilter("parcel-fill-hover", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
-    $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where="+ encodeURI('ParcelNo=\''+data.candidates[0].attributes.User_fld+'\'')+"&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( Rental_Inspections ) {
-      //console.log(Rental_Inspections);
+    $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where="+ encodeURI('ParcelNo=\''+data.candidates[0].attributes.User_fld+'\'')+"&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=ACTION_DESCRIPTION%2C+ParcelNo%2C+CSM_RECD_DATE&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( Rental_Inspections ) {
+      console.log(Rental_Inspections);
+      let tempParcelDataHTML = '';
       if(Rental_Inspections.features.length){
-        document.querySelector('.parcel-info.rental-info').innerHTML = '<article class="info-items"><span>RENTAL STATUS</span> ' + Rental_Inspections.features[0].attributes.ACTION_DESCRIPTION + '</article>';
+        tempParcelDataHTML += '<article class="info-items"><span>RENTAL STATUS</span> ';
+        switch (Rental_Inspections.features[0].attributes.ACTION_DESCRIPTION) {
+          case 'Issue Initial Registration ':
+            tempParcelDataHTML += '<initial><strong>Certificate of Registration</strong></initial></article>';
+            break;
+          case 'Issue Renewal Registration':
+            tempParcelDataHTML += '<initial><strong>Certificate of Registration</strong></initial></article>';
+            break;
+          default:
+            tempParcelDataHTML += '<cofc><strong>Certificate of Compliance</strong></cofc></article>';
+        }
+        document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
         document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn">SUBMIT A RENTER\'S COMPLAINT</article></a>';
         document.querySelector('.info-container > .not-rental').innerHTML = '';
         parcelData['rental-status'] = Rental_Inspections.features[0].attributes.ACTION_DESCRIPTION;
@@ -147,11 +221,12 @@ var toggleBaseMap = function toggleBaseMap(e) {
 };
 var closeInfo = function closeInfo() {
   //console.log('closing');
-  (document.querySelector('#info').className === 'active') ? document.querySelector('#info').className = '' : document.querySelector('#info').className = 'active';
+  // (document.querySelector('#info').className === 'active') ? document.querySelector('#info').className = '' : document.querySelector('#info').className = 'active';
+  (document.querySelector('.info-container > .street-name').innerHTML === 'CITY OF DETROIT') ? document.querySelector('#info').className = '' : loadCityNumbers();
   document.querySelector('.mapboxgl-ctrl-geocoder > input[type="text"]').value = '';
   //console.log('going back to city view');
   map.flyTo({
-      center: [-83.1, 42.367],
+      center: [-83.15, 42.36], // starting position
       zoom: 11.5,
       bearing: 0,
 
@@ -350,7 +425,7 @@ var addDataLayers = function addDataLayers(){
       'source-layer': 'parcelsgeojson',
       'filter': new_Filter,
       "paint": {
-        "fill-color":"#DF5800",
+        "fill-color":"#114BC7",
         "fill-opacity":0.5
       }
     });
@@ -361,6 +436,7 @@ map.on('style.load', function(){
   map.resize();
 });
 map.on('load', function(window) {
+  loadCityNumbers();
   map.on("mousemove", function(e) {
     var features = map.queryRenderedFeatures(e.point, {
       layers: ["council-fill"]
@@ -414,7 +490,8 @@ map.on('load', function(window) {
   });
 });
 map.on('zoom', function() {
-  //cons.log(map.getZoom());
+  // console.log(map.getZoom());
+  // updateURLParams([map.getZoom()]);
 });
 document.getElementById('close-emergency-modal-btn').addEventListener('click',closeInfo);
 var toggleBaseMapBtns = document.querySelectorAll('#basemap-toggle > article');

@@ -15,7 +15,7 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
 .overall-number > .garbage > span{color: #BD0019}
 .overall-number > .cofc > span, .info-items > cofc{color: #068A24}
 .overall-number > .initial > span, .info-items > initial{color: #114BC7}
-.overall-number > .renewal > span, .info-items > renewal{color: #DF5800}
+.overall-number > .renewal > span, .info-items > expired{color: #DF5800}
 .overall-number > .initial > span, .overall-number > .cofc > span, .overall-number > .garbage > span, .parcel-info > .info-items > span, .overall-number > .renewal > span, .overall-number > .district > span{position: absolute; top: -.75em; left: 1em; background-color: #fff; padding: 0 .5em; font-weight: bold}
 .total-rentals > h4{font-size: 1.25em; text-align: center; margin: 0; font-weight: bold;}
 .total-rentals > p{text-align: center; font-size: 2.5em; margin: 0;}
@@ -34,7 +34,7 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
 .mapboxgl-ctrl-top-left{width: 25em;}
 .mapboxgl-ctrl-geocoder{width: 100%;}
 .mapboxgl-ctrl-top-left > .mapboxgl-ctrl-geocoder.mapboxgl-ctrl > input[type='text'] {font-size: 16px;}
-#basemap-toggle{position: absolute;bottom: 2em;right: 2em;display: flex;}
+#basemap-toggle{position: absolute;bottom: 4em;right: 2em;display: flex;}
 #basemap-toggle > article{width: 3em; height: 3em; background-color: #EB002B; border-radius: 50%; padding: .5em; cursor: pointer;transition: all .2s ease-in-out;}
 #basemap-toggle > article:hover{background-color: #000;transition: all .2s ease-in-out;}
 #basemap-toggle > article:first-child{margin-right: .5em;}
@@ -117,12 +117,13 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
 }
 #legend{
   position: absolute;
-  top: 4em;
-  left: 1em;
-  width: 25em;
+  top: .6em;
+  right: 3em;
+  width: 10.5em;
   z-index: 2;
 }
 #legend > strong{
+  padding: 0 .2em;
   background-color: rgba(255,255,255,.7);
 }
 .legend label,
@@ -131,7 +132,7 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
   display:block;
   float:left;
   height:15px;
-  width:33.33333%;
+  width:100%;
   text-align:center;
   font-size:.75em;
 }

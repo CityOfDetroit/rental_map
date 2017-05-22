@@ -10,7 +10,7 @@
   <!--build:css css/styles.min.css-->
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.css' rel='stylesheet' />
   <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
-  <link href='css/styles.css' rel='stylesheet' />
+  <link href='css/styles.min.css' rel='stylesheet' />
   <!--endbuild-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
@@ -26,9 +26,6 @@
         <input type="hidden" name="route-id" value="">
         <input type="hidden" name="lng" value="">
         <input type="hidden" name="lat" value="">
-        <!-- <article class="building-view">
-          <img src="img/building-sample.jpg" alt="building">
-        </article> -->
         <article class="street-name"></article>
         <article class="not-rental"></article>
         <article class="rental"></article>
@@ -58,16 +55,12 @@
       <strong>RENTAL PROPERTIES</strong>
       <nav class='legend clearfix'>
         <span style='background:#114BC7;'></span>
-        <span style='background:#068A24;'></span>
-        <label>Certificate of Registration</label>
-        <label>Certificate of Compliance</label>
+        <label>Ready for rental</label>
       </nav>
     </div>
   </main>
   <!--build:js js/main.min.js -->
-  <script src='js/map.js'></script>
-  <script src='js/map_section_click_module.js'></script>
-  <script src='js/moment.min.js'></script>
+  <script src='js/main.min.js'></script>
   <!--endbuild -->
 </body>
 </html>

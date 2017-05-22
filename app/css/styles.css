@@ -82,7 +82,7 @@ main {
 .overall-number > .initial > span, .info-items > initial {
   color: #114BC7; }
 
-.overall-number > .renewal > span, .info-items > renewal {
+.overall-number > .renewal > span, .info-items > expired {
   color: #DF5800; }
 
 .overall-number > .initial > span, .overall-number > .cofc > span, .overall-number > .garbage > span, .parcel-info > .info-items > span, .overall-number > .renewal > span, .overall-number > .district > span {
@@ -282,11 +282,12 @@ main {
 #legend {
   position: absolute;
   top: .6em;
-  right: 1em;
-  width: 20em;
+  right: 3em;
+  width: 10.5em;
   z-index: 2; }
 
 #legend > strong {
+  padding: 0 .2em;
   background-color: rgba(255, 255, 255, 0.7); }
 
 .legend label,
@@ -295,7 +296,7 @@ main {
   display: block;
   float: left;
   height: 15px;
-  width: 50%;
+  width: 100%;
   text-align: center;
   font-size: .75em; }
 

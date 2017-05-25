@@ -69,10 +69,6 @@ main {
   position: relative;
   padding: 1em; }
 
-.parcel-info.display-section {
-  overflow-y: auto;
-  max-height: 25em; }
-
 .overall-number > .garbage > span {
   color: #BD0019; }
 
@@ -103,6 +99,16 @@ main {
   text-align: center;
   font-size: 2.5em;
   margin: 0; }
+
+.info-items > img {
+  margin: .25em 0 0 1em; }
+
+.info-items > item {
+  position: relative;
+  top: -.3em; }
+
+#suggested-addr {
+  cursor: pointer; }
 
 #close-emergency-modal-btn:hover {
   -webkit-animation: animation-close-btn 1s ease forwards;
@@ -142,8 +148,8 @@ main {
 .mapboxgl-ctrl-geocoder {
   width: 100%; }
 
-.mapboxgl-ctrl-top-left > .mapboxgl-ctrl-geocoder.mapboxgl-ctrl > input[type='text'] {
-  font-size: 16px; }
+.mapboxgl-ctrl-top-left > .mapboxgl-ctrl-geocoder.mapboxgl-ctrl > input[type='text'], .mapboxgl-ctrl-geocoder input[type='text'] {
+  font-size: 18px; }
 
 #basemap-toggle {
   position: absolute;
@@ -242,14 +248,15 @@ main {
     transition: all 0.2s ease-in-out;
     -webkit-box-shadow: 2px 0px 5px -1px rgba(0, 0, 0, 0.6);
     -moz-box-shadow: 2px 0px 5px -1px rgba(0, 0, 0, 0.6);
-    box-shadow: 2px 0px 5px -1px rgba(0, 0, 0, 0.6); }
+    box-shadow: 2px 0px 5px -1px rgba(0, 0, 0, 0.6);
+    overflow-y: auto; }
   #close-emergency-modal-btn {
     cursor: pointer;
     position: absolute;
-    right: -2.5em;
-    top: calc((100vh - 3em)/2);
-    width: 3em;
-    height: 3em; } }
+    right: -.5em;
+    top: .5em;
+    width: 2em;
+    height: 2em; } }
 
 @media (max-width: 400px) {
   #back-to-infor-btn {

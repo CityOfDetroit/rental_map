@@ -8,8 +8,8 @@ var mapSectionClickModule = (function(calendarEvents){
       councilFeatures = map.queryRenderedFeatures(e.point, { layers: ['council-fill'] });
       neighborhoodsFeatures = map.queryRenderedFeatures(e.point, { layers: ['neighborhoods-fill'] });
       parcelFeatures = map.queryRenderedFeatures(e.point, { layers: ['parcel-fill'] });
-    } catch (e) {
-      //console.log("ERROR: " +e);
+    } catch (error) {
+      //console.log("ERROR: " +error);
     } finally {
       //console.log(councilFeatures.length);
       //console.log(neighborhoodsFeatures.length);
@@ -61,7 +61,7 @@ var mapSectionClickModule = (function(calendarEvents){
         //   totalRentals += data.count;
         //   document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
         // });
-        document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
+        // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
         document.querySelector('.info-container > .street-name').innerHTML = simplifiedFeatured.properties.name;
         (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
         map.flyTo({
@@ -114,7 +114,7 @@ var mapSectionClickModule = (function(calendarEvents){
         $.getJSON('http://gis.detroitmi.gov/arcgis/rest/services/NeighborhoodsApp/Neighborhoods/MapServer/1/query?where=&text=&objectIds=&time=&geometry='+ e.lngLat.lng + '%2C' + e.lngLat.lat +'&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson', function( data ) {
           //console.log(data.features[0]);
           var simplifiedFeatured = turf.simplify(data.features[0], 0.0005, false);
-          document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
+          // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
           document.querySelector('.info-container > .street-name').innerHTML = simplifiedFeatured.properties.name;
           (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
           //console.log(simplifiedFeatured);
@@ -165,46 +165,46 @@ var mapSectionClickModule = (function(calendarEvents){
           var tempParcelDataHTML = '';
           if(Rental_Inspections.features.length){
             if(Rental_Inspections.features[0].properties){
-              tempParcelDataHTML += '<article class="info-items"><span>RENTAL STATUS</span> ';
+              tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
               switch (Rental_Inspections.features[0].properties.ACTION_DESCRIPTION) {
                 case 'Issue Initial Registration':
-                  tempParcelDataHTML += '<expired><strong>In process since</strong></expired><br>'+ moment.tz(Rental_Inspections.features[0].properties.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</article>';
+                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
                   break;
                 case 'Issue Renewal Registration':
-                  tempParcelDataHTML += '<expired><strong>In process since</strong></expired><br>'+ moment.tz(Rental_Inspections.features[0].properties.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</article>';
+                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
                   break;
                 default:
                   if (moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").isBefore(moment())) {
-                    tempParcelDataHTML += '<initial><strong>Ready for Rental</strong></initial></article>';
+                    tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
                   }else{
-                    tempParcelDataHTML += '<expired><strong>Expired Rental</strong></expired></article>';
+                    tempParcelDataHTML += '<expired>EXPIRED RENTAL</expired></article>';
                   }
               }
             }else{
-              tempParcelDataHTML += '<article class="info-items"><span>RENTAL STATUS</span> ';
+              tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
               switch (Rental_Inspections.features[0].attributes.ACTION_DESCRIPTION) {
                 case 'Issue Initial Registration ':
-                  tempParcelDataHTML += '<expired><strong>In process since</strong></expired><br>'+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</article>';
+                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
                   break;
                 case 'Issue Renewal Registration':
-                  tempParcelDataHTML += '<expired><strong>In process since</strong></expired><br>'+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</article>';
+                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
                   break;
                 default:
                   if (moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").isBefore(moment())) {
-                    tempParcelDataHTML += '<initial><strong>Ready for Rental</strong></initial></article>';
+                    tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
                   }else{
-                    tempParcelDataHTML += '<expired><strong>Expired</strong></expired></article>';
+                    tempParcelDataHTML += '<expired>EXPIRED</expired></article>';
                   }
               }
             }
             document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
-            document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
+            // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
             document.querySelector('.info-container > .not-rental').innerHTML = '';
           }else{
-            tempParcelDataHTML += '<article class="info-items"><span>RENTAL STATUS</span> Not a Rental</article>';
+            tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> NOT APPROVED RENTAL<br><img src="img/cancel.png" alt="x"> <item>Registered</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
             document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
             document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=7b3746bd20a048a5919ae07bd9ed89de" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
-            document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
+            document.querySelector('.info-container > .rental').innerHTML = '';
           }
         });
         $.getJSON("http://apis.detroitmi.gov/assessments/parcel/"+parcelFeatures[0].properties.parcelno.replace(/\./g,'_')+"/", function( parcel ) {

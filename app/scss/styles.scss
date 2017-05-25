@@ -11,7 +11,6 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
 .info-container > .building-view{width: 100%;height: 10em;padding: 0;overflow: hidden;}
 .info-container > .building-view > img{width: 100%;}
 .overall-number > .garbage, .overall-number > .cofc, .overall-number > .initial, .overall-number > .renewal, .parcel-info > .info-items{border: 1px solid #cdcac7; margin: 1em; position: relative; padding: 1em;}
-.parcel-info.display-section{overflow-y: auto; max-height: 25em;}
 .overall-number > .garbage > span{color: #BD0019}
 .overall-number > .cofc > span, .info-items > cofc{color: #068A24}
 .overall-number > .initial > span, .info-items > initial{color: #114BC7}
@@ -19,6 +18,9 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
 .overall-number > .initial > span, .overall-number > .cofc > span, .overall-number > .garbage > span, .parcel-info > .info-items > span, .overall-number > .renewal > span, .overall-number > .district > span{position: absolute; top: -.75em; left: 1em; background-color: #fff; padding: 0 .5em; font-weight: bold}
 .total-rentals > h4{font-size: 1.25em; text-align: center; margin: 0; font-weight: bold;}
 .total-rentals > p{text-align: center; font-size: 2.5em; margin: 0;}
+.info-items > img {margin: .25em 0 0 1em;}
+.info-items > item {position: relative; top:-.3em;}
+#suggested-addr{cursor: pointer;} 
 #close-emergency-modal-btn:hover{
   -webkit-animation: animation-close-btn 1s ease forwards;
   animation: animation-close-btn 1s ease forwards;
@@ -33,7 +35,7 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
 .mapboxgl-ctrl-geocoder input[type='text']{color: #000;}
 .mapboxgl-ctrl-top-left{width: 25em;}
 .mapboxgl-ctrl-geocoder{width: 100%;}
-.mapboxgl-ctrl-top-left > .mapboxgl-ctrl-geocoder.mapboxgl-ctrl > input[type='text'] {font-size: 16px;}
+.mapboxgl-ctrl-top-left > .mapboxgl-ctrl-geocoder.mapboxgl-ctrl > input[type='text'],.mapboxgl-ctrl-geocoder input[type='text'] {font-size: 18px;}
 #basemap-toggle{position: absolute;bottom: 4em;right: 2em;display: flex;}
 #basemap-toggle > article{width: 3em; height: 3em; background-color: #EB002B; border-radius: 50%; padding: .5em; cursor: pointer;transition: all .2s ease-in-out;}
 #basemap-toggle > article:hover{background-color: #000;transition: all .2s ease-in-out;}
@@ -90,14 +92,14 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
   }
 }
 @media (min-width: 401px) {
-  #info.active {width: 25em; height: 100vh; background-color: #fff;position: absolute; top: 0;left: 0; z-index: 5; padding: 0 0 2em 0;transition: all 0.2s ease-in-out;-webkit-box-shadow: 2px 0px 5px -1px rgba(0,0,0,0.6);-moz-box-shadow: 2px 0px 5px -1px rgba(0,0,0,0.6);box-shadow: 2px 0px 5px -1px rgba(0,0,0,0.6);}
+  #info.active {width: 25em; height: 100vh; background-color: #fff;position: absolute; top: 0;left: 0; z-index: 5; padding: 0 0 2em 0;transition: all 0.2s ease-in-out;-webkit-box-shadow: 2px 0px 5px -1px rgba(0,0,0,0.6);-moz-box-shadow: 2px 0px 5px -1px rgba(0,0,0,0.6);box-shadow: 2px 0px 5px -1px rgba(0,0,0,0.6);overflow-y: auto;}
   #close-emergency-modal-btn{
     cursor: pointer;
     position: absolute;
-    right: -2.5em;
-    top: calc((100vh - 3em)/2);
-    width: 3em;
-    height: 3em;
+    right: -.5em;
+    top: .5em;
+    width: 2em;
+    height: 2em;
   }
 }
 @media (max-width: 400px) {

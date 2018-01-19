@@ -20,7 +20,7 @@ var mapSectionClickModule = (function(calendarEvents){
         var features = map.queryRenderedFeatures(e.point, { layers: ['council-fill'] });
         var feature = features[0];
         //console.log(feature);
-        var simplifiedFeatured = turf.simplify(feature, 0.003, false);
+        var simplifiedFeatured = turf.simplify(feature, {tolerance: 0.003, highQuality: false});
         //console.log(simplifiedFeatured);
         var arcPolygon = Terraformer.ArcGIS.convert(simplifiedFeatured.geometry);
         //console.log(arcPolygon);
@@ -113,7 +113,7 @@ var mapSectionClickModule = (function(calendarEvents){
         // document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTALS</h4><p>0</p>";
         $.getJSON('http://gis.detroitmi.gov/arcgis/rest/services/NeighborhoodsApp/Neighborhoods/MapServer/1/query?where=&text=&objectIds=&time=&geometry='+ e.lngLat.lng + '%2C' + e.lngLat.lat +'&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson', function( data ) {
           //console.log(data.features[0]);
-          var simplifiedFeatured = turf.simplify(data.features[0], 0.0005, false);
+          var simplifiedFeatured = turf.simplify(data.features[0], {tolerance: 0.003, highQuality: false});
           // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
           document.querySelector('.info-container > .street-name').innerHTML = simplifiedFeatured.properties.name;
           (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
@@ -160,42 +160,25 @@ var mapSectionClickModule = (function(calendarEvents){
         document.querySelector('.parcel-info.display-section').innerHTML = '';
         //console.log(parcelFeatures[0].properties);
         map.setFilter("parcel-fill-hover", ["==", "parcelno", parcelFeatures[0].properties.parcelno]);
-        $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where="+ encodeURI("ParcelNo='"+parcelFeatures[0].properties.parcelno+"'")+"&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=ACTION_DESCRIPTION%2C+ParcelNo%2C+CSA_CREATION_DATE&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=json&token=", function( Rental_Inspections ) {
-          // console.log(Rental_Inspections);
+        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(parcelFeatures[0].properties.parcelno) + "'", function( Rental_Inspections ) {
+          console.log(Rental_Inspections);
           var tempParcelDataHTML = '';
-          if(Rental_Inspections.features.length){
-            if(Rental_Inspections.features[0].properties){
-              tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
-              switch (Rental_Inspections.features[0].properties.ACTION_DESCRIPTION) {
-                case 'Issue Initial Registration':
-                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
-                  break;
-                case 'Issue Renewal Registration':
-                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
-                  break;
-                default:
-                  if (moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").isBefore(moment())) {
-                    tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
-                  }else{
-                    tempParcelDataHTML += '<expired>EXPIRED RENTAL</expired></article>';
-                  }
-              }
-            }else{
-              tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
-              switch (Rental_Inspections.features[0].attributes.ACTION_DESCRIPTION) {
-                case 'Issue Initial Registration ':
-                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
-                  break;
-                case 'Issue Renewal Registration':
-                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
-                  break;
-                default:
-                  if (moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").isBefore(moment())) {
-                    tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
-                  }else{
-                    tempParcelDataHTML += '<expired>EXPIRED</expired></article>';
-                  }
-              }
+          if(Rental_Inspections.length){
+            tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
+            switch (Rental_Inspections[0].action_description) {
+              case 'Issue Initial Registration ':
+                tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
+                break;
+              case 'Issue Renewal Registration':
+                tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
+                break;
+              default:
+                // if (moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").isBefore(moment())) {
+                //   tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
+                // }else{
+                //   tempParcelDataHTML += '<expired>EXPIRED RENTAL</expired></article>';
+                // }
+                tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
             }
             document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
             // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';

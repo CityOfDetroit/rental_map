@@ -16,6 +16,11 @@ var currentURLParams = {
   'lat'         : 0,
   'lng'         : 0
 };
+var rentalData = null;
+$.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
+  rentalData = data;
+  console.log(rentalData);
+});
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2x1c2Fyc2tpZGRldHJvaXRtaSIsImEiOiJjaXZsNXlwcXQwYnY5MnlsYml4NTJ2Mno4In0.8wKUnlMPIlxq-eWH0d10-Q';
 var map = new mapboxgl.Map({
   container: 'map', // container id
@@ -66,46 +71,47 @@ var loadPanel = function loadPanel(addr,ev){
           }
       });
       map.setFilter("parcel-fill-hover", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
-      $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where="+ encodeURI('ParcelNo=\''+data.candidates[0].attributes.User_fld+'\'')+"&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=ACTION_DESCRIPTION%2C+ParcelNo%2C+CSA_CREATION_DATE&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( Rental_Inspections ) {
+      $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'", function( Rental_Inspections ) {
         console.log(Rental_Inspections);
         var tempParcelDataHTML = '';
-        if(Rental_Inspections.features.length){
+        if(Rental_Inspections.length){
           tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
-          switch (Rental_Inspections.features[0].attributes.ACTION_DESCRIPTION) {
+          switch (Rental_Inspections[0].action_description) {
             case 'Issue Initial Registration ':
-              tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
+              tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
               break;
             case 'Issue Renewal Registration':
-              tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
+              tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
               break;
             default:
-              if (moment.tz(Rental_Inspections.features[0].attributes.CSA_CREATION_DATE,"America/Detroit").isBefore(moment())) {
-                tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
-              }else{
-                tempParcelDataHTML += '<expired>EXPIRED RENTAL</expired></article>';
-              }
+              // if (moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").isBefore(moment())) {
+              //   tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
+              // }else{
+              //   tempParcelDataHTML += '<expired>EXPIRED RENTAL</expired></article>';
+              // }
+              tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
           }
           document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
-          document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
+          // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
           document.querySelector('.info-container > .not-rental').innerHTML = '';
-          parcelData['rental-status'] = Rental_Inspections.features[0].attributes.ACTION_DESCRIPTION;
         }else{
-          document.querySelector('.parcel-info.rental-info').innerHTML = '<article class="info-items"><span>COMPLIANCE STATUS</span> NOT APPROVED RENTAL<br><img src="img/cancel.png" alt="x"> <item>Registered</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
-          document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=7b3746bd20a048a5919ae07bd9ed89de" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a><br><a href="https://app.smartsheet.com/b/form?EQBCT=91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn">REPORT SUSPECTED RENTAL</article></a>';
-          parcelData['rental-status'] = 'Not a Rental';
+          tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> NOT APPROVED RENTAL<br><img src="img/cancel.png" alt="x"> <item>Registered</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
+          document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
+          document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=7b3746bd20a048a5919ae07bd9ed89de" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
+          document.querySelector('.info-container > .rental').innerHTML = '';
         }
-        $.getJSON("http://apis.detroitmi.gov/assessments/parcel/"+data.candidates[0].attributes.User_fld.replace(/\./g,'_')+"/", function( parcel ) {
-          //console.log(parcel);
-          document.querySelector('.info-container > .street-name').innerHTML = parcel.propstreetcombined;
-          // parcelData['owner-display'] += '<article class="info-items"><span>OWNER</span> ' + parcel.ownername1 + '</article>';
-          // parcelData['building-display'] += '<article class="info-items"><span>BUILDING TYPE</span> ' + parcel.resb_style + '</article>';
-          // parcelData['building-display'] += '<article class="info-items"><span>PARCEL NUMBER</span> ' + parcel.pnum + '</article>';
-          // parcelData['building-display'] += '<article class="info-items"><span>YEAR BUILT</span> ' + parcel.resb_yearbuilt + '</article>';
-          // document.querySelector('.parcel-info').innerHTML = tempParcelDataHTML;
-          document.querySelector('.parcel-data.owner').innerHTML = '<div class="data-view-btn" data-view="owner" onclick="switchParcelDataViews(this)">OWNER INFORMATION <span>&#10095;</span></div>';
-          document.querySelector('.parcel-data.building').innerHTML = '<div class="data-view-btn" data-view="building" onclick="switchParcelDataViews(this)">PROPERTY INFORMATION <span>&#10095;</span></div>';
-          parcelData['parcel-data'] = parcel;
-        });
+      });
+      $.getJSON("http://apis.detroitmi.gov/assessments/parcel/"+data.candidates[0].attributes.User_fld.replace(/\./g,'_')+"/", function( parcel ) {
+        // console.log(parcel);
+        document.querySelector('.info-container > .street-name').innerHTML = parcel.propstreetcombined;
+        // tempParcelDataHTML += '<article class="info-items"><span>OWNER</span> ' + parcel.ownername1 + '</article>';
+        // tempParcelDataHTML += '<article class="info-items"><span>BUILDING TYPE</span> ' + parcel.resb_style + '</article>';
+        // tempParcelDataHTML += '<article class="info-items"><span>PARCEL NUMBER</span> ' + parcel.pnum + '</article>';
+        // tempParcelDataHTML += '<article class="info-items"><span>YEAR BUILT</span> ' + parcel.resb_yearbuilt + '</article>';
+        // document.querySelector('.parcel-info').innerHTML = tempParcelDataHTML;
+        document.querySelector('.parcel-data.owner').innerHTML = '<div class="data-view-btn" data-view="owner" onclick="switchParcelDataViews(this)">OWNER INFORMATION <span>&#10095;</span></div>';
+        document.querySelector('.parcel-data.building').innerHTML = '<div class="data-view-btn" data-view="building" onclick="switchParcelDataViews(this)">PROPERTY INFORMATION <span>&#10095;</span></div>';
+        parcelData['parcel-data'] = parcel;
       });
     }else{console.log(ev.result.geometry.coordinates[0]+','+ev.result.geometry.coordinates[1]);
       $.getJSON('http://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+'+ev.result.geometry.coordinates[0]+'%2C%22y%22%3A+'+ev.result.geometry.coordinates[1]+'%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=pjson' , function( data ) {
@@ -284,6 +290,10 @@ var addDataLayers = function addDataLayers(){
     type: 'vector',
     url: 'mapbox://slusarskiddetroitmi.cwobdjn0'
   });
+  map.addSource('certified', {
+    type: 'geojson',
+    data: "https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE action_description = 'Issue City C of C -  Ord 18-03' limit 200000"
+  });
   map.addSource('councils', {
     type: 'geojson',
     data: "https://gis.detroitmi.gov/arcgis/rest/services/NeighborhoodsApp/council_district/MapServer/1/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson"
@@ -412,24 +422,38 @@ var addDataLayers = function addDataLayers(){
      "filter": ["==", "parcelno", ""]
    });
 
-   $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+City+C+of+C+-++Ord+18-03%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=ParcelNo%2C+CSA_CREATION_DATE&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( data ) {
-    //  console.log(data);
-     var new_Filter = ["in",'parcelno'];
-     for (var i = 0; i < data.features.length; i++) {
-       (moment.tz(data.features[i].attributes.CSA_CREATION_DATE,"America/Detroit").isBefore(moment()))? new_Filter.push(data.features[i].attributes.ParcelNo) : 0;
-     }
+   var new_Filter = ["in",'parcelno'];
+   $.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
+     data.features.forEach(function(rental){
+       if(rental.properties.action_description === "Issue City C of C -  Ord 18-03"){
+         new_Filter.push(rental.properties.parcelnum);
+       }
+     });
      map.addLayer({
-      "id": "parcel-fill-cofc",
-      "type": "fill",
-      "source": "parcels",
-      'source-layer': 'parcelsgeojson',
-      'filter': new_Filter,
-      "paint": {
-        "fill-color":"#114BC7",
-        "fill-opacity":0.5
-      }
-    });
+        "id": "parcel-fill-certified",
+        "type": "fill",
+        "source": "parcels",
+        "minzoom": 15.5,
+        'source-layer': 'parcelsgeojson',
+        'filter': new_Filter,
+        "paint": {
+          "fill-color":"#114BC7",
+          "fill-opacity":0.5
+        }
+      });
+      map.addLayer({
+        "id": "circle-certified",
+        "source": "certified",
+        "maxzoom": 15.5,
+        "type": "circle",
+        "paint": {
+            "circle-radius": 6,
+            "circle-color": "#114BC7",
+        }
+      });
    });
+
+
   //  $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Initial+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=parcelno&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( data ) {
   //    //console.log(data);
   //    var new_Filter = ["in",'parcelno'];

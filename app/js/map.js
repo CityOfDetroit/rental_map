@@ -17,6 +17,7 @@ var currentURLParams = {
   'lng'         : 0
 };
 var rentalData = null;
+var instpactionData = null;
 $.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
   rentalData = data;
   console.log(rentalData);
@@ -49,7 +50,7 @@ var loadSuggestedAddr = function loadSuggestedAddr(link){
 };
 var loadPanel = function loadPanel(addr,ev){
   //================ get parcel data ==========================
-  $.getJSON('http://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine='+ addr +'&category=&outFields=User_fld&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=pjson' , function( data ) {
+  $.getJSON('https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine='+ addr +'&category=&outFields=User_fld&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=pjson' , function( data ) {
     console.log(data.candidates[0].attributes.User_fld);
     if(data.candidates[0].attributes.User_fld !== ''){
       console.log('flying');
@@ -101,7 +102,7 @@ var loadPanel = function loadPanel(addr,ev){
           document.querySelector('.info-container > .rental').innerHTML = '';
         }
       });
-      $.getJSON("http://apis.detroitmi.gov/assessments/parcel/"+data.candidates[0].attributes.User_fld.replace(/\./g,'_')+"/", function( parcel ) {
+      $.getJSON("https://apis.detroitmi.gov/assessments/parcel/"+data.candidates[0].attributes.User_fld.replace(/\./g,'_')+"/", function( parcel ) {
         // console.log(parcel);
         document.querySelector('.info-container > .street-name').innerHTML = parcel.propstreetcombined;
         // tempParcelDataHTML += '<article class="info-items"><span>OWNER</span> ' + parcel.ownername1 + '</article>';
@@ -114,7 +115,7 @@ var loadPanel = function loadPanel(addr,ev){
         parcelData['parcel-data'] = parcel;
       });
     }else{console.log(ev.result.geometry.coordinates[0]+','+ev.result.geometry.coordinates[1]);
-      $.getJSON('http://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+'+ev.result.geometry.coordinates[0]+'%2C%22y%22%3A+'+ev.result.geometry.coordinates[1]+'%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=pjson' , function( data ) {
+      $.getJSON('https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+'+ev.result.geometry.coordinates[0]+'%2C%22y%22%3A+'+ev.result.geometry.coordinates[1]+'%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=pjson' , function( data ) {
         console.log(data);
         var displaySearchAddr = '';
         var splitAddr = addr.split('+');
@@ -144,34 +145,32 @@ var loadCityNumbers = function loadCityNumbers(){
   document.querySelector('.parcel-info.display-section').innerHTML = '';
   // ============================================================
   document.querySelector('.info-container > .street-name').innerHTML = 'CITY OF DETROIT';
-  // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
-  // let tempDataHTML = '';
-  // let certRegistration = 0;
-  // let totalRentals = 0;
-  // document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTALS</h4><p>0</p>";
-  // $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Initial+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=true&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=json&token=", function( data ) {
-  //   //console.log(data.count);
-  //   // tempDataHTML += '<article class="initial"><span>INITIAL CERT. OF REGISTRATION</span> ' + data.count + '</article>';
-  //   // document.querySelector('.overall-number').innerHTML = tempDataHTML;
-  //   totalRentals += data.count;
-  //   certRegistration += data.count;
-  //   // document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
-  //   $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Renewal+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=true&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=json&token=", function( data ) {
-  //     //console.log(data.count);
-  //     certRegistration += data.count;
-  //     tempDataHTML += '<article class="initial"><span>CERTIFICATE OF REGISTRATION</span> ' + certRegistration + '</article>';
-  //     document.querySelector('.overall-number').innerHTML = tempDataHTML;
-  //     totalRentals += data.count;
-  //     document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
-  //   });
-  // });
-  // $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+City+C+of+C+-++Ord+18-03%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=true&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=json&token=", function( data ) {
-  //   //console.log(data.count);
-  //   tempDataHTML += '<article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + data.count + '</article>';
-  //   document.querySelector('.overall-number').innerHTML = tempDataHTML;
-  //   totalRentals += data.count;
-  //   document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
-  // });
+  document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
+  var tempDataHTML = '';
+  var certRegistration = 0;
+  var totalRentals = 0;
+  var registerRental = 0;
+  var renewalRental = 0;
+  document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTALS</h4><p>0</p>";
+  $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$limit=500000", function( data ) {
+    console.log(data);
+    for (var i = 0; i < data.length; i++) {
+      switch (data[i].action_description.trim()) {
+        case "Issue Initial Registration":
+          registerRental++;
+          break;
+        case "Issue Renewal Registration":
+          renewalRental++;
+          break;
+        default:
+          certRegistration++;
+      }
+    }
+    totalRentals = data.length;
+    tempDataHTML += '<article class="initial"><span>INITIAL CERT. OF REGISTRATION</span> ' + registerRental + '</article><article class="renewal"><span>RENEWAL REGISTRATION</span> ' + renewalRental + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article>';
+    document.querySelector('.overall-number').innerHTML = tempDataHTML;
+    document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
+  });
   (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
 };
 var switchParcelDataViews = function switchParcelDataViews(e){
@@ -302,52 +301,14 @@ var addDataLayers = function addDataLayers(){
     type: 'geojson',
     data: "https://gis.detroitmi.gov/arcgis/rest/services/NeighborhoodsApp/council_district/MapServer/1/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson"
   });
-  map.addSource('neighborhoods', {
+  map.addSource('zip-codes', {
     type: 'geojson',
-    data: 'https://gis.detroitmi.gov/arcgis/rest/services/NeighborhoodsApp/Neighborhoods/MapServer/1/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=2898&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson'
-  });
-  map.addSource('neighborhoods-labels', {
-    type: 'geojson',
-    data: 'http://gis.detroitmi.gov/arcgis/rest/services/NeighborhoodsApp/Neighborhoods/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=2898&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson'
+    data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnHiddenFields=false&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson'
   });
   map.addLayer({
-    'id': 'councils_labels',
-    'type': 'symbol',
-    'source': 'councils_labels', maxzoom: 12,
-    'layout': {
-      "text-font": ["Mark SC Offc Pro Bold"],
-      "text-field": "{name}",
-      "symbol-placement": "point",
-      "text-size": 22
-    },
-    'paint': {
-      'text-color': 'black'
-    }
-  });
-  map.addLayer({
-    "id": "council-borders",
-    "type": "line",
-    "source": "councils", maxzoom: 12,
-    "layout": {},
-    "paint": {
-      "line-color": "#004b90",
-      "line-width": 3
-    }
-  });
-  map.addLayer({
-    "id": "council-fill",
+    "id": "zip-fill-hover",
     "type": "fill",
-    "source": "councils",  maxzoom: 12,
-    "layout": {},
-    "paint": {
-      "fill-color": '#0065c3',
-      "fill-opacity": 0
-    }
-  });
-  map.addLayer({
-    "id": "council-fill-hover",
-    "type": "fill",
-    "source": "councils",  maxzoom: 12,
+    "source": "zip-codes",  maxzoom: 13,
     "layout": {},
     "paint": {
       "fill-color": '#0065c3',
@@ -356,9 +317,9 @@ var addDataLayers = function addDataLayers(){
     "filter": ["==", "name", ""]
   });
   map.addLayer({
-    "id": "neighborhoods-borders",
+    "id": "zip-borders",
     "type": "line",
-    "source": "neighborhoods",  minzoom: 12,maxzoom:15.5,
+    "source": "zip-codes",  maxzoom:13,
     "layout": {},
     "paint": {
       "line-color": "#004b90",
@@ -366,27 +327,27 @@ var addDataLayers = function addDataLayers(){
     }
   });
   map.addLayer({
-    "id": "neighborhoods-fill",
+    "id": "zip-fill",
     "type": "fill",
-    "source": "neighborhoods",  minzoom: 12,maxzoom:15.5,
+    "source": "zip-codes", maxzoom:13,
     "paint":{
       "fill-color": '#fff',
       'fill-opacity': 0
     },
   });
-  map.addLayer({
-    'id': 'neighborhoods-labels',
-    'type': 'symbol',
-    'source': 'neighborhoods-labels',
-            'minzoom': 12,maxzoom:15.5,
-    'layout': {
-      "text-font": ["Mark SC Offc Pro Bold"],
-      'text-field': '{name}'
-    },
-    'paint': {
-      'text-color': 'black'
-    }
-  });
+  // map.addLayer({
+  //   'id': 'neighborhoods-labels',
+  //   'type': 'symbol',
+  //   'source': 'neighborhoods-labels',
+  //           'minzoom': 12,maxzoom:15.5,
+  //   'layout': {
+  //     "text-font": ["Mark SC Offc Pro Bold"],
+  //     'text-field': '{name}'
+  //   },
+  //   'paint': {
+  //     'text-color': 'black'
+  //   }
+  // });
   map.addLayer({
       "id": "parcel-fill",
       "type": "fill",
@@ -421,7 +382,48 @@ var addDataLayers = function addDataLayers(){
      'source-layer': 'parcelsgeojson',
      "filter": ["==", "parcelno", ""]
    });
+   var zipLabes = {
+     "type": "FeatureCollection",
+     "features": []
+   };
 
+  $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnHiddenFields=false&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson' , function( data ) {
+    console.log(data);
+    for (var i = 0; i < data.features.length; i++) {
+      console.log(data.features[i].geometry.coordinates[0]);
+      var tempPolygon = turf.polygon([data.features[i].geometry.coordinates[0]]);
+      var tempCenter = turf.centroid(tempPolygon);
+      var tempFeature = {
+          "type": "Feature",
+          "geometry": {
+              "type": "Point",
+              "coordinates": tempCenter.geometry.coordinates
+          },
+          "properties":{
+            "name": data.features[i].properties.zipcode
+          }
+      };
+      zipLabes.features.push(tempFeature);
+    }
+    console.log(zipLabes);
+    map.addSource('zip-codes-labels', {
+      type: 'geojson',
+      data: zipLabes
+    });
+    map.addLayer({
+      'id': 'zip-labels',
+      'type': 'symbol',
+      'source': "zip-codes-labels",
+      'maxzoom': 15.5,
+      'layout': {
+        "text-font": ["Mark SC Offc Pro Bold"],
+        'text-field': '{name}'
+      },
+      'paint': {
+        'text-color': 'black'
+      }
+    });
+  });
    var new_Filter = ["in",'parcelno'];
    $.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
      data.features.forEach(function(rental){
@@ -437,7 +439,7 @@ var addDataLayers = function addDataLayers(){
         'source-layer': 'parcelsgeojson',
         'filter': new_Filter,
         "paint": {
-          "fill-color":"#114BC7",
+          "fill-color":"#068A24",
           "fill-opacity":0.5
         }
       });
@@ -448,48 +450,13 @@ var addDataLayers = function addDataLayers(){
         "type": "circle",
         "paint": {
             "circle-radius": 6,
-            "circle-color": "#114BC7",
+            "circle-color": "#068A24",
         }
       });
    });
-
-
-  //  $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Initial+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=parcelno&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( data ) {
-  //    //console.log(data);
-  //    var new_Filter = ["in",'parcelno'];
-  //    for (var i = 0; i < data.features.length; i++) {
-  //      new_Filter.push(data.features[i].attributes.ParcelNo);
-  //    }
-  //    map.addLayer({
-  //     "id": "parcel-fill-initial",
-  //     "type": "fill",
-  //     "source": "parcels",
-  //     'source-layer': 'parcelsgeojson',
-  //     'filter': new_Filter,
-  //     "paint": {
-  //       "fill-color":"#114BC7",
-  //       "fill-opacity":0.5
-  //     }
-  //   });
-  //  });
-  //  $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Renewal+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=parcelno&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( data ) {
-  //    //console.log(data);
-  //    var new_Filter = ["in",'parcelno'];
-  //    for (var i = 0; i < data.features.length; i++) {
-  //      new_Filter.push(data.features[i].attributes.ParcelNo);
-  //    }
-  //    map.addLayer({
-  //     "id": "parcel-fill-renewal",
-  //     "type": "fill",
-  //     "source": "parcels",
-  //     'source-layer': 'parcelsgeojson',
-  //     'filter': new_Filter,
-  //     "paint": {
-  //       "fill-color":"#114BC7",
-  //       "fill-opacity":0.5
-  //     }
-  //   });
-  //  });
+   $.getJSON('https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$limit=200000' , function( data ) {
+     console.log(data);
+   });
 };
 map.on('style.load', function(){
   addDataLayers();
@@ -499,25 +466,24 @@ map.on('load', function(window) {
   loadCityNumbers();
   map.on("mousemove", function(e) {
     var features = map.queryRenderedFeatures(e.point, {
-      layers: ["council-fill"]
+      layers: ["zip-fill"]
     });
     if (features.length) {
-      map.setFilter("council-fill-hover", ["==", "districts", features[0].properties.districts]);
+      map.setFilter("zip-fill-hover", ["==", "zipcode", features[0].properties.zipcode]);
     }else{
-      map.setFilter("council-fill-hover", ["==", "districts", ""]);
+      map.setFilter("zip-fill-hover", ["==", "zipcode", ""]);
       features = map.queryRenderedFeatures(e.point, {
-        layers: ["neighborhoods-fill"]
+        layers: ["circle-certified"]
       });
       if (!features.length) {
         features = map.queryRenderedFeatures(e.point, {
           layers: ["parcel-fill"]
         });
-        // console.log(features);
-        // if (features.length) {
-        //   map.setFilter("parcel-fill-hover", ["==", "parcelno", features[0].properties.parcelno]);
-        // }else{
-        //   map.setFilter("parcel-fill-hover", ["==", "parcelno", ""]);
-        // }
+        if (features.length) {
+          map.setFilter("parcel-fill-hover", ["==", "parcelno", features[0].properties.parcelno]);
+        }else{
+          map.setFilter("parcel-fill-hover", ["==", "parcelno", ""]);
+        }
       }
     }
     map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';

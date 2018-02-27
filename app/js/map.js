@@ -17,6 +17,7 @@ var currentURLParams = {
   'lng'         : 0
 };
 var rentalData = null;
+var instpactionData = null;
 $.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
   rentalData = data;
   console.log(rentalData);
@@ -304,51 +305,6 @@ var addDataLayers = function addDataLayers(){
     type: 'geojson',
     data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnHiddenFields=false&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson'
   });
-  // map.addLayer({
-  //   'id': 'councils_labels',
-  //   'type': 'symbol',
-  //   'source': 'councils_labels', maxzoom: 12,
-  //   'layout': {
-  //     "text-font": ["Mark SC Offc Pro Bold"],
-  //     "text-field": "{name}",
-  //     "symbol-placement": "point",
-  //     "text-size": 22
-  //   },
-  //   'paint': {
-  //     'text-color': 'black'
-  //   }
-  // });
-  // map.addLayer({
-  //   "id": "council-borders",
-  //   "type": "line",
-  //   "source": "councils", maxzoom: 12,
-  //   "layout": {},
-  //   "paint": {
-  //     "line-color": "#004b90",
-  //     "line-width": 3
-  //   }
-  // });
-  // map.addLayer({
-  //   "id": "council-fill",
-  //   "type": "fill",
-  //   "source": "councils",  maxzoom: 12,
-  //   "layout": {},
-  //   "paint": {
-  //     "fill-color": '#0065c3',
-  //     "fill-opacity": 0
-  //   }
-  // });
-  // map.addLayer({
-  //   "id": "council-fill-hover",
-  //   "type": "fill",
-  //   "source": "councils",  maxzoom: 12,
-  //   "layout": {},
-  //   "paint": {
-  //     "fill-color": '#0065c3',
-  //     "fill-opacity": .5
-  //   },
-  //   "filter": ["==", "name", ""]
-  // });
   map.addLayer({
     "id": "zip-fill-hover",
     "type": "fill",
@@ -498,44 +454,9 @@ var addDataLayers = function addDataLayers(){
         }
       });
    });
-
-
-  //  $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Initial+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=parcelno&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( data ) {
-  //    //console.log(data);
-  //    var new_Filter = ["in",'parcelno'];
-  //    for (var i = 0; i < data.features.length; i++) {
-  //      new_Filter.push(data.features[i].attributes.ParcelNo);
-  //    }
-  //    map.addLayer({
-  //     "id": "parcel-fill-initial",
-  //     "type": "fill",
-  //     "source": "parcels",
-  //     'source-layer': 'parcelsgeojson',
-  //     'filter': new_Filter,
-  //     "paint": {
-  //       "fill-color":"#114BC7",
-  //       "fill-opacity":0.5
-  //     }
-  //   });
-  //  });
-  //  $.getJSON("https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/Rental_Inspections/FeatureServer/0/query?where=ACTION_DESCRIPTION%3D%27Issue+Renewal+Registration%27+AND+ParcelNo+IS+NOT+NULL&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=parcelno&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&quantizationParameters=&sqlFormat=none&f=pjson&token=", function( data ) {
-  //    //console.log(data);
-  //    var new_Filter = ["in",'parcelno'];
-  //    for (var i = 0; i < data.features.length; i++) {
-  //      new_Filter.push(data.features[i].attributes.ParcelNo);
-  //    }
-  //    map.addLayer({
-  //     "id": "parcel-fill-renewal",
-  //     "type": "fill",
-  //     "source": "parcels",
-  //     'source-layer': 'parcelsgeojson',
-  //     'filter': new_Filter,
-  //     "paint": {
-  //       "fill-color":"#114BC7",
-  //       "fill-opacity":0.5
-  //     }
-  //   });
-  //  });
+   $.getJSON('https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$limit=200000' , function( data ) {
+     console.log(data);
+   });
 };
 map.on('style.load', function(){
   addDataLayers();

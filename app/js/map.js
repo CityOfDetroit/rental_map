@@ -16,12 +16,16 @@ var currentURLParams = {
   'lat'         : 0,
   'lng'         : 0
 };
+var listOfZipcodes = ['48219','48215'];
 var rentalData = null;
-var instpactionData = null;
-$.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
-  rentalData = data;
-  console.log(rentalData);
-});
+var inspectionData = null;
+// $.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
+//   rentalData = data;
+// });
+// $.getJSON('https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$limit=200000' , function( data ) {
+//   inspectionData = data;
+//   console.log(inspectionData);
+// });
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2x1c2Fyc2tpZGRldHJvaXRtaSIsImEiOiJjaXZsNXlwcXQwYnY5MnlsYml4NTJ2Mno4In0.8wKUnlMPIlxq-eWH0d10-Q';
 var map = new mapboxgl.Map({
   container: 'map', // container id
@@ -72,9 +76,9 @@ var loadPanel = function loadPanel(addr,ev){
           }
       });
       map.setFilter("parcel-fill-hover", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
+      var tempParcelDataHTML = '';
       $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'", function( Rental_Inspections ) {
         console.log(Rental_Inspections);
-        var tempParcelDataHTML = '';
         if(Rental_Inspections.length){
           tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
           switch (Rental_Inspections[0].action_description) {
@@ -90,7 +94,7 @@ var loadPanel = function loadPanel(addr,ev){
               // }else{
               //   tempParcelDataHTML += '<expired>EXPIRED RENTAL</expired></article>';
               // }
-              tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
+              tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
           }
           document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
           // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
@@ -98,7 +102,48 @@ var loadPanel = function loadPanel(addr,ev){
         }else{
           tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> NOT APPROVED RENTAL<br><img src="img/cancel.png" alt="x"> <item>Registered</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
           document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
-          document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
+          // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
+          document.querySelector('.info-container > .rental').innerHTML = '';
+        }
+      });
+      $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'" , function( data1 ) {
+        console.log(data1);
+        if(data1.features.length){
+          tempParcelDataHTML += '<article class="info-items"><span>INSPECTION(S) STATUS</span>';
+          for (var i = 0; i < data1.features.length; i++) {
+            switch (data1.features[i].properties.action_description.trim()) {
+              case "Called Emergency Re-Inspection":
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Called Emergency Re-Inspection</item><br>';
+                break;
+              case "Emergency Called Inspection":
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Emergency Called Inspection</item><br>';
+                break;
+              case "Emergency Re-Inspection":
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Emergency Re-Inspection</item><br>';
+                break;
+              case "Called Inspection":
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Called Inspection</item><br>';
+                break;
+              case "Inspection":
+              console.log('inspection');
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Inspection</item><br>';
+                break;
+              case "Complaint Inspection":
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Complaint Inspection</item><br>';
+                break;
+              case "Lead Inspection report received":
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Lead Inspection report received</item><br>';
+                break;
+              case "3rd Party Inspection":
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>3rd Party Inspection</item><br>';
+                break;
+              default:
+            }
+          }
+          tempParcelDataHTML += '</article>';
+          console.log(tempParcelDataHTML);
+          document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
+          // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
           document.querySelector('.info-container > .rental').innerHTML = '';
         }
       });
@@ -145,33 +190,132 @@ var loadCityNumbers = function loadCityNumbers(){
   document.querySelector('.parcel-info.display-section').innerHTML = '';
   // ============================================================
   document.querySelector('.info-container > .street-name').innerHTML = 'CITY OF DETROIT';
-  document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
   var tempDataHTML = '';
   var certRegistration = 0;
   var totalRentals = 0;
   var registerRental = 0;
   var renewalRental = 0;
+
+  var calledEmergencyReInspection = 0;
+  var calledEmergencyInspection = 0;
+  var emergencyReInspection = 0;
+  var calledInspection = 0;
+  var inspection = 0;
+  var complaintInspection = 0;
+  var leadInspectionReport = 0;
+  var thirdPartyInspection = 0;
+
   document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTALS</h4><p>0</p>";
-  $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$limit=500000", function( data ) {
-    console.log(data);
-    for (var i = 0; i < data.length; i++) {
-      switch (data[i].action_description.trim()) {
-        case "Issue Initial Registration":
-          registerRental++;
-          break;
-        case "Issue Renewal Registration":
-          renewalRental++;
-          break;
-        default:
-          certRegistration++;
+  $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=1%2C29&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
+    var certifiedLayerData = null;
+    var simplePolygon = turf.simplify(data.features[0], {tolerance: 0.003, highQuality: false});
+    console.log(simplePolygon);
+    var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
+    console.log(socrataPolygon);
+    var new_Filter = ["in",'parcelno'];
+    $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data1 ) {
+      console.log(data1);
+      for (var i = 0; i < data1.features.length; i++) {
+        switch (data1.features[i].properties.action_description.trim()) {
+          case "Issue Initial Registration":
+            registerRental++;
+            break;
+          case "Issue Renewal Registration":
+            renewalRental++;
+            break;
+          default:
+            certRegistration++;
+        }
       }
-    }
-    totalRentals = data.length;
-    tempDataHTML += '<article class="initial"><span>INITIAL CERT. OF REGISTRATION</span> ' + registerRental + '</article><article class="renewal"><span>RENEWAL REGISTRATION</span> ' + renewalRental + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article>';
-    document.querySelector('.overall-number').innerHTML = tempDataHTML;
-    document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
+      $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data1 ) {
+        console.log(data1);
+        for (var i = 0; i < data1.features.length; i++) {
+          switch (data1.features[i].properties.action_description.trim()) {
+            case "Called Emergency Re-Inspection":
+              calledEmergencyReInspection++;
+              break;
+            case "Emergency Called Inspection":
+              calledEmergencyInspection++;
+              break;
+            case "Emergency Re-Inspection":
+              emergencyReInspection++;
+              break;
+            case "Called Inspection":
+              calledInspection++;
+              break;
+            case "Inspection":
+              inspection++;
+              break;
+            case "Complaint Inspection":
+              complaintInspection++;
+              break;
+            case "Lead Inspection report received":
+              leadInspectionReport++;
+              break;
+            case "3rd Party Inspection":
+              thirdPartyInspection++;
+              break;
+            default:
+          }
+        }
+        var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
+        console.log(simplePolygon);
+        var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
+        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data2 ) {
+          console.log(data2);
+          for (var i = 0; i < data2.features.length; i++) {
+            switch (data2.features[i].properties.action_description.trim()) {
+              case "Issue Initial Registration":
+                registerRental++;
+                break;
+              case "Issue Renewal Registration":
+                renewalRental++;
+                break;
+              default:
+                certRegistration++;
+            }
+          }
+          $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data1 ) {
+            console.log(data1);
+            for (var i = 0; i < data1.features.length; i++) {
+              switch (data1.features[i].properties.action_description.trim()) {
+                case "Called Emergency Re-Inspection":
+                  calledEmergencyReInspection++;
+                  break;
+                case "Emergency Called Inspection":
+                  calledEmergencyInspection++;
+                  break;
+                case "Emergency Re-Inspection":
+                  emergencyReInspection++;
+                  break;
+                case "Called Inspection":
+                  calledInspection++;
+                  break;
+                case "Inspection":
+                  inspection++;
+                  break;
+                case "Complaint Inspection":
+                  complaintInspection++;
+                  break;
+                case "Lead Inspection report received":
+                  leadInspectionReport++;
+                  break;
+                case "3rd Party Inspection":
+                  thirdPartyInspection++;
+                  break;
+                default:
+              }
+            }
+            totalRentals = registerRental + certRegistration;
+            tempDataHTML += '<article class="initial"><span>INITIAL CERT. OF REGISTRATION</span> ' + registerRental + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article><article class="normal"><span>CALLED EMERGENCY RE-INSPECTION</span> ' + calledEmergencyReInspection + '</article><article class="normal"><span>EMERGENCY CALLED INSPECTION</span> ' + calledEmergencyInspection + '</article><article class="normal"><span>EMERGENCY RE-INSPECTION</span> ' + emergencyReInspection + '</article><article class="normal"><span>CALLED INSPECTION</span> ' + calledInspection + '</article><article class="normal"><span>INSPECTION</span> ' + inspection + '</article><article class="normal"><span>COMPLAINT INSPECTION</span> ' + complaintInspection + '</article><article class="normal"><span>LEAD INSPECTION REPORT RECEIVED</span> ' + leadInspectionReport + '</article><article class="normal"><span>3RD PARTY INSPECTION</span> ' + thirdPartyInspection + '</article>';
+            document.querySelector('.overall-number').innerHTML = tempDataHTML;
+            document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
+            (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
+          });
+        });
+      });
+    });
   });
-  (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
 };
 var switchParcelDataViews = function switchParcelDataViews(e){
   //cons.log(e.getAttribute('data-view'));
@@ -289,10 +433,6 @@ var addDataLayers = function addDataLayers(){
     type: 'vector',
     url: 'mapbox://slusarskiddetroitmi.cwobdjn0'
   });
-  map.addSource('certified', {
-    type: 'geojson',
-    data: "https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE action_description = 'Issue City C of C -  Ord 18-03' limit 200000"
-  });
   map.addSource('councils', {
     type: 'geojson',
     data: "https://gis.detroitmi.gov/arcgis/rest/services/NeighborhoodsApp/council_district/MapServer/1/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson"
@@ -303,7 +443,7 @@ var addDataLayers = function addDataLayers(){
   });
   map.addSource('zip-codes', {
     type: 'geojson',
-    data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnHiddenFields=false&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson'
+    data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=1%2C29&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token='
   });
   map.addLayer({
     "id": "zip-fill-hover",
@@ -319,7 +459,7 @@ var addDataLayers = function addDataLayers(){
   map.addLayer({
     "id": "zip-borders",
     "type": "line",
-    "source": "zip-codes",  maxzoom:13,
+    "source": "zip-codes",
     "layout": {},
     "paint": {
       "line-color": "#004b90",
@@ -335,19 +475,6 @@ var addDataLayers = function addDataLayers(){
       'fill-opacity': 0
     },
   });
-  // map.addLayer({
-  //   'id': 'neighborhoods-labels',
-  //   'type': 'symbol',
-  //   'source': 'neighborhoods-labels',
-  //           'minzoom': 12,maxzoom:15.5,
-  //   'layout': {
-  //     "text-font": ["Mark SC Offc Pro Bold"],
-  //     'text-field': '{name}'
-  //   },
-  //   'paint': {
-  //     'text-color': 'black'
-  //   }
-  // });
   map.addLayer({
       "id": "parcel-fill",
       "type": "fill",
@@ -368,6 +495,7 @@ var addDataLayers = function addDataLayers(){
       },
       "paint": {
            "line-color":"#cbcbcb",
+           "line-width": 2
       },
       'source-layer': 'parcelsgeojson'
    });
@@ -377,7 +505,8 @@ var addDataLayers = function addDataLayers(){
      "source": "parcels",  minzoom: 15.5,
      "layout": {},
      "paint": {
-       "line-color": '#a40040'
+       "line-color": '#a40040',
+       "line-width": 3
      },
      'source-layer': 'parcelsgeojson',
      "filter": ["==", "parcelno", ""]
@@ -387,7 +516,7 @@ var addDataLayers = function addDataLayers(){
      "features": []
    };
 
-  $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnHiddenFields=false&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson' , function( data ) {
+  $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=1%2C29&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
     console.log(data);
     for (var i = 0; i < data.features.length; i++) {
       console.log(data.features[i].geometry.coordinates[0]);
@@ -423,40 +552,57 @@ var addDataLayers = function addDataLayers(){
         'text-color': 'black'
       }
     });
+    var certifiedLayerData = null;
+    var simplePolygon = turf.simplify(data.features[0], {tolerance: 0.003, highQuality: false});
+    console.log(simplePolygon);
+    var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
+    console.log(socrataPolygon);
+    var new_Filter = ["in",'parcelno'];
+    $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND action_description = 'Issue City C of C -  Ord 18-03'" , function( data1 ) {
+      console.log(data1);
+      certifiedLayerData = data1;
+      data1.features.forEach(function(rental){
+        new_Filter.push(rental.properties.parcelnum);
+      });
+      var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
+      console.log(simplePolygon);
+      var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
+      $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND action_description = 'Issue City C of C -  Ord 18-03'" , function( data2 ) {
+        data2.features.forEach(function(rental){
+          new_Filter.push(rental.properties.parcelnum);
+          certifiedLayerData.features.push(rental);
+        });
+        console.log(new_Filter);
+        console.log(certifiedLayerData);
+        map.addLayer({
+           "id": "parcel-fill-certified",
+           "type": "fill",
+           "source": "parcels",
+           "minzoom": 15.5,
+           'source-layer': 'parcelsgeojson',
+           'filter': new_Filter,
+           "paint": {
+             "fill-color":"#068A24",
+             "fill-opacity":0.5
+           }
+         });
+         map.addSource('certified', {
+           type: 'geojson',
+           data: certifiedLayerData
+         });
+         map.addLayer({
+           "id": "circle-certified",
+           "source": "certified",
+           "maxzoom": 15.5,
+           "type": "circle",
+           "paint": {
+               "circle-radius": 6,
+               "circle-color": "#068A24",
+           }
+         });
+      });
+    });
   });
-   var new_Filter = ["in",'parcelno'];
-   $.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
-     data.features.forEach(function(rental){
-       if(rental.properties.action_description === "Issue City C of C -  Ord 18-03"){
-         new_Filter.push(rental.properties.parcelnum);
-       }
-     });
-     map.addLayer({
-        "id": "parcel-fill-certified",
-        "type": "fill",
-        "source": "parcels",
-        "minzoom": 15.5,
-        'source-layer': 'parcelsgeojson',
-        'filter': new_Filter,
-        "paint": {
-          "fill-color":"#068A24",
-          "fill-opacity":0.5
-        }
-      });
-      map.addLayer({
-        "id": "circle-certified",
-        "source": "certified",
-        "maxzoom": 15.5,
-        "type": "circle",
-        "paint": {
-            "circle-radius": 6,
-            "circle-color": "#068A24",
-        }
-      });
-   });
-   $.getJSON('https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$limit=200000' , function( data ) {
-     console.log(data);
-   });
 };
 map.on('style.load', function(){
   addDataLayers();
@@ -479,11 +625,6 @@ map.on('load', function(window) {
         features = map.queryRenderedFeatures(e.point, {
           layers: ["parcel-fill"]
         });
-        if (features.length) {
-          map.setFilter("parcel-fill-hover", ["==", "parcelno", features[0].properties.parcelno]);
-        }else{
-          map.setFilter("parcel-fill-hover", ["==", "parcelno", ""]);
-        }
       }
     }
     map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';

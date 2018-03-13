@@ -122,6 +122,16 @@ var mapSectionClickModule = (function(calendarEvents){
           var totalRentals = 0;
           var registerRental = 0;
           var renewalRental = 0;
+
+          var calledEmergencyReInspection = 0;
+          var calledEmergencyInspection = 0;
+          var emergencyReInspection = 0;
+          var calledInspection = 0;
+          var inspection = 0;
+          var complaintInspection = 0;
+          var leadInspectionReport = 0;
+          var thirdPartyInspection = 0;
+
           for (var i = 0; i < data.length; i++) {
             switch (data[i].action_description.trim()) {
               case "Issue Initial Registration":
@@ -134,9 +144,42 @@ var mapSectionClickModule = (function(calendarEvents){
                 certRegistration++;
             }
           }
-          totalRentals = data.length;
-          tempDataHTML += '<article class="initial"><span>INITIAL CERT. OF REGISTRATION</span> ' + registerRental + '</article><article class="renewal"><span>RENEWAL REGISTRATION</span> ' + renewalRental + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article>';
-          document.querySelector('.overall-number').innerHTML = tempDataHTML;
+          $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data1 ) {
+            console.log(data1);
+            for (var i = 0; i < data1.features.length; i++) {
+              switch (data1.features[i].properties.action_description.trim()) {
+                case "Called Emergency Re-Inspection":
+                  calledEmergencyReInspection++;
+                  break;
+                case "Emergency Called Inspection":
+                  calledEmergencyInspection++;
+                  break;
+                case "Emergency Re-Inspection":
+                  emergencyReInspection++;
+                  break;
+                case "Called Inspection":
+                  calledInspection++;
+                  break;
+                case "Inspection":
+                  inspection++;
+                  break;
+                case "Complaint Inspection":
+                  complaintInspection++;
+                  break;
+                case "Lead Inspection report received":
+                  leadInspectionReport++;
+                  break;
+                case "3rd Party Inspection":
+                  thirdPartyInspection++;
+                  break;
+                default:
+              }
+            }
+            totalRentals = registerRental + certRegistration;
+            tempDataHTML += '<article class="initial"><span>INITIAL CERT. OF REGISTRATION</span> ' + registerRental + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article><article class="normal"><span>CALLED EMERGENCY RE-INSPECTION</span> ' + calledEmergencyReInspection + '</article><article class="normal"><span>EMERGENCY CALLED INSPECTION</span> ' + calledEmergencyInspection + '</article><article class="normal"><span>EMERGENCY RE-INSPECTION</span> ' + emergencyReInspection + '</article><article class="normal"><span>CALLED INSPECTION</span> ' + calledInspection + '</article><article class="normal"><span>INSPECTION</span> ' + inspection + '</article><article class="normal"><span>COMPLAINT INSPECTION</span> ' + complaintInspection + '</article><article class="normal"><span>LEAD INSPECTION REPORT RECEIVED</span> ' + leadInspectionReport + '</article><article class="normal"><span>3RD PARTY INSPECTION</span> ' + thirdPartyInspection + '</article>';
+            document.querySelector('.overall-number').innerHTML = tempDataHTML;
+          });
+
         });
         (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
         break;
@@ -151,9 +194,9 @@ var mapSectionClickModule = (function(calendarEvents){
         document.querySelector('.parcel-info.display-section').innerHTML = '';
         //console.log(parcelFeatures[0].properties);
         map.setFilter("parcel-fill-hover", ["==", "parcelno", parcelFeatures[0].properties.parcelno]);
+        var tempParcelDataHTML = '';
         $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(parcelFeatures[0].properties.parcelno) + "'", function( Rental_Inspections ) {
           console.log(Rental_Inspections);
-          var tempParcelDataHTML = '';
           if(Rental_Inspections.length){
             tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
             switch (Rental_Inspections[0].action_description) {
@@ -169,7 +212,7 @@ var mapSectionClickModule = (function(calendarEvents){
                 // }else{
                 //   tempParcelDataHTML += '<expired>EXPIRED RENTAL</expired></article>';
                 // }
-                tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
+                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
             }
             document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
             // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
@@ -177,7 +220,48 @@ var mapSectionClickModule = (function(calendarEvents){
           }else{
             tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> NOT APPROVED RENTAL<br><img src="img/cancel.png" alt="x"> <item>Registered</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
             document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
-            document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
+            // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
+            document.querySelector('.info-container > .rental').innerHTML = '';
+          }
+        });
+        $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$where=parcelnum = '"+ encodeURI(parcelFeatures[0].properties.parcelno) + "'" , function( data1 ) {
+          console.log(data1);
+          if(data1.features.length){
+            tempParcelDataHTML += '<article class="info-items"><span>INSPECTION(S) STATUS</span>';
+            for (var i = 0; i < data1.features.length; i++) {
+              switch (data1.features[i].properties.action_description.trim()) {
+                case "Called Emergency Re-Inspection":
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Called Emergency Re-Inspection</item><br>';
+                  break;
+                case "Emergency Called Inspection":
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Emergency Called Inspection</item><br>';
+                  break;
+                case "Emergency Re-Inspection":
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Emergency Re-Inspection</item><br>';
+                  break;
+                case "Called Inspection":
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Called Inspection</item><br>';
+                  break;
+                case "Inspection":
+                console.log('inspection');
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Inspection</item><br>';
+                  break;
+                case "Complaint Inspection":
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Complaint Inspection</item><br>';
+                  break;
+                case "Lead Inspection report received":
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Lead Inspection report received</item><br>';
+                  break;
+                case "3rd Party Inspection":
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>3rd Party Inspection</item><br>';
+                  break;
+                default:
+              }
+            }
+            tempParcelDataHTML += '</article>';
+            console.log(tempParcelDataHTML);
+            document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
+            // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
             document.querySelector('.info-container > .rental').innerHTML = '';
           }
         });
@@ -205,7 +289,7 @@ var mapSectionClickModule = (function(calendarEvents){
         document.querySelector('.parcel-data.building').innerHTML = '';
         document.querySelector('.parcel-info.display-section').innerHTML = '';
 
-        var tempParcelDataHTML = '<article class="info-items"><span>COMPLIANCE STATUS</span><initial>APPROVED FOR RENTAL</initial></article>';
+        var tempParcelDataHTML = '<article class="info-items"><span>COMPLIANCE STATUS</span><img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
         document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
         // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
         document.querySelector('.info-container > .not-rental').innerHTML = '';

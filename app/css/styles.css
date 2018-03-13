@@ -63,14 +63,14 @@ main {
 .info-container > .building-view > img {
   width: 100%; }
 
-.overall-number > .garbage, .overall-number > .cofc, .overall-number > .initial, .overall-number > .renewal, .parcel-info > .info-items {
+.overall-number > .normal, .overall-number > .cofc, .overall-number > .initial, .overall-number > .renewal, .parcel-info > .info-items {
   border: 1px solid #cdcac7;
   margin: 1em;
   position: relative;
   padding: 1em; }
 
-.overall-number > .garbage > span {
-  color: #BD0019; }
+.overall-number > .normal > span {
+  color: #000; }
 
 .overall-number > .cofc > span, .info-items > cofc {
   color: #068A24; }
@@ -81,7 +81,7 @@ main {
 .overall-number > .renewal > span, .info-items > expired {
   color: #DF5800; }
 
-.overall-number > .initial > span, .overall-number > .cofc > span, .overall-number > .garbage > span, .parcel-info > .info-items > span, .overall-number > .renewal > span, .overall-number > .district > span {
+.overall-number > .initial > span, .overall-number > .cofc > span, .overall-number > .normal > span, .parcel-info > .info-items > span, .overall-number > .renewal > span, .overall-number > .district > span {
   position: absolute;
   top: -.75em;
   left: 1em;

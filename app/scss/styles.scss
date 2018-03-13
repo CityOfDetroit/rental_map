@@ -10,17 +10,17 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
 .info-container > .street-name{font-family: 'Roboto', sans-serif; font-size: 1.5em; font-weight: bold; color: #EB002B; border-bottom: 1px solid #cdcac7; text-align: center;padding: 1em;}
 .info-container > .building-view{width: 100%;height: 10em;padding: 0;overflow: hidden;}
 .info-container > .building-view > img{width: 100%;}
-.overall-number > .garbage, .overall-number > .cofc, .overall-number > .initial, .overall-number > .renewal, .parcel-info > .info-items{border: 1px solid #cdcac7; margin: 1em; position: relative; padding: 1em;}
-.overall-number > .garbage > span{color: #BD0019}
+.overall-number > .normal, .overall-number > .cofc, .overall-number > .initial, .overall-number > .renewal, .parcel-info > .info-items{border: 1px solid #cdcac7; margin: 1em; position: relative; padding: 1em;}
+.overall-number > .normal > span{color: #000}
 .overall-number > .cofc > span, .info-items > cofc{color: #068A24}
 .overall-number > .initial > span, .info-items > initial{color: #114BC7}
 .overall-number > .renewal > span, .info-items > expired{color: #DF5800}
-.overall-number > .initial > span, .overall-number > .cofc > span, .overall-number > .garbage > span, .parcel-info > .info-items > span, .overall-number > .renewal > span, .overall-number > .district > span{position: absolute; top: -.75em; left: 1em; background-color: #fff; padding: 0 .5em; font-weight: bold}
+.overall-number > .initial > span, .overall-number > .cofc > span, .overall-number > .normal > span, .parcel-info > .info-items > span, .overall-number > .renewal > span, .overall-number > .district > span{position: absolute; top: -.75em; left: 1em; background-color: #fff; padding: 0 .5em; font-weight: bold}
 .total-rentals > h4{font-size: 1.25em; text-align: center; margin: 0; font-weight: bold;}
 .total-rentals > p{text-align: center; font-size: 2.5em; margin: 0;}
 .info-items > img {margin: .25em 0 0 1em;}
 .info-items > item {position: relative; top:-.3em;}
-#suggested-addr{cursor: pointer;} 
+#suggested-addr{cursor: pointer;}
 #close-emergency-modal-btn:hover{
   -webkit-animation: animation-close-btn 1s ease forwards;
   animation: animation-close-btn 1s ease forwards;

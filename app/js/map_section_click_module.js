@@ -115,7 +115,7 @@ var mapSectionClickModule = (function(calendarEvents){
         var simplifiedFeatured = turf.simplify(zipFeatures[0], {tolerance: 0.003, highQuality: false});
         var socrataPolygon = Terraformer.WKT.convert(simplifiedFeatured.geometry);
         console.log(socrataPolygon);
-        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=within_polygon(location,"+ JSON.stringify(socrataPolygon) + ") LIMIT 500000", function( data ) {
+        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'", function( data ) {
           console.log(data);
           var tempDataHTML = '';
           var certRegistration = 0;
@@ -144,7 +144,7 @@ var mapSectionClickModule = (function(calendarEvents){
                 certRegistration++;
             }
           }
-          $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data1 ) {
+          $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
             console.log(data1);
             for (var i = 0; i < data1.features.length; i++) {
               switch (data1.features[i].properties.action_description.trim()) {

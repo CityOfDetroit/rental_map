@@ -16,7 +16,7 @@ var currentURLParams = {
   'lat'         : 0,
   'lng'         : 0
 };
-var listOfZipcodes = ['48219','48215'];
+var listOfZipcodes = ['48215','48224'];
 var rentalData = null;
 var inspectionData = null;
 // $.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
@@ -206,14 +206,14 @@ var loadCityNumbers = function loadCityNumbers(){
   var thirdPartyInspection = 0;
 
   document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTALS</h4><p>0</p>";
-  $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=1%2C29&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
+  $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=29%2C30&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
     var certifiedLayerData = null;
     var simplePolygon = turf.simplify(data.features[0], {tolerance: 0.003, highQuality: false});
     console.log(simplePolygon);
     var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
     console.log(socrataPolygon);
     var new_Filter = ["in",'parcelno'];
-    $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data1 ) {
+    $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
       console.log(data1);
       for (var i = 0; i < data1.features.length; i++) {
         switch (data1.features[i].properties.action_description.trim()) {
@@ -227,7 +227,7 @@ var loadCityNumbers = function loadCityNumbers(){
             certRegistration++;
         }
       }
-      $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data1 ) {
+      $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
         console.log(data1);
         for (var i = 0; i < data1.features.length; i++) {
           switch (data1.features[i].properties.action_description.trim()) {
@@ -261,7 +261,7 @@ var loadCityNumbers = function loadCityNumbers(){
         var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
         console.log(simplePolygon);
         var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
-        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data2 ) {
+        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data2 ) {
           console.log(data2);
           for (var i = 0; i < data2.features.length; i++) {
             switch (data2.features[i].properties.action_description.trim()) {
@@ -275,7 +275,7 @@ var loadCityNumbers = function loadCityNumbers(){
                 certRegistration++;
             }
           }
-          $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "')" , function( data1 ) {
+          $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
             console.log(data1);
             for (var i = 0; i < data1.features.length; i++) {
               switch (data1.features[i].properties.action_description.trim()) {
@@ -443,7 +443,7 @@ var addDataLayers = function addDataLayers(){
   });
   map.addSource('zip-codes', {
     type: 'geojson',
-    data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=1%2C29&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token='
+    data: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=29%2C30&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token='
   });
   map.addLayer({
     "id": "zip-fill-hover",
@@ -516,7 +516,7 @@ var addDataLayers = function addDataLayers(){
      "features": []
    };
 
-  $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=1%2C29&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
+  $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=29%2C30&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
     console.log(data);
     for (var i = 0; i < data.features.length; i++) {
       console.log(data.features[i].geometry.coordinates[0]);

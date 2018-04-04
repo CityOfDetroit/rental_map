@@ -220,7 +220,7 @@ var mapSectionClickModule = (function(calendarEvents){
             document.querySelector('.info-container > .rental').innerHTML = '';
           }
         });
-        $.getJSON("http://apis.detroitmi.gov/assessments/parcel/"+parcelFeatures[0].properties.parcelno.replace(/\./g,'_')+"/", function( parcel ) {
+        $.getJSON("https://apis.detroitmi.gov/assessments/parcel/"+parcelFeatures[0].properties.parcelno.replace(/\./g,'_')+"/", function( parcel ) {
           // console.log(parcel);
           document.querySelector('.info-container > .street-name').innerHTML = parcel.propstreetcombined;
           // tempParcelDataHTML += '<article class="info-items"><span>OWNER</span> ' + parcel.ownername1 + '</article>';
@@ -248,7 +248,7 @@ var mapSectionClickModule = (function(calendarEvents){
         document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
         // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
         document.querySelector('.info-container > .not-rental').innerHTML = '';
-        $.getJSON("http://apis.detroitmi.gov/assessments/parcel/" + certifiedFeatures[0].properties.parcelnum + "/", function( parcel ) {
+        $.getJSON("https://apis.detroitmi.gov/assessments/parcel/" + certifiedFeatures[0].properties.parcelnum + "/", function( parcel ) {
           // console.log(parcel);
           document.querySelector('.info-container > .street-name').innerHTML = parcel.propstreetcombined;
           // tempParcelDataHTML += '<article class="info-items"><span>OWNER</span> ' + parcel.ownername1 + '</article>';

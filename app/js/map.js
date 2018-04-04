@@ -77,33 +77,35 @@ var loadPanel = function loadPanel(addr,ev){
       });
       map.setFilter("parcel-fill-hover", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
       var tempParcelDataHTML = '';
-      $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'", function( Rental_Inspections ) {
-        console.log(Rental_Inspections);
-        if(Rental_Inspections.length){
-          tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
-          switch (Rental_Inspections[0].action_description) {
-            case 'Issue Initial Registration ':
-              tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
-              break;
-            case 'Issue Renewal Registration':
-              tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
-              break;
-            default:
-              // if (moment.tz(Rental_Inspections[0].csa_creation_date,"America/Detroit").isBefore(moment())) {
-              //   tempParcelDataHTML += '<initial>APPROVED FOR RENTAL</initial></article>';
-              // }else{
-              //   tempParcelDataHTML += '<expired>EXPIRED RENTAL</expired></article>';
-              // }
-              tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
-          }
+      $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'", function( certified ) {
+        console.log(certified);
+        if(certified.length){
+          tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> <img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
           document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
           // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
           document.querySelector('.info-container > .not-rental').innerHTML = '';
         }else{
-          tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> NOT APPROVED RENTAL<br><img src="img/cancel.png" alt="x"> <item>Registered</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
-          document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
-          // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
-          document.querySelector('.info-container > .rental').innerHTML = '';
+          $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'", function( register ) {
+            console.log(register);
+            if(register.length){
+              tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
+              switch (register[0].action_description) {
+                case 'Issue Initial Registration ':
+                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(register[0].csa_date3,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
+                  break;
+                case 'Issue Renewal Registration':
+                  tempParcelDataHTML += 'NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on '+ moment.tz(register[0].csa_date3,"America/Detroit").format('MMM Do,YYYY') +'</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
+                  break;
+                default:
+                  tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
+              }
+            }else{
+              tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> NOT APPROVED RENTAL<br><img src="img/cancel.png" alt="x"> <item>Registered</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
+            }
+            document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
+            // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
+            document.querySelector('.info-container > .rental').innerHTML = '';
+          });
         }
       });
       $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'" , function( data1 ) {
@@ -111,25 +113,25 @@ var loadPanel = function loadPanel(addr,ev){
         if(data1.features.length){
           tempParcelDataHTML += '<article class="info-items"><span>INSPECTION(S) STATUS</span>';
           for (var i = 0; i < data1.features.length; i++) {
+            var inspectionOn = false;
             switch (data1.features[i].properties.action_description.trim()) {
               case "Called Emergency Re-Inspection":
-                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Called Emergency Re-Inspection</item><br>';
+                inspectionOn = true;
                 break;
               case "Emergency Called Inspection":
-                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Emergency Called Inspection</item><br>';
+                inspectionOn = true;
                 break;
               case "Emergency Re-Inspection":
-                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Emergency Re-Inspection</item><br>';
+                inspectionOn = true;
                 break;
               case "Called Inspection":
-                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Called Inspection</item><br>';
+                inspectionOn = true;
                 break;
               case "Inspection":
-              console.log('inspection');
-                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Inspection</item><br>';
+                inspectionOn = true;
                 break;
               case "Complaint Inspection":
-                tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Complaint Inspection</item><br>';
+                inspectionOn = true;
                 break;
               case "Lead Inspection report received":
                 tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Lead Inspection report received</item><br>';
@@ -139,15 +141,15 @@ var loadPanel = function loadPanel(addr,ev){
                 break;
               default:
             }
+            if(inspectionOn){tempParcelDataHTML += '<img src="img/done.png" alt="x"> <item>Inspection</item><br>';}
           }
           tempParcelDataHTML += '</article>';
-          console.log(tempParcelDataHTML);
           document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
           // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
           document.querySelector('.info-container > .rental').innerHTML = '';
         }
       });
-      $.getJSON("https://apis.detroitmi.gov/assessments/parcel/"+data.candidates[0].attributes.User_fld.replace(/\./g,'_')+"/", function( parcel ) {
+      $.getJSON("http://apis.detroitmi.gov/assessments/parcel/"+data.candidates[0].attributes.User_fld.replace(/\./g,'_')+"/", function( parcel ) {
         // console.log(parcel);
         document.querySelector('.info-container > .street-name').innerHTML = parcel.propstreetcombined;
         // tempParcelDataHTML += '<article class="info-items"><span>OWNER</span> ' + parcel.ownername1 + '</article>';
@@ -193,15 +195,8 @@ var loadCityNumbers = function loadCityNumbers(){
   var tempDataHTML = '';
   var certRegistration = 0;
   var totalRentals = 0;
-  var registerRental = 0;
-  var renewalRental = 0;
 
-  var calledEmergencyReInspection = 0;
-  var calledEmergencyInspection = 0;
-  var emergencyReInspection = 0;
-  var calledInspection = 0;
-  var inspection = 0;
-  var complaintInspection = 0;
+  var totalInspections = 0;
   var leadInspectionReport = 0;
   var thirdPartyInspection = 0;
 
@@ -213,104 +208,95 @@ var loadCityNumbers = function loadCityNumbers(){
     var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
     console.log(socrataPolygon);
     var new_Filter = ["in",'parcelno'];
-    $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
+    $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data1 ) {
       console.log(data1);
-      for (var i = 0; i < data1.features.length; i++) {
-        switch (data1.features[i].properties.action_description.trim()) {
-          case "Issue Initial Registration":
-            registerRental++;
-            break;
-          case "Issue Renewal Registration":
-            renewalRental++;
-            break;
-          default:
-            certRegistration++;
-        }
-      }
-      $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
-        console.log(data1);
-        for (var i = 0; i < data1.features.length; i++) {
-          switch (data1.features[i].properties.action_description.trim()) {
-            case "Called Emergency Re-Inspection":
-              calledEmergencyReInspection++;
-              break;
-            case "Emergency Called Inspection":
-              calledEmergencyInspection++;
-              break;
-            case "Emergency Re-Inspection":
-              emergencyReInspection++;
-              break;
-            case "Called Inspection":
-              calledInspection++;
-              break;
-            case "Inspection":
-              inspection++;
-              break;
-            case "Complaint Inspection":
-              complaintInspection++;
-              break;
-            case "Lead Inspection report received":
-              leadInspectionReport++;
-              break;
-            case "3rd Party Inspection":
-              thirdPartyInspection++;
-              break;
-            default:
-          }
-        }
-        var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
-        console.log(simplePolygon);
-        var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
-        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data2 ) {
-          console.log(data2);
-          for (var i = 0; i < data2.features.length; i++) {
-            switch (data2.features[i].properties.action_description.trim()) {
-              case "Issue Initial Registration":
-                registerRental++;
+      totalRentals += data1.features.length;
+
+      $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( certs1 ) {
+        console.log(certs1);
+        certRegistration += certs1.features.length;
+
+        $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
+          console.log(data1);
+          for (var i = 0; i < data1.features.length; i++) {
+            switch (data1.features[i].properties.action_description.trim()) {
+              case "Called Emergency Re-Inspection":
+                totalInspections++;
                 break;
-              case "Issue Renewal Registration":
-                renewalRental++;
+              case "Emergency Called Inspection":
+                totalInspections++;
+                break;
+              case "Emergency Re-Inspection":
+                totalInspections++;
+                break;
+              case "Called Inspection":
+                totalInspections++;
+                break;
+              case "Inspection":
+                totalInspections++;
+                break;
+              case "Complaint Inspection":
+                totalInspections++;
+                break;
+              case "Lead Inspection report received":
+                leadInspectionReport++;
+                break;
+              case "3rd Party Inspection":
+                thirdPartyInspection++;
                 break;
               default:
-                certRegistration++;
             }
           }
-          $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
-            console.log(data1);
-            for (var i = 0; i < data1.features.length; i++) {
-              switch (data1.features[i].properties.action_description.trim()) {
-                case "Called Emergency Re-Inspection":
-                  calledEmergencyReInspection++;
-                  break;
-                case "Emergency Called Inspection":
-                  calledEmergencyInspection++;
-                  break;
-                case "Emergency Re-Inspection":
-                  emergencyReInspection++;
-                  break;
-                case "Called Inspection":
-                  calledInspection++;
-                  break;
-                case "Inspection":
-                  inspection++;
-                  break;
-                case "Complaint Inspection":
-                  complaintInspection++;
-                  break;
-                case "Lead Inspection report received":
-                  leadInspectionReport++;
-                  break;
-                case "3rd Party Inspection":
-                  thirdPartyInspection++;
-                  break;
-                default:
-              }
-            }
-            totalRentals = registerRental + certRegistration;
-            tempDataHTML += '<article class="initial"><span>INITIAL CERT. OF REGISTRATION</span> ' + registerRental + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article><article class="normal"><span>CALLED EMERGENCY RE-INSPECTION</span> ' + calledEmergencyReInspection + '</article><article class="normal"><span>EMERGENCY CALLED INSPECTION</span> ' + calledEmergencyInspection + '</article><article class="normal"><span>EMERGENCY RE-INSPECTION</span> ' + emergencyReInspection + '</article><article class="normal"><span>CALLED INSPECTION</span> ' + calledInspection + '</article><article class="normal"><span>INSPECTION</span> ' + inspection + '</article><article class="normal"><span>COMPLAINT INSPECTION</span> ' + complaintInspection + '</article><article class="normal"><span>LEAD INSPECTION REPORT RECEIVED</span> ' + leadInspectionReport + '</article><article class="normal"><span>3RD PARTY INSPECTION</span> ' + thirdPartyInspection + '</article>';
-            document.querySelector('.overall-number').innerHTML = tempDataHTML;
-            document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
-            (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
+          var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
+          console.log(simplePolygon);
+          var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
+          $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data2 ) {
+            console.log(data2);
+            totalRentals += data1.features.length;
+
+            $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( certs2 ) {
+              console.log(certs2);
+              certRegistration += certs2.features.length;
+
+              $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data1 ) {
+                console.log(data1);
+                for (var i = 0; i < data1.features.length; i++) {
+                  switch (data1.features[i].properties.action_description.trim()) {
+                    case "Called Emergency Re-Inspection":
+                      totalInspections++;
+                      break;
+                    case "Emergency Called Inspection":
+                      totalInspections++;
+                      break;
+                    case "Emergency Re-Inspection":
+                      totalInspections++;
+                      break;
+                    case "Called Inspection":
+                      totalInspections++;
+                      break;
+                    case "Inspection":
+                      totalInspections++;
+                      break;
+                    case "Complaint Inspection":
+                      totalInspections++;
+                      break;
+                    case "Lead Inspection report received":
+                      leadInspectionReport++;
+                      break;
+                    case "3rd Party Inspection":
+                      thirdPartyInspection++;
+                      break;
+                    default:
+                  }
+                }
+                console.log(totalRentals);
+                console.log(certRegistration);
+                tempDataHTML += '<article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article><article class="normal"><span>INSPECTIONS</span> ' + totalInspections + '</article><article class="normal"><span>LEAD INSPECTION REPORT RECEIVED</span> ' + leadInspectionReport + '</article><article class="normal"><span>3RD PARTY INSPECTION</span> ' + thirdPartyInspection + '</article>';
+                document.querySelector('.overall-number').innerHTML = tempDataHTML;
+                document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
+                (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
+              });
+            });
           });
         });
       });
@@ -558,7 +544,7 @@ var addDataLayers = function addDataLayers(){
     var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
     console.log(socrataPolygon);
     var new_Filter = ["in",'parcelno'];
-    $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND action_description = 'Issue City C of C -  Ord 18-03'" , function( data1 ) {
+    $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data1 ) {
       console.log(data1);
       certifiedLayerData = data1;
       data1.features.forEach(function(rental){
@@ -567,7 +553,7 @@ var addDataLayers = function addDataLayers(){
       var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
       console.log(simplePolygon);
       var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
-      $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND action_description = 'Issue City C of C -  Ord 18-03'" , function( data2 ) {
+      $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data2 ) {
         data2.features.forEach(function(rental){
           new_Filter.push(rental.properties.parcelnum);
           certifiedLayerData.features.push(rental);

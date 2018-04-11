@@ -19,13 +19,6 @@ var currentURLParams = {
 var listOfZipcodes = ['48215','48224'];
 var rentalData = null;
 var inspectionData = null;
-// $.getJSON('https://data.detroitmi.gov/resource/vphr-kg52.geojson?$limit=200000' , function( data ) {
-//   rentalData = data;
-// });
-// $.getJSON('https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$limit=200000' , function( data ) {
-//   inspectionData = data;
-//   console.log(inspectionData);
-// });
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2x1c2Fyc2tpZGRldHJvaXRtaSIsImEiOiJjaXZsNXlwcXQwYnY5MnlsYml4NTJ2Mno4In0.8wKUnlMPIlxq-eWH0d10-Q';
 var map = new mapboxgl.Map({
   container: 'map', // container id
@@ -82,7 +75,7 @@ var loadPanel = function loadPanel(addr,ev){
         if(certified.length){
           tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> <img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
           document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
-          // document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form?EQBCT=f3d4f41a75624b6fb497daa71ef79810" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
+          document.querySelector('.info-container > .rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>';
           document.querySelector('.info-container > .not-rental').innerHTML = '';
         }else{
           $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'", function( register ) {
@@ -103,7 +96,7 @@ var loadPanel = function loadPanel(addr,ev){
               tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> NOT APPROVED RENTAL<br><img src="img/cancel.png" alt="x"> <item>Registered</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>';
             }
             document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
-            // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
+            document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn">REPORT SUSPECTED RENTAL</article></a>';
             document.querySelector('.info-container > .rental').innerHTML = '';
           });
         }
@@ -145,18 +138,12 @@ var loadPanel = function loadPanel(addr,ev){
           }
           tempParcelDataHTML += '</article>';
           document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
-          // document.querySelector('.info-container > .not-rental').innerHTML = '<a href="https://app.smartsheet.com/b/form/d2f38105a59d45e9a6636d92cdf07b80" target="_blank"><article class="form-btn">REGISTER MY RENTAL</article></a>';
-          document.querySelector('.info-container > .rental').innerHTML = '';
+          // document.querySelector('.info-container > .rental').innerHTML = '';
         }
       });
       $.getJSON("https://apis.detroitmi.gov/assessments/parcel/"+data.candidates[0].attributes.User_fld.replace(/\./g,'_')+"/", function( parcel ) {
         // console.log(parcel);
         document.querySelector('.info-container > .street-name').innerHTML = parcel.propstreetcombined;
-        // tempParcelDataHTML += '<article class="info-items"><span>OWNER</span> ' + parcel.ownername1 + '</article>';
-        // tempParcelDataHTML += '<article class="info-items"><span>BUILDING TYPE</span> ' + parcel.resb_style + '</article>';
-        // tempParcelDataHTML += '<article class="info-items"><span>PARCEL NUMBER</span> ' + parcel.pnum + '</article>';
-        // tempParcelDataHTML += '<article class="info-items"><span>YEAR BUILT</span> ' + parcel.resb_yearbuilt + '</article>';
-        // document.querySelector('.parcel-info').innerHTML = tempParcelDataHTML;
         document.querySelector('.parcel-data.owner').innerHTML = '<div class="data-view-btn" data-view="owner" onclick="switchParcelDataViews(this)">OWNER INFORMATION <span>&#10095;</span></div>';
         document.querySelector('.parcel-data.building').innerHTML = '<div class="data-view-btn" data-view="building" onclick="switchParcelDataViews(this)">PROPERTY INFORMATION <span>&#10095;</span></div>';
         parcelData['parcel-data'] = parcel;

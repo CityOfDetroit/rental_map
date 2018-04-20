@@ -187,7 +187,7 @@ var loadCityNumbers = function loadCityNumbers(){
   var leadInspectionReport = 0;
   var thirdPartyInspection = 0;
 
-  document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTALS</h4><p>0</p>";
+  document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTAL REGISTRATIONS</h4><p>0</p>";
   $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=29%2C30&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
     var certifiedLayerData = null;
     var simplePolygon = turf.simplify(data.features[0], {tolerance: 0.003, highQuality: false});

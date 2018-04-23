@@ -56,7 +56,7 @@ var mapSectionClickModule = (function(calendarEvents){
         document.querySelector('.info-container > .street-name').innerHTML = "ZIP CODE: " + zipFeatures[0].properties.zipcode;
         map.flyTo({
             center: [e.lngLat.lng, e.lngLat.lat],
-            zoom: 13.5,
+            zoom: 14,
             bearing: 0,
 
             // These options control the flight curve, making it move
@@ -80,7 +80,7 @@ var mapSectionClickModule = (function(calendarEvents){
         document.querySelector('.parcel-data.owner').innerHTML = '';
         document.querySelector('.parcel-data.building').innerHTML = '';
         document.querySelector('.parcel-info.display-section').innerHTML = '';
-        var simplifiedFeatured = turf.simplify(zipFeatures[0], {tolerance: 0.003, highQuality: false});
+        var simplifiedFeatured = turf.simplify(zipFeatures[0], {tolerance: 0.0001, highQuality: false});
         var socrataPolygon = Terraformer.WKT.convert(simplifiedFeatured.geometry);
         console.log(socrataPolygon);
         var tempDataHTML = '';

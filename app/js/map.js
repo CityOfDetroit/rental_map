@@ -190,7 +190,7 @@ var loadCityNumbers = function loadCityNumbers(){
   document.querySelector('.info-container > .total-rentals').innerHTML = "<h4>TOTAL RENTAL REGISTRATIONS</h4><p>0</p>";
   $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=29%2C30&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
     var certifiedLayerData = null;
-    var simplePolygon = turf.simplify(data.features[0], {tolerance: 0.003, highQuality: false});
+    var simplePolygon = turf.simplify(data.features[0], {tolerance: 0.001, highQuality: false});
     console.log(simplePolygon);
     var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
     console.log(socrataPolygon);
@@ -203,14 +203,14 @@ var loadCityNumbers = function loadCityNumbers(){
         console.log(certs1);
         certRegistration += certs1.features.length;
 
-        var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
-        console.log(simplePolygon);
-        var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
-        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data2 ) {
+        var simplePolygon2 = turf.simplify(data.features[1], {tolerance: 0.001, highQuality: false});
+        console.log(simplePolygon2);
+        var socrataPolygon2 = Terraformer.WKT.convert(simplePolygon2.geometry);
+        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon2 + "') AND csa_date3 > '2017-12-31'" , function( data2 ) {
           console.log(data2);
-          totalRentals += data1.features.length;
+          totalRentals += data2.features.length;
 
-          $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( certs2 ) {
+          $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon2 + "') AND csa_date3 > '2017-12-31'" , function( certs2 ) {
             console.log(certs2);
             certRegistration += certs2.features.length;
 

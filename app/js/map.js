@@ -203,87 +203,23 @@ var loadCityNumbers = function loadCityNumbers(){
         console.log(certs1);
         certRegistration += certs1.features.length;
 
-        $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
-          console.log(data1);
-          for (var i = 0; i < data1.features.length; i++) {
-            switch (data1.features[i].properties.action_description.trim()) {
-              case "Called Emergency Re-Inspection":
-                totalInspections++;
-                break;
-              case "Emergency Called Inspection":
-                totalInspections++;
-                break;
-              case "Emergency Re-Inspection":
-                totalInspections++;
-                break;
-              case "Called Inspection":
-                totalInspections++;
-                break;
-              case "Inspection":
-                totalInspections++;
-                break;
-              case "Complaint Inspection":
-                totalInspections++;
-                break;
-              case "Lead Inspection report received":
-                leadInspectionReport++;
-                break;
-              case "3rd Party Inspection":
-                thirdPartyInspection++;
-                break;
-              default:
-            }
-          }
-          var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
-          console.log(simplePolygon);
-          var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
-          $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data2 ) {
-            console.log(data2);
-            totalRentals += data1.features.length;
+        var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
+        console.log(simplePolygon);
+        var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
+        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data2 ) {
+          console.log(data2);
+          totalRentals += data1.features.length;
 
-            $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( certs2 ) {
-              console.log(certs2);
-              certRegistration += certs2.features.length;
+          $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( certs2 ) {
+            console.log(certs2);
+            certRegistration += certs2.features.length;
 
-              $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data1 ) {
-                console.log(data1);
-                for (var i = 0; i < data1.features.length; i++) {
-                  switch (data1.features[i].properties.action_description.trim()) {
-                    case "Called Emergency Re-Inspection":
-                      totalInspections++;
-                      break;
-                    case "Emergency Called Inspection":
-                      totalInspections++;
-                      break;
-                    case "Emergency Re-Inspection":
-                      totalInspections++;
-                      break;
-                    case "Called Inspection":
-                      totalInspections++;
-                      break;
-                    case "Inspection":
-                      totalInspections++;
-                      break;
-                    case "Complaint Inspection":
-                      totalInspections++;
-                      break;
-                    case "Lead Inspection report received":
-                      leadInspectionReport++;
-                      break;
-                    case "3rd Party Inspection":
-                      thirdPartyInspection++;
-                      break;
-                    default:
-                  }
-                }
-                console.log(totalRentals);
-                console.log(certRegistration);
-                tempDataHTML += '<article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article><article class="normal"><span>INSPECTIONS</span> ' + totalInspections + '</article><article class="normal"><span>LEAD INSPECTION REPORT RECEIVED</span> ' + leadInspectionReport + '</article><article class="normal"><span>3RD PARTY INSPECTION</span> ' + thirdPartyInspection + '</article>';
-                document.querySelector('.overall-number').innerHTML = tempDataHTML;
-                document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
-                (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
-              });
-            });
+            console.log(totalRentals);
+            console.log(certRegistration);
+            tempDataHTML += '<article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article>';
+            document.querySelector('.overall-number').innerHTML = tempDataHTML;
+            document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
+            (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
           });
         });
       });
@@ -490,9 +426,9 @@ var addDataLayers = function addDataLayers(){
    };
 
   $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=29%2C30&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
-    console.log(data);
+    // console.log(data);
     for (var i = 0; i < data.features.length; i++) {
-      console.log(data.features[i].geometry.coordinates[0]);
+      // console.log(data.features[i].geometry.coordinates[0]);
       var tempPolygon = turf.polygon([data.features[i].geometry.coordinates[0]]);
       var tempCenter = turf.centroid(tempPolygon);
       var tempFeature = {
@@ -507,7 +443,7 @@ var addDataLayers = function addDataLayers(){
       };
       zipLabes.features.push(tempFeature);
     }
-    console.log(zipLabes);
+    // console.log(zipLabes);
     map.addSource('zip-codes-labels', {
       type: 'geojson',
       data: zipLabes
@@ -527,26 +463,26 @@ var addDataLayers = function addDataLayers(){
     });
     var certifiedLayerData = null;
     var simplePolygon = turf.simplify(data.features[0], {tolerance: 0.003, highQuality: false});
-    console.log(simplePolygon);
+    // console.log(simplePolygon);
     var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
-    console.log(socrataPolygon);
+    // console.log(socrataPolygon);
     var new_Filter = ["in",'parcelno'];
     $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data1 ) {
-      console.log(data1);
+      // console.log(data1);
       certifiedLayerData = data1;
       data1.features.forEach(function(rental){
         new_Filter.push(rental.properties.parcelnum);
       });
       var simplePolygon = turf.simplify(data.features[1], {tolerance: 0.003, highQuality: false});
-      console.log(simplePolygon);
+      // console.log(simplePolygon);
       var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
       $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data2 ) {
         data2.features.forEach(function(rental){
           new_Filter.push(rental.properties.parcelnum);
           certifiedLayerData.features.push(rental);
         });
-        console.log(new_Filter);
-        console.log(certifiedLayerData);
+        // console.log(new_Filter);
+        // console.log(certifiedLayerData);
         map.addLayer({
            "id": "parcel-fill-certified",
            "type": "fill",
@@ -584,23 +520,45 @@ map.on('style.load', function(){
 map.on('load', function(window) {
   loadCityNumbers();
   map.on("mousemove", function(e) {
-    var features = map.queryRenderedFeatures(e.point, {
+    var zip = map.queryRenderedFeatures(e.point, {
       layers: ["zip-fill"]
     });
-    if (features.length) {
-      map.setFilter("zip-fill-hover", ["==", "zipcode", features[0].properties.zipcode]);
-    }else{
-      map.setFilter("zip-fill-hover", ["==", "zipcode", ""]);
-      features = map.queryRenderedFeatures(e.point, {
-        layers: ["circle-certified"]
-      });
-      if (!features.length) {
-        features = map.queryRenderedFeatures(e.point, {
-          layers: ["parcel-fill"]
-        });
-      }
+    var cert = map.queryRenderedFeatures(e.point, {
+      layers: ["circle-certified"]
+    });
+    var parcel = map.queryRenderedFeatures(e.point, {
+      layers: ["parcel-fill"]
+    });
+    switch (true) {
+      case zip.length > 0:
+        map.setFilter("zip-fill-hover", ["==", "zipcode", zip[0].properties.zipcode]);
+        map.getCanvas().style.cursor = 'pointer';
+        break;
+      case cert.length > 0:
+        map.getCanvas().style.cursor = 'pointer';
+        break;
+      case parcel.length > 0:
+        map.setFilter("zip-fill-hover", ["==", "zipcode", ""]);
+        map.getCanvas().style.cursor = 'pointer';
+        break;
+      default:
+        map.getCanvas().style.cursor = '';
     }
-    map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+    // if (features.length) {
+    //   map.setFilter("zip-fill-hover", ["==", "zipcode", features[0].properties.zipcode]);
+    //   map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+    // }else{
+    //   map.setFilter("zip-fill-hover", ["==", "zipcode", ""]);
+    //   features = map.queryRenderedFeatures(e.point, {
+    //     layers: ["circle-certified"]
+    //   });
+    //   if (!features.length) {
+    //     features = map.queryRenderedFeatures(e.point, {
+    //       layers: ["parcel-fill"]
+    //     });
+    //     map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+    //   }
+    // }
   });
   var geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,

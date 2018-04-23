@@ -95,40 +95,9 @@ var mapSectionClickModule = (function(calendarEvents){
           totalRentals = data.features.length;
           $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'", function( data ) {
             certRegistration = data.features.length;
-            $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_creation_date > '2017-12-31'" , function( data1 ) {
-              console.log(data1);
-              for (var i = 0; i < data1.features.length; i++) {
-                switch (data1.features[i].properties.action_description.trim()) {
-                  case "Called Emergency Re-Inspection":
-                    totalInspections++;
-                    break;
-                  case "Emergency Called Inspection":
-                    totalInspections++;
-                    break;
-                  case "Emergency Re-Inspection":
-                    totalInspections++;
-                    break;
-                  case "Called Inspection":
-                    totalInspections++;
-                    break;
-                  case "Inspection":
-                    totalInspections++;
-                    break;
-                  case "Complaint Inspection":
-                    totalInspections++;
-                    break;
-                  case "Lead Inspection report received":
-                    leadInspectionReport++;
-                    break;
-                  case "3rd Party Inspection":
-                    thirdPartyInspection++;
-                    break;
-                  default:
-                }
-              }
-              tempDataHTML += '<article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article><article class="normal"><span>INSPECTIONS</span> ' + totalInspections + '</article><article class="normal"><span>LEAD INSPECTION REPORT RECEIVED</span> ' + leadInspectionReport + '</article><article class="normal"><span>3RD PARTY INSPECTION</span> ' + thirdPartyInspection + '</article>';
-              document.querySelector('.overall-number').innerHTML = tempDataHTML;
-            });
+
+            tempDataHTML += '<article class="normal"><span>TOTAL RENTAL REGISTRATIONS</span> ' + totalRentals + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article>';
+            document.querySelector('.overall-number').innerHTML = tempDataHTML;
           });
         });
         (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';

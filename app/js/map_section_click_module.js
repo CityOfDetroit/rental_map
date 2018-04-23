@@ -42,26 +42,26 @@ var mapSectionClickModule = (function(calendarEvents){
         document.querySelector('.parcel-data.owner').innerHTML = '';
         document.querySelector('.parcel-data.building').innerHTML = '';
         document.querySelector('.parcel-info.display-section').innerHTML = '';
-        var simplifiedFeatured = turf.simplify(zipFeatures[0], {tolerance: 0.0001, highQuality: false});
-        var socrataPolygon = Terraformer.WKT.convert(simplifiedFeatured.geometry);
-        // console.log(socrataPolygon);
-        var tempDataHTML = '';
-        var certRegistration = 0;
-        var totalRentals = 0;
-
-        var totalInspections = 0;
-        var leadInspectionReport = 0;
-        var thirdPartyInspection = 0;
-        $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'", function( data ) {
-          // console.log(data);
-          totalRentals = data.features.length;
-          $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'", function( data ) {
-            certRegistration = data.features.length;
-
-            tempDataHTML += '<article class="normal"><span>TOTAL RENTAL REGISTRATIONS</span> ' + totalRentals + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article>';
-            document.querySelector('.overall-number').innerHTML = tempDataHTML;
-          });
-        });
+        // var simplifiedFeatured = turf.simplify(zipFeatures[0], {tolerance: 0.0001, highQuality: false});
+        // var socrataPolygon = Terraformer.WKT.convert(simplifiedFeatured.geometry);
+        // // console.log(socrataPolygon);
+        // var tempDataHTML = '';
+        // var certRegistration = 0;
+        // var totalRentals = 0;
+        //
+        // var totalInspections = 0;
+        // var leadInspectionReport = 0;
+        // var thirdPartyInspection = 0;
+        // $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'", function( data ) {
+        //   // console.log(data);
+        //   totalRentals = data.features.length;
+        //   $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'", function( data ) {
+        //     certRegistration = data.features.length;
+        //
+        //     tempDataHTML += '<article class="normal"><span>TOTAL RENTAL REGISTRATIONS</span> ' + totalRentals + '</article><article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article>';
+        //     document.querySelector('.overall-number').innerHTML = tempDataHTML;
+        //   });
+        // });
         (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
         break;
       case parcelFeatures.length !== 0:

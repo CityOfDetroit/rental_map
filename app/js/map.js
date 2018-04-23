@@ -31,26 +31,26 @@ map.addControl(new mapboxgl.NavigationControl());
 moment.tz.add("America/Detroit|LMT CST EST EWT EPT EDT|5w.b 60 50 40 40 40|01234252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252525252|-2Cgir.N peqr.N 156L0 8x40 iv0 6fd0 11z0 Jy10 SL0 dnB0 1cL0 s10 1Vz0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 1cN0 1fz0 1a10 1fz0 1cN0 1cL0 1cN0 1cL0 1cN0 1cL0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 14p0 1lb0 14p0 1lb0 14p0 1nX0 11B0 1nX0 11B0 1nX0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Rd0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0 Op0 1zb0|37e5");
 // ================== functions =====================
 var loadSuggestedAddr = function loadSuggestedAddr(link){
-  console.log(link.innerHTML);
-  console.log(link.getAttribute('data-lng'));
-  console.log(link.getAttribute('data-lat'));
+  // console.log(link.innerHTML);
+  // console.log(link.getAttribute('data-lng'));
+  // console.log(link.getAttribute('data-lat'));
   var tempArr = link.innerHTML.split(' ');
   var addr = '';
   for (var i = 0; i < tempArr.length; i++) {
     addr += tempArr[i];
     ((i < tempArr.length) && (i + 1) !== tempArr.length) ? addr += '+': 0;
   }
-  console.log(addr);
+  // console.log(addr);
   var ev = {'result':{'geometry':{'coordinates':[link.getAttribute('data-lng'), link.getAttribute('data-lat')]}}};
-  console.log(ev);
+  // console.log(ev);
   loadPanel(addr,ev);
 };
 var loadPanel = function loadPanel(addr,ev){
   //================ get parcel data ==========================
   $.getJSON('https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine='+ addr +'&category=&outFields=User_fld&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=pjson' , function( data ) {
-    console.log(data.candidates[0].attributes.User_fld);
+    // console.log(data.candidates[0].attributes.User_fld);
     if(data.candidates[0].attributes.User_fld !== ''){
-      console.log('flying');
+      // console.log('flying');
       map.flyTo({
           center: [ev.result.geometry.coordinates[0], ev.result.geometry.coordinates[1]],
           zoom: 16,
@@ -71,7 +71,7 @@ var loadPanel = function loadPanel(addr,ev){
       map.setFilter("parcel-fill-hover", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
       var tempParcelDataHTML = '';
       $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'", function( certified ) {
-        console.log(certified);
+        // console.log(certified);
         if(certified.length){
           tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> <img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
           document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
@@ -79,7 +79,7 @@ var loadPanel = function loadPanel(addr,ev){
           document.querySelector('.info-container > .not-rental').innerHTML = '';
         }else{
           $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'", function( register ) {
-            console.log(register);
+            // console.log(register);
             if(register.length){
               tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
               switch (register[0].action_description) {
@@ -102,7 +102,7 @@ var loadPanel = function loadPanel(addr,ev){
         }
       });
       $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$where=parcelnum = '"+ encodeURI(data.candidates[0].attributes.User_fld) + "'" , function( data1 ) {
-        console.log(data1);
+        // console.log(data1);
         if(data1.features.length){
           tempParcelDataHTML += '<article class="info-items"><span>INSPECTION(S) STATUS</span>';
           for (var i = 0; i < data1.features.length; i++) {
@@ -148,7 +148,8 @@ var loadPanel = function loadPanel(addr,ev){
         document.querySelector('.parcel-data.building').innerHTML = '<div class="data-view-btn" data-view="building" onclick="switchParcelDataViews(this)">PROPERTY INFORMATION <span>&#10095;</span></div>';
         parcelData['parcel-data'] = parcel;
       });
-    }else{console.log(ev.result.geometry.coordinates[0]+','+ev.result.geometry.coordinates[1]);
+    }else{
+      // console.log(ev.result.geometry.coordinates[0]+','+ev.result.geometry.coordinates[1]);
       $.getJSON('https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+'+ev.result.geometry.coordinates[0]+'%2C%22y%22%3A+'+ev.result.geometry.coordinates[1]+'%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=pjson' , function( data ) {
         console.log(data);
         var displaySearchAddr = '';
@@ -191,31 +192,31 @@ var loadCityNumbers = function loadCityNumbers(){
   $.getJSON('https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=29%2C30&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=' , function( data ) {
     var certifiedLayerData = null;
     var simplePolygon = turf.simplify(data.features[0], {tolerance: 0.001, highQuality: false});
-    console.log(simplePolygon);
+    // console.log(simplePolygon);
     var socrataPolygon = Terraformer.WKT.convert(simplePolygon.geometry);
-    console.log(socrataPolygon);
+    // console.log(socrataPolygon);
     var new_Filter = ["in",'parcelno'];
     $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( data1 ) {
-      console.log(data1);
+      // console.log(data1);
       totalRentals += data1.features.length;
 
       $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'" , function( certs1 ) {
-        console.log(certs1);
+        // console.log(certs1);
         certRegistration += certs1.features.length;
 
         var simplePolygon2 = turf.simplify(data.features[1], {tolerance: 0.001, highQuality: false});
-        console.log(simplePolygon2);
+        // console.log(simplePolygon2);
         var socrataPolygon2 = Terraformer.WKT.convert(simplePolygon2.geometry);
         $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon2 + "') AND csa_date3 > '2017-12-31'" , function( data2 ) {
-          console.log(data2);
+          // console.log(data2);
           totalRentals += data2.features.length;
 
           $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon2 + "') AND csa_date3 > '2017-12-31'" , function( certs2 ) {
-            console.log(certs2);
+            // console.log(certs2);
             certRegistration += certs2.features.length;
 
-            console.log(totalRentals);
-            console.log(certRegistration);
+            // console.log(totalRentals);
+            // console.log(certRegistration);
             tempDataHTML += '<article class="cofc"><span>CERTIFICATE OF COMPLIANCE</span> ' + certRegistration + '</article>';
             document.querySelector('.overall-number').innerHTML = tempDataHTML;
             document.querySelector('.info-container > .total-rentals > p').innerHTML = totalRentals;
@@ -300,7 +301,7 @@ var startGeocoderResults = function startGeocoderResults(ev){
     newTempAddr += item;
     ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
   });
-  console.log(newTempAddr);
+  // console.log(newTempAddr);
   loadPanel(newTempAddr,ev);
 };
 var toggleBaseMap = function toggleBaseMap(e) {
@@ -544,21 +545,6 @@ map.on('load', function(window) {
       default:
         map.getCanvas().style.cursor = '';
     }
-    // if (features.length) {
-    //   map.setFilter("zip-fill-hover", ["==", "zipcode", features[0].properties.zipcode]);
-    //   map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
-    // }else{
-    //   map.setFilter("zip-fill-hover", ["==", "zipcode", ""]);
-    //   features = map.queryRenderedFeatures(e.point, {
-    //     layers: ["circle-certified"]
-    //   });
-    //   if (!features.length) {
-    //     features = map.queryRenderedFeatures(e.point, {
-    //       layers: ["parcel-fill"]
-    //     });
-    //     map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
-    //   }
-    // }
   });
   var geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
@@ -587,10 +573,10 @@ map.on('load', function(window) {
     startGeocoderResults(ev);
   });
 });
-map.on('zoom', function() {
-  // console.log(map.getZoom());
-  // updateURLParams([map.getZoom()]);
-});
+// map.on('zoom', function() {
+//   // console.log(map.getZoom());
+//   // updateURLParams([map.getZoom()]);
+// });
 document.getElementById('close-emergency-modal-btn').addEventListener('click',closeInfo);
 var toggleBaseMapBtns = document.querySelectorAll('#basemap-toggle > article');
 for (var i = 0; i < toggleBaseMapBtns.length; i++) {

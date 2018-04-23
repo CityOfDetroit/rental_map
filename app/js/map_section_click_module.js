@@ -1,11 +1,10 @@
 var mapSectionClickModule = (function(calendarEvents){
   map.on('click', function (e) {
     //console.log(e);
-    var councilFeatures = null;
-    var neighborhoodsFeatures = null;
     var parcelFeatures = null;
+    var zipFeatures = null;
+    var certifiedFeatures = null;
     try {
-      councilFeatures = [];
       zipFeatures = map.queryRenderedFeatures(e.point, { layers: ['zip-fill'] });
       parcelFeatures = map.queryRenderedFeatures(e.point, { layers: ['parcel-fill'] });
       certifiedFeatures = map.queryRenderedFeatures(e.point, { layers: ['circle-certified'] });
@@ -14,45 +13,8 @@ var mapSectionClickModule = (function(calendarEvents){
     } finally {
     }
     switch (true) {
-      case councilFeatures.length !== 0:
-        var features = map.queryRenderedFeatures(e.point, { layers: ['council-fill'] });
-        var feature = features[0];
-        //console.log(feature);
-        var simplifiedFeatured = turf.simplify(feature, {tolerance: 0.003, highQuality: false});
-        //console.log(simplifiedFeatured);
-        var arcPolygon = Terraformer.ArcGIS.convert(simplifiedFeatured.geometry);
-        //console.log(arcPolygon);
-        // clearing panel data
-        document.querySelector('.overall-number').innerHTML = '';
-        document.querySelector('.parcel-info').innerHTML = '';
-        document.querySelector('.info-container > .not-rental').innerHTML = '';
-        document.querySelector('.info-container > .rental').innerHTML = '';
-        document.querySelector('.info-container > .total-rentals').innerHTML = '';
-        document.querySelector('.parcel-data.owner').innerHTML = '';
-        document.querySelector('.parcel-data.building').innerHTML = '';
-        document.querySelector('.parcel-info.display-section').innerHTML = '';
-        document.querySelector('.info-container > .street-name').innerHTML = simplifiedFeatured.properties.name;
-        (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
-        map.flyTo({
-            center: [e.lngLat.lng, e.lngLat.lat],
-            zoom: 13,
-            bearing: 0,
-
-            // These options control the flight curve, making it move
-            // slowly and zoom out almost completely before starting
-            // to pan.
-            speed: 2, // make the flying slow
-            curve: 1, // change the speed at which it zooms out
-
-            // This can be any easing function: it takes a number between
-            // 0 and 1 and returns another number between 0 and 1.
-            easing: function (t) {
-                return t;
-            }
-        });
-        break;
       case zipFeatures.length !== 0:
-        console.log(zipFeatures);
+        // console.log(zipFeatures);
         document.querySelector('.info-container > .street-name').innerHTML = "ZIP CODE: " + zipFeatures[0].properties.zipcode;
         map.flyTo({
             center: [e.lngLat.lng, e.lngLat.lat],
@@ -82,7 +44,7 @@ var mapSectionClickModule = (function(calendarEvents){
         document.querySelector('.parcel-info.display-section').innerHTML = '';
         var simplifiedFeatured = turf.simplify(zipFeatures[0], {tolerance: 0.0001, highQuality: false});
         var socrataPolygon = Terraformer.WKT.convert(simplifiedFeatured.geometry);
-        console.log(socrataPolygon);
+        // console.log(socrataPolygon);
         var tempDataHTML = '';
         var certRegistration = 0;
         var totalRentals = 0;
@@ -91,7 +53,7 @@ var mapSectionClickModule = (function(calendarEvents){
         var leadInspectionReport = 0;
         var thirdPartyInspection = 0;
         $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'", function( data ) {
-          console.log(data);
+          // console.log(data);
           totalRentals = data.features.length;
           $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '" + socrataPolygon + "') AND csa_date3 > '2017-12-31'", function( data ) {
             certRegistration = data.features.length;
@@ -115,7 +77,7 @@ var mapSectionClickModule = (function(calendarEvents){
         map.setFilter("parcel-fill-hover", ["==", "parcelno", parcelFeatures[0].properties.parcelno]);
         var tempParcelDataHTML = '';
         $.getJSON("https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '"+ encodeURI(parcelFeatures[0].properties.parcelno) + "'", function( certified ) {
-          console.log(certified);
+          // console.log(certified);
           if(certified.length){
             tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> <img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item></article>';
             document.querySelector('.parcel-info.rental-info').innerHTML = tempParcelDataHTML;
@@ -123,7 +85,7 @@ var mapSectionClickModule = (function(calendarEvents){
             document.querySelector('.info-container > .not-rental').innerHTML = '';
           }else{
             $.getJSON("https://data.detroitmi.gov/resource/vphr-kg52.json?$where=parcelnum = '"+ encodeURI(parcelFeatures[0].properties.parcelno) + "'", function( register ) {
-              console.log(register);
+              // console.log(register);
               if(register.length){
                 tempParcelDataHTML += '<article class="info-items"><span>COMPLIANCE STATUS</span> ';
                 switch (register[0].action_description) {
@@ -146,7 +108,7 @@ var mapSectionClickModule = (function(calendarEvents){
           }
         });
         $.getJSON("https://data.detroitmi.gov/resource/x3fu-i52p.geojson?$where=parcelnum = '"+ encodeURI(parcelFeatures[0].properties.parcelno) + "'" , function( data1 ) {
-          console.log(data1);
+          // console.log(data1);
           if(data1.features.length){
             tempParcelDataHTML += '<article class="info-items"><span>INSPECTION(S) STATUS</span>';
             for (var i = 0; i < data1.features.length; i++) {
@@ -195,7 +157,7 @@ var mapSectionClickModule = (function(calendarEvents){
         (document.querySelector('#info').className === 'active') ? 0 : document.querySelector('#info').className = 'active';
         break;
       case certifiedFeatures.length !== 0:
-        console.log(certifiedFeatures);
+        // console.log(certifiedFeatures);
         document.querySelector('.overall-number').innerHTML = '';
         document.querySelector('.parcel-info').innerHTML = '';
         document.querySelector('.info-container > .street-name').innerHTML = '';

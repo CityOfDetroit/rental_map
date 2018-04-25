@@ -1,42 +1,51 @@
+'use strict';
+
 var gulp = require('gulp');
-// Requires the gulp-sass plugin
+var babelify = require('babelify');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
 var sass = require('gulp-sass');
+var browserSync = require('browser-sync').create();
+
+gulp.task('build', function () {
+    browserify({
+        entries: './app/js/main.js',
+        debug: true
+    })
+    .transform(babelify)
+    .bundle()
+    .pipe(source('app.main.js'))
+    .pipe(gulp.dest('./dist/js'));
+});
+
+gulp.task('copy', function () {
+    gulp.src('app/index.html')
+    .pipe(gulp.dest('./dist'));
+});
+
 gulp.task('sass', function() {
   return gulp.src('app/scss/**/*.scss') // Gets all files ending with .scss in app/scss
     .pipe(sass())
-    .pipe(gulp.dest('app/css'))
-    .pipe(browserSync.reload({
-      stream: true
-    }));
+    .pipe(gulp.dest('./dist/css'));
 });
-gulp.task('watch', function(){
-  gulp.watch('app/scss/**/*.scss', ['sass']);
-  // Other watchers
-});
-var browserSync = require('browser-sync').create();
+
 gulp.task('browserSync', function() {
   browserSync.init({
     server: {
-      baseDir: 'app'
+      baseDir: 'dist'
     },
+    https: true
   });
 });
-gulp.task('watch', ['browserSync', 'sass'], function (){
-  gulp.watch('app/scss/**/*.scss', ['sass']);
-  // Reloads the browser whenever HTML or JS files change
-  gulp.watch('app/*.html', browserSync.reload);
-  gulp.watch('app/js/**/*.js', browserSync.reload);
-});
-var runSequence = require('run-sequence');
-gulp.task('build', function (callback) {
-  runSequence('clean:dist',
-    ['sass', 'useref', 'images'],
-    callback
-  );
+
+gulp.task('watch', function () {
+    gulp.watch('app/**/*.js', ['build']);
+    gulp.watch('app/*.html', ['copy']);
+    gulp.watch('app/**/*.scss', ['sass']);
+    gulp.watch('app/scss/**/*.scss', ['sass']);
+    gulp.watch('dist/**/*.css', browserSync.reload);
+    gulp.watch('dist/**/*.js', browserSync.reload);
+    gulp.watch('dist/*.html', browserSync.reload);
 });
 
-gulp.task('default', function (callback) {
-  runSequence(['sass','browserSync', 'watch'],
-    callback
-  );
-});
+gulp.task('default', ['browserSync', 'copy', 'sass', 'build', 'watch']);

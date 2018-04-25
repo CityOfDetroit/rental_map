@@ -8,27 +8,35 @@
   <meta name="author" content="Edgar Montes, Dexter Slursarski & Karl Kaebnick">
   <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0' />
   <!--build:css css/styles.min.css-->
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.css' rel='stylesheet' />
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
   <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
   <link href='css/styles.css' rel='stylesheet' />
   <!--endbuild-->
   <!-- <link href='css/styles.min.css' rel='stylesheet' /> -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
-  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.js"></script>
-  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
-  <script src="https://unpkg.com/terraformer@1.0.8"></script>
-  <script src="https://unpkg.com/terraformer-arcgis-parser@1.0.5"></script>
-  <script src="https://unpkg.com/terraformer-wkt-parser@1.1.2"></script>
 </head>
 <body>
+  <section id="initial-loader-overlay" class="">
+    <article>
+      <div>
+        <div class="loader">
+          <div class="loader__bar"></div>
+          <div class="loader__bar"></div>
+          <div class="loader__bar"></div>
+          <div class="loader__bar"></div>
+          <div class="loader__bar"></div>
+          <div class="loader__ball"></div>
+        </div>
+        <p>LOADING</p>
+      </div>
+    </article>
+  </section>
   <main>
     <section id="info" class="active">
       <section class="info-container">
         <input type="hidden" name="route-id" value="">
         <input type="hidden" name="lng" value="">
         <input type="hidden" name="lat" value="">
-        <article class="street-name"></article>
+        <article class="street-name">CITY OF DETROIT</article>
         <article id='geocoder' class='geocoder'></article>
         <article class="not-rental"></article>
         <article class="rental"></article>
@@ -45,28 +53,22 @@
     </section>
     <section id='map'></section>
     <section id='mobile-geocoder'></section>
-    <section id="basemap-toggle">
+    <!-- <section id="basemap-toggle">
       <article class="map-view" title="Map view">
         <img src="img/map.png" alt="map view">
       </article>
       <article class="satellite-view" title="Satellite view">
         <img src="img/satellites.png" alt="satellite view">
       </article>
-    </section>
+    </section> -->
     <div id='legend'>
       <strong>RENTAL PROPERTIES</strong>
       <nav class='legend clearfix'>
-        <span style='background:#068A24;'></span>
-        <label>Approved for rental</label>
+        <span style='background:#194ed7;'></span>
+        <label>Registered rental</label>
       </nav>
     </div>
   </main>
-  <!--build:js js/main.min.js -->
-  <script src='js/moment.min.js'></script>
-  <script src='js/moment.timezone.min.js'></script>
-  <script src='js/map.js'></script>
-  <script src='js/map_section_click_module.js'></script>
-  <!--endbuild -->
-  <!-- <script src='js/main.min.js'></script> -->
+  <script src="js/app.main.js"></script>
 </body>
 </html>

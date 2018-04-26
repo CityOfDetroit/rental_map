@@ -8,6 +8,7 @@ const moment = require('moment');
 export default class Controller {
   constructor(map, zipcodes) {
     this.activeAreas = null;
+    this.activeRentalParcels = ["in",'parcelno'];
     this.defaultSettings = {
       zipcodes: zipcodes,
       activeLayers: ['parcel-fill']
@@ -55,7 +56,7 @@ export default class Controller {
       "features": []
     };
     for (var i = 0; i < controller.activeAreas.features.length; i++) {
-      console.log(controller.activeAreas.features[i].geometry.coordinates[0]);
+      // console.log(controller.activeAreas.features[i].geometry.coordinates[0]);
       var tempPolygon = turf.polygon([controller.activeAreas.features[i].geometry.coordinates[0]]);
       var tempCenter = turf.centroid(tempPolygon);
       var tempFeature = {
@@ -97,10 +98,9 @@ export default class Controller {
     console.log(controller.dataManager.initialDataBank);
     let tempNewLayers = [];
     for (var zip in controller.dataManager.initialDataBank.rentals) {
-      let new_Filter = ["in",'parcelno'];
       if (controller.dataManager.initialDataBank.rentals.hasOwnProperty(zip)) {
         controller.dataManager.initialDataBank.rentals[zip].features.forEach(function(parcel){
-          new_Filter.push(parcel.properties.parcelnum);
+          controller.activeRentalParcels.push(parcel.properties.parcelnum);
         });
       }
       console.log(`rental-${zip}`);
@@ -109,6 +109,7 @@ export default class Controller {
         tempNewLayers.push({
           "id": `rental-${zip}`,
           "source": `rental-${zip}`,
+          "maxzoom": 15.5,
           "type": "circle",
           "paint": {
               "circle-radius": 6,
@@ -127,6 +128,7 @@ export default class Controller {
         tempNewLayers.push({
           "id": `rental-${zip}`,
           "source": `rental-${zip}`,
+          "maxzoom": 15.5,
           "type": "circle",
           "paint": {
               "circle-radius": 6,
@@ -137,6 +139,25 @@ export default class Controller {
       }
       controller.defaultSettings.activeLayers.push(`rental-${zip}`);
     }
+    if(controller.map.map.getLayer("rental-parcels")){
+      controller.map.removeLayer("rental-parcels", controller);
+    }else{
+      controller.defaultSettings.activeLayers.push("rental-parcels");
+    }
+    console.log(controller.activeRentalParcels);
+    tempNewLayers.push({
+      "id": "rental-parcels",
+      "type": "fill",
+      "source": "parcels",
+      "minzoom": 15.5,
+      'source-layer': 'parcelsgeojson',
+      'filter': controller.activeRentalParcels,
+      "paint": {
+        "fill-color":"#194ed7",
+        "fill-opacity":1
+      },
+      "event": true
+    });
     controller.map.addLayers(tempNewLayers, controller);
     controller.createZipcodesLayers(controller);
     document.getElementById('initial-loader-overlay').className = '';
@@ -145,6 +166,62 @@ export default class Controller {
     console.log(ev);
     console.log(layerID);
     console.log(layer);
+    switch (layer.layer.id) {
+      case 'parcel-fill':
+        console.log('parcel');
+        controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelno]);
+        let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=&time=&geometry=${ev.lngLat.lng}%2C+${ev.lngLat.lat}%0D%0A%0D%0A%0D%0A&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=zipcode&returnGeometry=false&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json&token=`;
+        fetch(url)
+        .then((resp) => resp.json()) // Transform the data into json
+        .then(function(data) {
+          console.log(data);
+          if(controller.defaultSettings.zipcodes.includes(data.features[0].attributes.zipcode)){
+            controller.panel.creatPanel('parcel', controller, layer, true);
+          }else {
+            controller.panel.creatPanel('parcel', controller, layer);
+          }
+        });
+        break;
+      case 'rental-parcels':
+        controller.panel.creatPanel('parcel', controller, layer, true);
+        break;
+      default:
+        console.log('rental');
+        console.log(layer.properties.parcelnum);
+        if(layer.properties.parcelnum != undefined){
+          controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelnum]);
+          let url = `https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '${encodeURI(layer.properties.parcelno)}'`;
+          fetch(url)
+          .then((resp) => resp.json()) // Transform the data into json
+          .then(function(data) {
+            console.log(data);
+            if(data.length){
+              controller.panel.creatPanel('rental', controller, layer, true, true);
+            }else{
+              controller.panel.creatPanel('rental', controller, layer, true);
+            }
+          });
+        }
+    }
+    controller.map.map.flyTo({
+        // These options control the ending camera position: centered at
+        // the target, at zoom level 9, and north up.
+        center: [ev.lngLat.lng, ev.lngLat.lat],
+        zoom: 16.5,
+        bearing: 0,
+
+        // These options control the flight curve, making it move
+        // slowly and zoom out almost completely before starting
+        // to pan.
+        speed: 2, // make the flying slow
+        curve: 1, // change the speed at which it zooms out
+
+        // This can be any easing function: it takes a number between
+        // 0 and 1 and returns another number between 0 and 1.
+        easing: function (t) {
+            return t;
+        }
+    });
   }
   geocoderResults(e, controller){
     let tempAddr = e.result.place_name.split(",");

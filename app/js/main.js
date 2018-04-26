@@ -59,7 +59,7 @@ import Controller from './controller.class.js';
          "layout": {},
          "paint": {
            "line-color": "#BD0019",
-           "line-width": 3
+           "line-width": 4
          },
          "source-layer": "parcelsgeojson",
          "filter": ["==", "parcelno", ""]
@@ -67,4 +67,14 @@ import Controller from './controller.class.js';
     ]
   },
   ['48215']);
+  let closeInfo = function closeInfo() {
+    //console.log('closing');
+    (document.querySelector('#info').className === 'active') ? document.querySelector('#info').className = '' : document.querySelector('#info').className = 'active';
+    document.querySelector('.info-container > .street-name').innerHTML = 'Rental Dashboard';
+    document.querySelector('.info-container .info').innerHTML = `Welcome to the Detroit Rental Dashboard. Please use this tool
+    look up the status of a rental property. For more information, please
+    visit the <a href="https://data.detroitmi.gov/resource/vphr-kg52" target="_blank">Detroit Open Data Portal</a>.`;
+    document.querySelector('.mapboxgl-ctrl-geocoder > input[type="text"]').value = '';
+  };
+  document.getElementById('close-emergency-modal-btn').addEventListener('click',closeInfo);
 })(window);

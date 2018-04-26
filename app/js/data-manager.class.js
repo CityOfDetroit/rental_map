@@ -20,10 +20,10 @@ export default class DataManager {
   }
   buildInitialData(controller){
     // NOTE: Fetching initial data
-    controller.activeAreas.forEach(function(zip){
+    controller.activeAreas.features.forEach(function(zip){
       let socrataPolygon = WKT.convert(zip.geometry);
       let registrations = new Promise((resolve, reject) => {
-        let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '${socrataPolygon}') AND csa_date3 > '${controller.defaultSettings.startDate}'`;
+        let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '${socrataPolygon}')`;
         return fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {

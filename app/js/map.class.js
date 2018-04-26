@@ -211,7 +211,8 @@ export default class Map {
     return 0
   }
   addLayers(layers, controller){
-    // console.log(layers);
+    console.log(layers);
+    console.log(controller);
     layers.forEach(function(layer){
       console.log(layer);
       controller.map.currentState.layers.push(layer);
@@ -230,11 +231,13 @@ export default class Map {
       (layer.ref === undefined) ? 0: tempLayer.ref = layer.ref;
       if(controller.map.map.getLayer(layer.id) === undefined){
         controller.map.map.addLayer(tempLayer);
-        // (layer.event) ? controller.map.addEvent(layer, controller) : 0;
+        console.log(controller);
+        if(layer.event) controller.map.addEvent(controller);
       }
     });
   }
   addMouseMoveFunction(e , parent = this){
+    //     this.getCanvas().style.cursor = 'pointer';
     // switch (this.appController.currentBoundary) {
     //   case "council":
     //     let features = this.queryRenderedFeatures(e.point, {
@@ -257,22 +260,22 @@ export default class Map {
     //   default:
     //
     // }
-    // let checker = false;
-    // for (var i = 0; i < this.appController.activeLayers.length; i++) {
-    //   if(this.getLayer(this.appController.activeLayers[i])){
-    //     let tempFeature = this.queryRenderedFeatures(e.point, {
-    //       layers: [this.appController.activeLayers[i]]
-    //     });
-    //     if(tempFeature.length){
-    //       checker = true;
-    //     }
-    //   }
-    // }
-    // if(checker){
-    //   this.getCanvas().style.cursor = 'pointer';
-    // }else{
-    //   this.getCanvas().style.cursor = '';
-    // }
+    let checker = false;
+    for (var i = 0; i < this.appController.defaultSettings.activeLayers.length; i++) {
+      if(this.getLayer(this.appController.defaultSettings.activeLayers[i])){
+        let tempFeature = this.queryRenderedFeatures(e.point, {
+          layers: [this.appController.defaultSettings.activeLayers[i]]
+        });
+        if(tempFeature.length){
+          checker = true;
+        }
+      }
+    }
+    if(checker){
+      this.getCanvas().style.cursor = 'pointer';
+    }else{
+      this.getCanvas().style.cursor = '';
+    }
   }
   addMouseLeaveFunction(e, parent = this){
     // switch (this.appController.currentBoundary) {

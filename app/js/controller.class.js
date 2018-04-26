@@ -7,8 +7,11 @@ const turf = require('@turf/turf');
 const moment = require('moment');
 export default class Controller {
   constructor(map, zipcodes) {
-    this.activeArea = null;
-    this.defaultSettings = {zipcodes: zipcodes};
+    this.activeAreas = null;
+    this.defaultSettings = {
+      zipcodes: zipcodes,
+      activeLayers: ['parcel-fill']
+    };
     this.panel = new Panel();
     this.dataManager = new DataManager();
     this.map = new Map(map, this);
@@ -24,13 +27,75 @@ export default class Controller {
     fetch(url)
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) {
-      controller.activeAreas = data.features;
+      controller.activeAreas = data;
       controller.defaultSettings.startDate = '2017-12-31';
       controller.dataManager.buildData('initial', controller);
     });
   }
+  createZipcodesLayers(controller){
+    let sources = [{
+      "id":  "zip-borders",
+      "type": "geojson",
+      "data": controller.activeAreas
+    }];
+    controller.map.addSources(sources, controller);
+    let tempNewLayers = [{
+      "id": "zip-borders",
+      "type": "line",
+      "source": "zip-borders",
+      "layout": {},
+      "paint": {
+        "line-color": "#004b90",
+        "line-width": 3
+      }
+    }];
+    controller.map.addLayers(tempNewLayers, controller);
+    let zipLabes = {
+      "type": "FeatureCollection",
+      "features": []
+    };
+    for (var i = 0; i < controller.activeAreas.features.length; i++) {
+      console.log(controller.activeAreas.features[i].geometry.coordinates[0]);
+      var tempPolygon = turf.polygon([controller.activeAreas.features[i].geometry.coordinates[0]]);
+      var tempCenter = turf.centroid(tempPolygon);
+      var tempFeature = {
+          "type": "Feature",
+          "geometry": {
+              "type": "Point",
+              "coordinates": tempCenter.geometry.coordinates
+          },
+          "properties":{
+            "name": controller.activeAreas.features[i].properties.zipcode
+          }
+      };
+      zipLabes.features.push(tempFeature);
+    }
+    console.log(zipLabes);
+    let zipLabesSource = [{
+      "id":  "zip-codes-labels",
+      "type": "geojson",
+      "data": zipLabes
+    }];
+    controller.map.addSources(zipLabesSource, controller);
+    let zipLabelsLayers = [{
+      'id': 'zip-labels',
+      'type': 'symbol',
+      'source': "zip-codes-labels",
+      'maxzoom': 15.5,
+      'layout': {
+        "text-font": ["Open Sans Bold"],
+        'text-field': '{name}',
+        'text-allow-overlap': true
+      },
+      'paint': {
+        'text-color': 'black'
+      }
+    }];
+    controller.map.addLayers(zipLabelsLayers, controller);
+  }
   createRentalsLayer(controller){
     console.log(controller.dataManager.initialDataBank);
+    let tempNewLayers = [];
     for (var zip in controller.dataManager.initialDataBank.rentals) {
       let new_Filter = ["in",'parcelno'];
       if (controller.dataManager.initialDataBank.rentals.hasOwnProperty(zip)) {
@@ -39,10 +104,9 @@ export default class Controller {
         });
       }
       console.log(`rental-${zip}`);
-      let tempNewLayer = null;
       if(controller.map.map.getSource(`rental-${zip}`)){
         controller.map.map.getSource(`rental-${zip}`).setData(controller.dataManager.initialDataBank.rentals[zip]);
-        tempNewLayer = {
+        tempNewLayers.push({
           "id": `rental-${zip}`,
           "source": `rental-${zip}`,
           "type": "circle",
@@ -51,7 +115,7 @@ export default class Controller {
               "circle-color": "#194ed7"
           },
           "event": true
-        };
+        });
       }else{
         console.log("no source found");
         let sources = [{
@@ -60,7 +124,7 @@ export default class Controller {
           "data": controller.dataManager.initialDataBank.rentals[zip]
         }];
         controller.map.addSources(sources, controller);
-        tempNewLayer = {
+        tempNewLayers.push({
           "id": `rental-${zip}`,
           "source": `rental-${zip}`,
           "type": "circle",
@@ -69,11 +133,12 @@ export default class Controller {
               "circle-color": "#194ed7"
           },
           "event": true
-        };
+        });
       }
-      controller.map.addLayers([tempNewLayer], controller);
+      controller.defaultSettings.activeLayers.push(`rental-${zip}`);
     }
-
+    controller.map.addLayers(tempNewLayers, controller);
+    controller.createZipcodesLayers(controller);
     document.getElementById('initial-loader-overlay').className = '';
   }
   checkLayerType(ev, layerID, layer, controller){

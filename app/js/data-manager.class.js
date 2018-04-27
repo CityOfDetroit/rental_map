@@ -50,6 +50,16 @@ export default class DataManager {
       });
     });
   }
-  buildTempData(location, controller){
+  buildTempData(type, location, controller){
+    switch (type) {
+      case 'parcel':
+        
+        break;
+      case 'rental-parcels':
+
+        break;
+      default:
+
+    }
   }
 }

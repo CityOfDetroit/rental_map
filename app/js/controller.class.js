@@ -71,7 +71,7 @@ export default class Controller {
       };
       zipLabes.features.push(tempFeature);
     }
-    console.log(zipLabes);
+    // console.log(zipLabes);
     let zipLabesSource = [{
       "id":  "zip-codes-labels",
       "type": "geojson",
@@ -95,7 +95,7 @@ export default class Controller {
     controller.map.addLayers(zipLabelsLayers, controller);
   }
   createRentalsLayer(controller){
-    console.log(controller.dataManager.initialDataBank);
+    // console.log(controller.dataManager.initialDataBank);
     let tempNewLayers = [];
     for (var zip in controller.dataManager.initialDataBank.rentals) {
       if (controller.dataManager.initialDataBank.rentals.hasOwnProperty(zip)) {
@@ -103,48 +103,26 @@ export default class Controller {
           controller.activeRentalParcels.push(parcel.properties.parcelnum);
         });
       }
-      console.log(`rental-${zip}`);
-      if(controller.map.map.getSource(`rental-${zip}`)){
-        controller.map.map.getSource(`rental-${zip}`).setData(controller.dataManager.initialDataBank.rentals[zip]);
-        tempNewLayers.push({
-          "id": `rental-${zip}`,
-          "source": `rental-${zip}`,
-          "maxzoom": 15.5,
-          "type": "circle",
-          "paint": {
-              "circle-radius": 6,
-              "circle-color": "#194ed7"
-          },
-          "event": true
-        });
-      }else{
-        console.log("no source found");
-        let sources = [{
-          "id":  `rental-${zip}`,
-          "type": "geojson",
-          "data": controller.dataManager.initialDataBank.rentals[zip]
-        }];
-        controller.map.addSources(sources, controller);
-        tempNewLayers.push({
-          "id": `rental-${zip}`,
-          "source": `rental-${zip}`,
-          "maxzoom": 15.5,
-          "type": "circle",
-          "paint": {
-              "circle-radius": 6,
-              "circle-color": "#194ed7"
-          },
-          "event": true
-        });
-      }
+      // console.log(`rental-${zip}`);
+      let sources = [{
+        "id":  `rental-${zip}`,
+        "type": "geojson",
+        "data": controller.dataManager.initialDataBank.rentals[zip]
+      }];
+      controller.map.addSources(sources, controller);
+      tempNewLayers.push({
+        "id": `rental-${zip}`,
+        "source": `rental-${zip}`,
+        "maxzoom": 15.5,
+        "type": "circle",
+        "paint": {
+            "circle-radius": 6,
+            "circle-color": "#194ed7"
+        },
+        "event": true
+      });
       controller.defaultSettings.activeLayers.push(`rental-${zip}`);
     }
-    if(controller.map.map.getLayer("rental-parcels")){
-      controller.map.removeLayer("rental-parcels", controller);
-    }else{
-      controller.defaultSettings.activeLayers.push("rental-parcels");
-    }
-    console.log(controller.activeRentalParcels);
     tempNewLayers.push({
       "id": "rental-parcels",
       "type": "fill",
@@ -158,23 +136,24 @@ export default class Controller {
       },
       "event": true
     });
+    controller.defaultSettings.activeLayers.push("rental-parcels");
     controller.map.addLayers(tempNewLayers, controller);
     controller.createZipcodesLayers(controller);
     document.getElementById('initial-loader-overlay').className = '';
   }
   checkLayerType(ev, layerID, layer, controller){
-    console.log(ev);
+    // console.log(ev);
     console.log(layerID);
     console.log(layer);
     switch (layer.layer.id) {
       case 'parcel-fill':
-        console.log('parcel');
+        // console.log('parcel');
         controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelno]);
         let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=&time=&geometry=${ev.lngLat.lng}%2C+${ev.lngLat.lat}%0D%0A%0D%0A%0D%0A&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=zipcode&returnGeometry=false&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json&token=`;
         fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          console.log(data);
+          // console.log(data);
           if(controller.defaultSettings.zipcodes.includes(data.features[0].attributes.zipcode)){
             controller.panel.creatPanel('parcel', controller, layer, true);
           }else {
@@ -186,8 +165,8 @@ export default class Controller {
         controller.panel.creatPanel('parcel', controller, layer, true);
         break;
       default:
-        console.log('rental');
-        console.log(layer.properties.parcelnum);
+        // console.log('rental');
+        // console.log(layer.properties.parcelnum);
         if(layer.properties.parcelnum != undefined){
           controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelnum]);
           let url = `https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '${encodeURI(layer.properties.parcelno)}'`;

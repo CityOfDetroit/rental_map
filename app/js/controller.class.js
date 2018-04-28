@@ -7,6 +7,7 @@ const turf = require('@turf/turf');
 const moment = require('moment');
 export default class Controller {
   constructor(map, zipcodes) {
+    this.parcelData = null;
     this.activeAreas = null;
     this.activeRentalParcels = ["in",'parcelno'];
     this.defaultSettings = {
@@ -141,10 +142,12 @@ export default class Controller {
     controller.createZipcodesLayers(controller);
     document.getElementById('initial-loader-overlay').className = '';
   }
+
   checkLayerType(ev, layerID, layer, controller){
     // console.log(ev);
     console.log(layerID);
     console.log(layer);
+    controller.panel.clearPanel();
     switch (layer.layer.id) {
       case 'parcel-fill':
         // console.log('parcel');
@@ -155,30 +158,37 @@ export default class Controller {
         .then(function(data) {
           // console.log(data);
           if(controller.defaultSettings.zipcodes.includes(data.features[0].attributes.zipcode)){
-            controller.panel.creatPanel('parcel', controller, layer, true);
+            controller.dataManager.buildTempData('parcel', {active: true, data: layer}, controller);
           }else {
-            controller.panel.creatPanel('parcel', controller, layer);
+            controller.dataManager.buildTempData('parcel', {active: false, data: layer}, controller);
           }
         });
         break;
       case 'rental-parcels':
-        controller.panel.creatPanel('parcel', controller, layer, true);
+        controller.dataManager.buildTempData('rental-parcel', {active: true, data: layer}, controller);
         break;
       default:
         // console.log('rental');
-        // console.log(layer.properties.parcelnum);
+        // console.log(layer);
         if(layer.properties.parcelnum != undefined){
           controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelnum]);
-          let url = `https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '${encodeURI(layer.properties.parcelno)}'`;
+          let url = `https://apis.detroitmi.gov/assessments/parcel/${layer.properties.parcelnum}/`;
           fetch(url)
           .then((resp) => resp.json()) // Transform the data into json
           .then(function(data) {
             console.log(data);
-            if(data.length){
-              controller.panel.creatPanel('rental', controller, layer, true, true);
-            }else{
-              controller.panel.creatPanel('rental', controller, layer, true);
-            }
+            controller.parcelData = data;
+            let url = `https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '${encodeURI(layer.properties.parcelnum)}'`;
+            fetch(url)
+            .then((resp) => resp.json()) // Transform the data into json
+            .then(function(data) {
+              console.log(data);
+              if(data.length){
+                controller.panel.creatPanel('rental', controller, layer, true, true);
+              }else{
+                controller.panel.creatPanel('rental', controller, layer, true);
+              }
+            });
           });
         }
     }
@@ -202,7 +212,53 @@ export default class Controller {
         }
     });
   }
+  switchParcelDataViews(e, controller){
+    console.log(e);
+    switch (e.target.attributes[1].value) {
+      case 'owner':
+        var tempOwnerData = '';
+        tempOwnerData += '<article class="info-items"><span>OWNER CITY</span> ' + controller.parcelData.ownercity + '</article>';
+        tempOwnerData += '<article class="info-items"><span>OWNER NAME</span> ' + controller.parcelData.ownername1 + '</article>';
+        tempOwnerData += '<article class="info-items"><span>OWNER STATE</span> ' + controller.parcelData.ownerstate + '</article>';
+        tempOwnerData += '<article class="info-items"><span>OWNER ADDRESS</span> ' + controller.parcelData.ownerstreetaddr + '</article>';
+        tempOwnerData += '<article class="info-items"><span>OWNER ZIP</span> ' + controller.parcelData.ownerzip + '</article>';
+        document.querySelector('.parcel-info.display-section').innerHTML = tempOwnerData;
+        //cons.log(controller.parcelData);
+        break;
+      case 'building':
+        var tempBuldingData = '';
+        tempBuldingData += '<article class="info-items"><span>PARCEL NUMBER</span> ' + controller.parcelData.pnum + '</article>';
+        if(controller.parcelData.resb_calcvalue !== 0){
+          tempBuldingData += '<article class="info-items"><span>BASEMENT AREA</span> ' + controller.parcelData.resb_basementarea + '</article>';
+          tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.resb_bldgclass + '</article>';
+          tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.resb_calcvalue).toLocaleString() + '</article>';
+          tempBuldingData += '<article class="info-items"><span>EXTERIOR</span> ' + controller.parcelData.resb_exterior + '</article>';
+          tempBuldingData += '<article class="info-items"><span>NUMBER OF FIREPLACES</span> ' + controller.parcelData.resb_fireplaces + '</article>';
+          tempBuldingData += '<article class="info-items"><span>FLOOR AREA</span> ' + controller.parcelData.resb_floorarea.toLocaleString() + '</article>';
+          tempBuldingData += '<article class="info-items"><span>GARAGE AREA</span> ' + controller.parcelData.resb_garagearea.toLocaleString() + '</article>';
+          tempBuldingData += '<article class="info-items"><span>GARAGE TYPE</span> ' + controller.parcelData.resb_gartype + '</article>';
+          tempBuldingData += '<article class="info-items"><span>GROUND AREA</span> ' + controller.parcelData.resb_groundarea.toLocaleString() + '</article>';
+          tempBuldingData += '<article class="info-items"><span>HALF BATHS</span> ' + controller.parcelData.resb_halfbaths + '</article>';
+          tempBuldingData += '<article class="info-items"><span>NUMBER OF BEDROOMS</span> ' + controller.parcelData.resb_nbed + '</article>';
+          tempBuldingData += '<article class="info-items"><span>YEAR BUILD</span> ' + controller.parcelData.resb_yearbuilt + '</article>';
+        }else{
+          tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.cib_bldgclass + '</article>';
+          tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.cib_calcvalue).toLocaleString() + '</article>';
+          tempBuldingData += '<article class="info-items"><span>FLOOR AREA</span> ' + controller.parcelData.cib_floorarea.toLocaleString() + '</article>';
+          tempBuldingData += '<article class="info-items"><span>COMMERCIAL OCCUPANT</span> ' + controller.parcelData.cib_occ + '</article>';
+          tempBuldingData += '<article class="info-items"><span>COMMERCIAL FLOOR PRICE</span> $' + controller.parcelData.cib_pricefloor.toLocaleString() + '</article>';
+          tempBuldingData += '<article class="info-items"><span>NUMBER OF STORIES</span> ' + controller.parcelData.cib_stories + '</article>';
+          tempBuldingData += '<article class="info-items"><span>YEAR BUILD</span> ' + controller.parcelData.cib_yearbuilt + '</article>';
+        }
+        document.querySelector('.parcel-info.display-section').innerHTML = tempBuldingData;
+        //cons.log(controller.parcelData);
+        break;
+      default:
+
+    }
+  }
   geocoderResults(e, controller){
+    controller.panel.clearPanel();
     let tempAddr = e.result.place_name.split(",");
     tempAddr = tempAddr[0];
     tempAddr = tempAddr.split(" ");
@@ -221,7 +277,8 @@ export default class Controller {
       if(data.candidates.length){
         if(data.candidates[0].attributes.User_fld != ""){
           // console.log('parcel found');
-          controller.dataManager.buildData(data.candidates[0], controller);
+          controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
+          controller.dataManager.buildTempData('parcel',{data:{properties:{parcelno: data.candidates[0].attributes.User_fld}}}, controller);
           // controller.panel.creatPanel("parcel", data.candidates[0].attributes.User_fld, controller);
         }else{
           // console.log("no parcel found");

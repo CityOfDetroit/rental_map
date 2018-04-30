@@ -79,10 +79,10 @@ export default class DataManager {
       case 'parcel':
         Promise.all([registrations, certified, assessors]).then(values => {
           console.log(values);
+          let certified = false;
           let tempData = {
             register: false,
-            registrationDate: null,
-            certified: null
+            registrationDate: null
           };
           controller.parcelData = values[2].data;
           if(values[0].data.features.length){
@@ -90,9 +90,9 @@ export default class DataManager {
             tempData.registrationDate = moment(values[0].data.features[0].properties.csa_date3).format('MMM Do,YYYY');
           }
           if(values[1].data.length){
-            tempData.certified = true;
+            certified = true;
           }
-          controller.panel.creatPanel('parcel', controller, tempData, location.active);
+          controller.panel.creatPanel('parcel', controller, tempData, location.active, certified);
         }).catch(reason => {
           console.log(reason);
         });
@@ -100,10 +100,10 @@ export default class DataManager {
       case 'rental-parcels':
         Promise.all([registrations, certified, assessors]).then(values => {
           console.log(values);
+          let certified = false;
           let tempData = {
             register: false,
-            registrationDate: null,
-            certified: null
+            registrationDate: null
           };
           controller.parcelData = values[2].data;
           if(values[0].data.features.length){
@@ -111,13 +111,12 @@ export default class DataManager {
             tempData.registrationDate = moment(values[0].data.features[0].properties.csa_date3).format('MMM Do,YYYY');
           }
           if(values[1].data.length){
-            tempData.certified = true;
+            certified = true;
           }
-          controller.panel.creatPanel('parcel', controller, tempData, location.active);
+          controller.panel.creatPanel('parcel', controller, tempData, location.active, certified);
         }).catch(reason => {
           console.log(reason);
         });
-        controller.panel.creatPanel('parcel', controller, layer, true);
         break;
       default:
 

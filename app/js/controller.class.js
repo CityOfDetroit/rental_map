@@ -25,7 +25,7 @@ export default class Controller {
     controller.defaultSettings.zipcodes.forEach(function(zip,index){
       queryStr +=  `%27${zip}%27${index < controller.defaultSettings.zipcodes.length - 1 ? `,` : ''}`;
     });
-    let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=zipcode+in+%28${queryStr}%29&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
+    let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/MetroZipCodes/MapServer/0/query?where=ZCTA5CE10+in+%28${queryStr}%29&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
     fetch(url)
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) {
@@ -67,7 +67,7 @@ export default class Controller {
               "coordinates": tempCenter.geometry.coordinates
           },
           "properties":{
-            "name": controller.activeAreas.features[i].properties.zipcode
+            "name": controller.activeAreas.features[i].properties.ZCTA5CE10
           }
       };
       zipLabes.features.push(tempFeature);
@@ -144,7 +144,7 @@ export default class Controller {
   }
 
   checkLayerType(ev, layerID, layer, controller){
-    // console.log(ev);
+    console.log(ev);
     console.log(layerID);
     console.log(layer);
     controller.panel.clearPanel();
@@ -152,12 +152,13 @@ export default class Controller {
       case 'parcel-fill':
         // console.log('parcel');
         controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelno]);
-        let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/ZipCodes/FeatureServer/0/query?where=&objectIds=&time=&geometry=${ev.lngLat.lng}%2C+${ev.lngLat.lat}%0D%0A%0D%0A%0D%0A&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=zipcode&returnGeometry=false&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json&token=`;
+        let url = `
+        https://gis.detroitmi.gov/arcgis/rest/services/DoIT/MetroZipCodes/MapServer/0/query?where=&text=&objectIds=&time=&geometry=${ev.lngLat.lng}%2C+${ev.lngLat.lat}%0D%0A&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=ZCTA5CE10&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=json`;
         fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          // console.log(data);
-          if(controller.defaultSettings.zipcodes.includes(data.features[0].attributes.zipcode)){
+          console.log(data);
+          if(controller.defaultSettings.zipcodes.includes(data.features[0].attributes.ZCTA5CE10)){
             controller.dataManager.buildTempData('parcel', {active: true, data: layer}, controller);
           }else {
             controller.dataManager.buildTempData('parcel', {active: false, data: layer}, controller);

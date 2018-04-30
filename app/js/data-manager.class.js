@@ -24,7 +24,7 @@ export default class DataManager {
     controller.activeAreas.features.forEach(function(zip){
       let socrataPolygon = WKT.convert(zip.geometry);
       let registrations = new Promise((resolve, reject) => {
-        let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE within_polygon(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
+        let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
         return fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
@@ -32,7 +32,7 @@ export default class DataManager {
         });
       });
       let certificates = new Promise((resolve, reject) => {
-        let url = `https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
+        let url = `https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
         return fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {

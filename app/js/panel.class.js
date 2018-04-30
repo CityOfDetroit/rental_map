@@ -94,4 +94,14 @@ export default class Panel {
     document.querySelector('.parcel-info.display-section').innerHTML = '';
     document.querySelector('.mapboxgl-ctrl-geocoder.mapboxgl-ctrl input').value = '';
   }
+  suggestedAddress(info, controller){
+    document.querySelector('.info').innerHTML = '';
+    document.querySelector('.mapboxgl-ctrl-geocoder.mapboxgl-ctrl input').value = '';
+    document.querySelector('.info-container > .street-name').innerHTML = info.old;
+    document.querySelector('.parcel-info.rental-info').innerHTML = `<article class="info-items"><span>SEARCH STATUS</span> NO DATA FOUND<br><br>Did you mean?<br><initial><i id="suggested-addr"  data-lng="${info.lng}" data-lat="${info.lat}">${info.new}</i></initial></article>`;
+
+    document.getElementById('suggested-addr').addEventListener('click', function(e){
+      controller.loadSuggestedAddr(e, controller);
+    });
+  }
 }

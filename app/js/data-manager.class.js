@@ -8,7 +8,8 @@ export default class DataManager {
     // NOTE: rental data
     this.initialDataBank = {
       rentals: {},
-      instpections: {}
+      instpections: {},
+      certificates: {}
     };
     this.tempDataBank = {
       rentals: {},
@@ -30,18 +31,31 @@ export default class DataManager {
           resolve({"id": zip.properties.zipcode, "type": "rentals", "data": data});
         });
       });
-      Promise.all([registrations]).then(values => {
-          values.forEach(function(set){
-            if(set.data.features.length){
-              switch (set.type) {
-                case 'rentals':
-                  controller.dataManager.initialDataBank.rentals[set.id] = set.data;
-                  break;
-                default:
-
-              }
+      let certificates = new Promise((resolve, reject) => {
+        let url = `https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE within_polygon(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
+        return fetch(url)
+        .then((resp) => resp.json()) // Transform the data into json
+        .then(function(data) {
+          resolve({"id": zip.properties.zipcode, "type": "certificates", "data": data});
+        });
+      })
+      Promise.all([registrations, certificates]).then(values => {
+        console.log(values);
+          let tempRentals = values[0].data;
+          console.log(tempRentals);
+          values[1].data.features.forEach(function(value){
+            let test = false;
+            tempRentals.features.forEach(function(item){
+              (item.properties.parcelnum === value.properties.parcelnum) ? test = true : 0;
+            });
+            console.log(test);
+            if(!test){
+              console.log(value);
+              tempRentals.features.push(value);
             }
           });
+          console.log(tempRentals);
+          controller.dataManager.initialDataBank.rentals[values[0].id] = tempRentals;
           console.log(controller.dataManager.initialDataBank);
           controller.createRentalsLayer(controller);
           controller.panel.creatPanel('initial', controller);

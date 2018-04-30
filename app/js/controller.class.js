@@ -257,8 +257,19 @@ export default class Controller {
 
     }
   }
-  geocoderResults(e, controller){
-    controller.panel.clearPanel();
+  loadSuggestedAddr(e, controller){
+    console.log(e);
+    let tempArr = e.target.innerHTML.split(' ');
+    let addr = '';
+    for (let i = 0; i < tempArr.length; i++) {
+      addr += tempArr[i];
+      ((i < tempArr.length) && (i + 1) !== tempArr.length) ? addr += '+': 0;
+    }
+    // console.log(addr);
+    let ev = {'result':{'geometry':{'coordinates':[e.target.attributes[1], e.target.attributes[2]]},'place_name': `${e.target.innerHTML},`}};
+    controller.starGeocoder(ev, controller);
+  }
+  starGeocoder(e, controller){
     let tempAddr = e.result.place_name.split(",");
     tempAddr = tempAddr[0];
     tempAddr = tempAddr.split(" ");
@@ -268,7 +279,6 @@ export default class Controller {
       newTempAddr += item;
       ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
     });
-    // console.log(newTempAddr);
     let url = "https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=" + newTempAddr + "&category=&outFields=User_fld&maxLocations=&outSR=4326&searchExtent=&location=&distance=&magicKey=&f=json";
     fetch(url)
     .then((resp) => resp.json()) // Transform the data into json
@@ -279,14 +289,44 @@ export default class Controller {
           // console.log('parcel found');
           controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
           controller.dataManager.buildTempData('parcel',{data:{properties:{parcelno: data.candidates[0].attributes.User_fld}}}, controller);
-          // controller.panel.creatPanel("parcel", data.candidates[0].attributes.User_fld, controller);
+          controller.panel.clearPanel();
         }else{
-          // console.log("no parcel found");
+          let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+${e.result.geometry.coordinates[0]}%2C%22y%22%3A+${e.result.geometry.coordinates[1]}%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=json`;
+          fetch(url)
+          .then((resp) => resp.json()) // Transform the data into json
+          .then(function(data) {
+            console.log(data);
+            var displaySearchAddr = '';
+            var splitAddr = addr.split('+');
+            for (var i = 0; i < splitAddr.length; i++) {
+              displaySearchAddr += splitAddr[i] + ' ';
+            }
+            document.querySelector('.info-container > .street-name').innerHTML = displaySearchAddr;
+            document.querySelector('.parcel-info.rental-info').innerHTML = '<article class="info-items"><span>SEARCH STATUS</span> NO DATA FOUND<br><br>Did you mean?<br><initial><i id="suggested-addr"  data-lng="'+e.result.geometry.coordinates[0]+'" data-lat="'+e.result.geometry.coordinates[1]+'">'+ data.address.Street +'</i></initial></article>';
+
+            document.getElementById('suggested-addr').addEventListener('click', function(e){
+              controller.loadSuggestedAddr(e, controller);
+            });
+          });
         }
       }else{
-        // console.log("no parcel found");
+        console.log("no parcel found");
+        let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+${e.result.geometry.coordinates[0]}%2C%22y%22%3A+${e.result.geometry.coordinates[1]}%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=json`;
+        fetch(url)
+        .then((resp) => resp.json()) // Transform the data into json
+        .then(function(data) {
+          let displaySearchAddr = '';
+          let splitAddr = newTempAddr.split('+');
+          for (let i = 0; i < splitAddr.length; i++) {
+            displaySearchAddr += splitAddr[i] + ' ';
+          }
+          controller.panel.suggestedAddress({old: displaySearchAddr, lng: e.result.geometry.coordinates[0], lat: e.result.geometry.coordinates[1], new: data.address.Street}, controller);
+        });
       }
     });
+  }
+  geocoderResults(e, controller){
+    controller.starGeocoder(e, controller);
   }
   closeAlert(ev){
     (ev.target.parentNode.parentNode.id === 'alert-overlay') ? document.getElementById('alert-overlay').className = '': document.getElementById('drill-down-overlay').className = '';

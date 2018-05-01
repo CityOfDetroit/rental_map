@@ -173,24 +173,41 @@ export default class Controller {
         // console.log(layer);
         if(layer.properties.parcelnum != undefined){
           controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelnum]);
-          let url = `https://apis.detroitmi.gov/assessments/parcel/${layer.properties.parcelnum}/`;
-          fetch(url)
-          .then((resp) => resp.json()) // Transform the data into json
-          .then(function(data) {
-            console.log(data);
-            controller.parcelData = data;
-            let url = `https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '${encodeURI(layer.properties.parcelnum)}'`;
-            fetch(url)
-            .then((resp) => resp.json()) // Transform the data into json
-            .then(function(data) {
-              console.log(data);
-              if(data.length){
-                controller.panel.creatPanel('rental', controller, layer, true, true);
-              }else{
-                controller.panel.creatPanel('rental', controller, layer, true);
-              }
-            });
-          });
+          controller.dataManager.buildTempData('parcel', {active: true, data: {properties:{parcelno: layer.properties.parcelnum}}}, controller);
+          // let url = `https://apis.detroitmi.gov/assessments/parcel/${layer.properties.parcelnum}/`;
+          // fetch(url)
+          // .then((resp) => resp.json()) // Transform the data into json
+          // .then(function(data) {
+          //   console.log(data);
+          //   controller.parcelData = data;
+          //   let tempParam = {data: layer, zip: null};
+          //   let tempAddr = data.propstreetcombined.split(",");
+          //   tempAddr = tempAddr[0];
+          //   tempAddr = tempAddr.split(" ");
+          //   let newTempAddr = '';
+          //   let size = tempAddr.length;
+          //   tempAddr.forEach(function(item, index) {
+          //     newTempAddr += item;
+          //     ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
+          //   });
+          //   let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=${tempAddr}&category=&outFields=ZIP&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=json`;
+          //   fetch(url)
+          //   .then((resp) => resp.json()) // Transform the data into json
+          //   .then(function(zip) {
+          //     tempParam.zip = zip.candidates[0].attributes.ZIP;
+          //     let url = `https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '${encodeURI(layer.properties.parcelnum)}'`;
+          //     fetch(url)
+          //     .then((resp) => resp.json()) // Transform the data into json
+          //     .then(function(data) {
+          //       console.log(data);
+          //       if(data.length){
+          //         controller.panel.creatPanel('rental', controller, tempParam, true, true);
+          //       }else{
+          //         controller.panel.creatPanel('rental', controller, tempParam, true);
+          //       }
+          //     });
+          //   });
+          // });
         }
     }
     controller.map.map.flyTo({

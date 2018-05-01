@@ -40,6 +40,7 @@ export default class Panel {
     document.querySelector('#info').className = 'active';
   }
   createMarkup(type, controller, data, active, certified){
+    console.log(data);
     let tempHTML = null;
     switch (type) {
       case 'rental':
@@ -48,7 +49,43 @@ export default class Panel {
           <span>COMPLIANCE STATUS</span>
           ${certified != false ? `<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item>` : `NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on ${moment(data.properties.csa_date3).format('MMM Do,YYYY')}</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>`}
         </article>
-        `;
+         ${data.zipcode === '48215' ? `
+         <article class="info-items">
+          <span>ENFORCEMENT DATES</span>
+          <item>Must be Registered by May 1st, 2018</item><br>
+          <item>Must be Compliant by Aug 1st, 2018</item>
+         </article>` : ``}
+         ${data.zipcode === '48224' ? `
+         <article class="info-items">
+          <span>ENFORCEMENT DATES</span>
+          <item>Must be Registered by Jun 1st, 2018</item><br>
+          <item>Must be Compliant by Sep 1st, 2018</item>
+         </article>` : ``}
+         ${data.zipcode === '48223' ? `
+         <article class="info-items">
+          <span>ENFORCEMENT DATES</span>
+          <item>Must be Registered by Aug 1st, 2018</item><br>
+          <item>Must be Compliant by Nov 1st, 2018</item>
+         </article>` : ``}
+         ${data.zipcode === '48219' ? `
+         <article class="info-items">
+          <span>ENFORCEMENT DATES</span>
+          <item>Must be Registered by Sep 1st, 2018</item><br>
+          <item>Must be Compliant by Dec 1st, 2018</item>
+         </article>` : ``}
+         ${data.zipcode === '48209' ? `
+         <article class="info-items">
+          <span>ENFORCEMENT DATES</span>
+          <item>Must be Registered by Oct 1st, 2018</item><br>
+          <item>Must be Compliant by Jan 1st, 2019</item>
+         </article>` : ``}
+         ${data.zipcode === '48210' ? `
+         <article class="info-items">
+          <span>ENFORCEMENT DATES</span>
+          <item>Must be Registered by Nov 1st, 2018</item><br>
+          <item>Must be Compliant by Feb 1st, 2019</item>
+         </article>` : ``}
+         `;
         document.querySelector('.info-container > .rental').innerHTML = `<a href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn">SUBMIT RENTAL COMPLAINT</article></a>`;
 
         document.querySelector('.parcel-data.owner').innerHTML = '<div class="data-view-btn" data-view="owner">OWNER INFORMATION <span>&#10095;</span></div>';
@@ -63,6 +100,42 @@ export default class Panel {
           <span>COMPLIANCE STATUS</span>
           ${certified == true ? `<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item>` : `NOT APPROVED RENTAL<br>${data.register == true ? `<img src="img/done.png" alt="check"> <item>Registered on ${data.registrationDate}</item><br>`:`<img src="img/cancel.png" alt="x"> <item>Registered</item><br>`}<img src="img/cancel.png" alt="x"> <item>Compliance</item></article>`}
         </article>
+        ${data.zipcode === '48215' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by May 1st, 2018</item><br>
+         <item>Must be Compliant by Aug 1st, 2018</item>
+        </article>` : ``}
+        ${data.zipcode === '48224' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Jun 1st, 2018</item><br>
+         <item>Must be Compliant by Sep 1st, 2018</item>
+        </article>` : ``}
+        ${data.zipcode === '48223' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Aug 1st, 2018</item><br>
+         <item>Must be Compliant by Nov 1st, 2018</item>
+        </article>` : ``}
+        ${data.zipcode === '48219' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Sep 1st, 2018</item><br>
+         <item>Must be Compliant by Dec 1st, 2018</item>
+        </article>` : ``}
+        ${data.zipcode === '48209' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Oct 1st, 2018</item><br>
+         <item>Must be Compliant by Jan 1st, 2019</item>
+        </article>` : ``}
+        ${data.zipcode === '48210' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Nov 1st, 2018</item><br>
+         <item>Must be Compliant by Feb 1st, 2019</item>
+        </article>` : ``}
         `;
         if(active){
           if (data.register) {

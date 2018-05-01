@@ -65,6 +65,7 @@ export default class DataManager {
     });
   }
   buildTempData(type, location, controller){
+    console.log(location);
     let registrations = new Promise((resolve, reject) => {
       let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$where=parcelnum = '${encodeURI(location.data.properties.parcelno)}'`;
       return fetch(url)
@@ -83,10 +84,25 @@ export default class DataManager {
     });
     let assessors = new Promise((resolve, reject) => {
       let url = `https://apis.detroitmi.gov/assessments/parcel/${location.data.properties.parcelno}/`;
-      return fetch(url)
+      fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
-        resolve({"id": location.data.properties.parcelno, "type": "assessors", "data": data});
+        console.log(data);
+        let tempAddr = data.propstreetcombined.split(",");
+        tempAddr = tempAddr[0];
+        tempAddr = tempAddr.split(" ");
+        let newTempAddr = '';
+        let size = tempAddr.length;
+        tempAddr.forEach(function(item, index) {
+          newTempAddr += item;
+          ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
+        });
+        let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=${tempAddr}&category=&outFields=ZIP&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=json`;
+        return fetch(url)
+        .then((resp) => resp.json()) // Transform the data into json
+        .then(function(zip) {
+          resolve({"id": location.data.properties.parcelno, "type": "assessors", "data": data, "zip": zip.candidates[0].attributes.ZIP});
+        });
       });
     });
     switch (type) {
@@ -96,7 +112,8 @@ export default class DataManager {
           let certified = false;
           let tempData = {
             register: false,
-            registrationDate: null
+            registrationDate: null,
+            zipcode: values[2].zip
           };
           controller.parcelData = values[2].data;
           if(values[0].data.features.length){
@@ -117,7 +134,30 @@ export default class DataManager {
           let certified = false;
           let tempData = {
             register: false,
-            registrationDate: null
+            registrationDate: null,
+            zipcode: values[2].zip
+          };
+          controller.parcelData = values[2].data;
+          if(values[0].data.features.length){
+            tempData.register = true;
+            tempData.registrationDate = moment(values[0].data.features[0].properties.csa_date3).format('MMM Do,YYYY');
+          }
+          if(values[1].data.length){
+            certified = true;
+          }
+          controller.panel.creatPanel('parcel', controller, tempData, location.active, certified);
+        }).catch(reason => {
+          console.log(reason);
+        });
+        break;
+      case 'rental':
+        Promise.all([certified, assessors]).then(values => {
+          console.log(values);
+          let certified = false;
+          let tempData = {
+            register: false,
+            registrationDate: null,
+            zipcode: values[2].zip
           };
           controller.parcelData = values[2].data;
           if(values[0].data.features.length){

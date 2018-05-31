@@ -90,7 +90,7 @@ export default class Map {
           layers: ["parcel-fill"]
         });
         if (features.length) {
-          console.log(features);
+          // console.log(features);
           controller.checkLayerType(e, features[0].layer.id,features[0],controller);
         }else{
           console.log('No features');
@@ -164,7 +164,7 @@ export default class Map {
   }
   removeLayer(layer, controller){
     if(Array.isArray(layer)){
-      console.log(layer);
+      // console.log(layer);
       try {
         if(controller.map.map.getLayer(layer[0]) != undefined){
           // controller.map.removeEvent(layer[0], controller);
@@ -191,7 +191,7 @@ export default class Map {
     }
   }
   removeEvent(layer, controller){
-    console.log(layer);
+    // console.log(layer);
     controller.map.map.off('click', layer, addClickFunction);
     controller.map.map.off('mousemove', layer, addMouseMoveFunction);
     controller.map.map.off('mouseleave', layer, addMouseLeaveFunction);
@@ -211,10 +211,10 @@ export default class Map {
     return 0
   }
   addLayers(layers, controller){
-    console.log(layers);
-    console.log(controller);
+    // console.log(layers);
+    // console.log(controller);
     layers.forEach(function(layer){
-      console.log(layer);
+      // console.log(layer);
       controller.map.currentState.layers.push(layer);
       let tempLayer = {
         id: layer.id,
@@ -231,7 +231,7 @@ export default class Map {
       (layer.ref === undefined) ? 0: tempLayer.ref = layer.ref;
       if(controller.map.map.getLayer(layer.id) === undefined){
         controller.map.map.addLayer(tempLayer);
-        console.log(controller);
+        // console.log(controller);
         if(layer.event) controller.map.addEvent(controller);
       }
     });
@@ -292,16 +292,16 @@ export default class Map {
     // }
   }
   addClickFunction(e, parent = this){
-    console.log(e);
-    console.log(this.appController.activeLayers);
+    // console.log(e);
+    // console.log(this.appController.activeLayers);
     // console.log(this.tempLayerEvent.id);
     let features = this.queryRenderedFeatures(e.point, {
       layers: this.appController.activeLayers
     });
-    console.log(features);
+    // console.log(features);
     if (features.length) {
-      console.log(features);
-      console.log(this.appController);
+      // console.log(features);
+      // console.log(this.appController);
       this.appController.checkLayerType(e, features[0].layer.id, features[0],this.appController);
     }else{
       console.log('No features');

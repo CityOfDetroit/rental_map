@@ -21,6 +21,7 @@ export default class DataManager {
   }
   buildInitialData(controller){
     // NOTE: Fetching initial data
+    // console.log(controller.activeAreas);
     controller.activeAreas.features.forEach(function(zip){
       let socrataPolygon = WKT.convert(zip.geometry);
       let registrations = new Promise((resolve, reject) => {
@@ -28,7 +29,8 @@ export default class DataManager {
         return fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          resolve({"id": zip.properties.zipcode, "type": "rentals", "data": data});
+          // console.log(zip);
+          resolve({"id": zip.properties.GEOID10, "type": "rentals", "data": data});
         });
       });
       let certificates = new Promise((resolve, reject) => {
@@ -36,27 +38,28 @@ export default class DataManager {
         return fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          resolve({"id": zip.properties.zipcode, "type": "certificates", "data": data});
+          // console.log(zip);
+          resolve({"id": zip.properties.GEOID10, "type": "certificates", "data": data});
         });
       })
       Promise.all([registrations, certificates]).then(values => {
-        console.log(values);
+        // console.log(values);
           let tempRentals = values[0].data;
-          console.log(tempRentals);
+          // console.log(tempRentals);
           values[1].data.features.forEach(function(value){
             let test = false;
             tempRentals.features.forEach(function(item){
               (item.properties.parcelnum === value.properties.parcelnum) ? test = true : 0;
             });
-            console.log(test);
+            // console.log(test);
             if(!test){
-              console.log(value);
+              // console.log(value);
               tempRentals.features.push(value);
             }
           });
-          console.log(tempRentals);
+          // console.log(tempRentals);
           controller.dataManager.initialDataBank.rentals[values[0].id] = tempRentals;
-          console.log(controller.dataManager.initialDataBank);
+          // console.log(controller.dataManager.initialDataBank);
           controller.createRentalsLayer(controller);
           controller.panel.creatPanel('initial', controller);
       }).catch(reason => {
@@ -65,7 +68,7 @@ export default class DataManager {
     });
   }
   buildTempData(type, location, controller){
-    console.log(location);
+    // console.log(location);
     let registrations = new Promise((resolve, reject) => {
       let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$where=parcelnum = '${encodeURI(location.data.properties.parcelno)}'`;
       return fetch(url)
@@ -87,7 +90,7 @@ export default class DataManager {
       fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
-        console.log(data);
+        // console.log(data);
         let tempAddr = data.propstreetcombined.split(",");
         tempAddr = tempAddr[0];
         tempAddr = tempAddr.split(" ");
@@ -108,7 +111,7 @@ export default class DataManager {
     switch (type) {
       case 'parcel':
         Promise.all([registrations, certified, assessors]).then(values => {
-          console.log(values);
+          // console.log(values);
           let certified = false;
           let tempData = {
             register: false,
@@ -130,7 +133,7 @@ export default class DataManager {
         break;
       case 'rental-parcels':
         Promise.all([registrations, certified, assessors]).then(values => {
-          console.log(values);
+          // console.log(values);
           let certified = false;
           let tempData = {
             register: false,
@@ -152,7 +155,7 @@ export default class DataManager {
         break;
       case 'rental':
         Promise.all([certified, assessors]).then(values => {
-          console.log(values);
+          // console.log(values);
           let certified = false;
           let tempData = {
             register: false,

@@ -144,9 +144,9 @@ export default class Controller {
   }
 
   checkLayerType(ev, layerID, layer, controller){
-    console.log(ev);
-    console.log(layerID);
-    console.log(layer);
+    // console.log(ev);
+    // console.log(layerID);
+    // console.log(layer);
     controller.panel.clearPanel();
     switch (layer.layer.id) {
       case 'parcel-fill':
@@ -157,7 +157,7 @@ export default class Controller {
         fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          console.log(data);
+          // console.log(data);
           if(controller.defaultSettings.zipcodes.includes(data.features[0].attributes.ZCTA5CE10)){
             controller.dataManager.buildTempData('parcel', {active: true, data: layer}, controller);
           }else {
@@ -231,7 +231,7 @@ export default class Controller {
     });
   }
   switchParcelDataViews(e, controller){
-    console.log(e);
+    // console.log(e);
     switch (e.target.attributes[1].value) {
       case 'owner':
         var tempOwnerData = '';
@@ -276,7 +276,7 @@ export default class Controller {
     }
   }
   loadSuggestedAddr(e, controller){
-    console.log(e);
+    // console.log(e);
     let tempArr = e.target.innerHTML.split(' ');
     let addr = '';
     for (let i = 0; i < tempArr.length; i++) {
@@ -313,7 +313,7 @@ export default class Controller {
           fetch(url)
           .then((resp) => resp.json()) // Transform the data into json
           .then(function(data) {
-            console.log(data);
+            // console.log(data);
             var displaySearchAddr = '';
             var splitAddr = addr.split('+');
             for (var i = 0; i < splitAddr.length; i++) {
@@ -328,7 +328,7 @@ export default class Controller {
           });
         }
       }else{
-        console.log("no parcel found");
+        // console.log("no parcel found");
         let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+${e.result.geometry.coordinates[0]}%2C%22y%22%3A+${e.result.geometry.coordinates[1]}%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=json`;
         fetch(url)
         .then((resp) => resp.json()) // Transform the data into json

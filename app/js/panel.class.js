@@ -44,12 +44,14 @@ export default class Panel {
     let tempHTML = null;
     switch (type) {
       case 'rental':
+        console.log('rental');
         tempHTML = `
         <article class="info-items">
           <span>COMPLIANCE STATUS</span>
           ${certified != false ? `<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item>` : `NOT APPROVED RENTAL<br><img src="img/done.png" alt="check"> <item>Registered on ${moment(data.properties.csa_date3).format('MMM Do,YYYY')}</item><br><img src="img/cancel.png" alt="x"> <item>Compliance</item></article>`}
         </article>
          ${data.zipcode === '48215' ? `
+         ${!certified ? `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`:``}
          <article class="info-items">
           <span>ENFORCEMENT DATES</span>
           <item>Must be Registered by May 1st, 2018</item><br>
@@ -95,6 +97,7 @@ export default class Panel {
         document.querySelector('.street-name').innerText = controller.parcelData.propstreetcombined;
         break;
       case 'parcel':
+        console.log('parcel');
         tempHTML = `
         <article class="info-items">
           <span>COMPLIANCE STATUS</span>
@@ -105,6 +108,7 @@ export default class Panel {
          <span>ENFORCEMENT DATES</span>
          <item>Must be Registered by May 1st, 2018</item><br>
          <item>Must be Compliant by Aug 1st, 2018</item>
+         ${!certified ? `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`:``}
         </article>` : ``}
         ${data.zipcode === '48224' ? `
         <article class="info-items">

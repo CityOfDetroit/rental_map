@@ -6,12 +6,13 @@ import mapboxgl from 'mapbox-gl';
 const turf = require('@turf/turf');
 const moment = require('moment');
 export default class Controller {
-  constructor(map, zipcodes) {
+  constructor(map, zipcodes, escrows) {
     this.parcelData = null;
     this.activeAreas = null;
     this.activeRentalParcels = ["in",'parcelno'];
     this.defaultSettings = {
       zipcodes: zipcodes,
+      escrows: escrows,
       activeLayers: ['parcel-fill']
     };
     this.panel = new Panel();
@@ -95,11 +96,13 @@ export default class Controller {
     }];
     controller.map.addLayers(zipLabelsLayers, controller);
   }
+  
   createRentalsLayer(controller){
-    // console.log(controller.dataManager.initialDataBank);
+    console.log(controller.dataManager.initialDataBank);
     let tempNewLayers = [];
     for (var zip in controller.dataManager.initialDataBank.rentals) {
       if (controller.dataManager.initialDataBank.rentals.hasOwnProperty(zip)) {
+        console.log(zip);
         controller.dataManager.initialDataBank.rentals[zip].features.forEach(function(parcel){
           controller.activeRentalParcels.push(parcel.properties.parcelnum);
         });

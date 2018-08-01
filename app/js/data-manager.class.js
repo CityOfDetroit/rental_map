@@ -22,7 +22,7 @@ export default class DataManager {
   buildInitialData(controller){
     // NOTE: Fetching initial data
     // console.log(controller.activeAreas);
-    controller.activeAreas.features.forEach(function(zip){
+    controller.activeAreas.features.forEach(function(zip, index){
       let socrataPolygon = WKT.convert(zip.geometry);
       let registrations = new Promise((resolve, reject) => {
         let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
@@ -60,8 +60,11 @@ export default class DataManager {
           // console.log(tempRentals);
           controller.dataManager.initialDataBank.rentals[values[0].id] = tempRentals;
           // console.log(controller.dataManager.initialDataBank);
+          if(index == controller.activeAreas.features.length - 1){
+            controller.panel.creatPanel('initial', controller);
+          }
           controller.createRentalsLayer(controller);
-          controller.panel.creatPanel('initial', controller);
+          
       }).catch(reason => {
         console.log(reason);
       });

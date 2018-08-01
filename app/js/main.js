@@ -66,7 +66,8 @@ import Controller from './controller.class.js';
        }
     ]
   },
-  ['48215','48224']);
+  ['48215','48224','48223'],
+  ['48215']);
   let closeInfo = function closeInfo() {
     //console.log('closing');
     (document.querySelector('#info').className === 'active') ? document.querySelector('#info').className = '' : document.querySelector('#info').className = 'active';

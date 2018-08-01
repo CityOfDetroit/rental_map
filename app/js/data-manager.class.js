@@ -43,22 +43,36 @@ export default class DataManager {
         });
       })
       Promise.all([registrations, certificates]).then(values => {
-        // console.log(values);
-          let tempRentals = values[0].data;
+        console.log(values);
+          let rentals = values[0].data;
+          let tempRentals = [];
           // console.log(tempRentals);
-          values[1].data.features.forEach(function(value){
+          values[0].data.features.forEach(function(value){
             let test = false;
-            tempRentals.features.forEach(function(item){
+            values[1].data.features.forEach(function(item){
               (item.properties.parcelnum === value.properties.parcelnum) ? test = true : 0;
             });
             // console.log(test);
             if(!test){
               // console.log(value);
-              tempRentals.features.push(value);
+              tempRentals.push(value);
             }
           });
-          // console.log(tempRentals);
-          controller.dataManager.initialDataBank.rentals[values[0].id] = tempRentals;
+          // values[1].data.features.forEach(function(value){
+          //   let test = false;
+          //   tempRentals.features.forEach(function(item){
+          //     (item.properties.parcelnum === value.properties.parcelnum) ? test = true : 0;
+          //   });
+          //   // console.log(test);
+          //   if(!test){
+          //     // console.log(value);
+          //     tempRentals.features.push(value);
+          //   }
+          // });
+          console.log(tempRentals);
+          rentals.features = tempRentals;
+          controller.dataManager.initialDataBank.rentals[values[0].id] = rentals;
+          controller.dataManager.initialDataBank.certificates[values[1].id] = values[1];
           // console.log(controller.dataManager.initialDataBank);
           if(index == controller.activeAreas.features.length - 1){
             controller.panel.creatPanel('initial', controller);

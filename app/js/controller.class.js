@@ -9,11 +9,17 @@ export default class Controller {
   constructor(map, zipcodes, escrows) {
     this.parcelData = null;
     this.activeAreas = null;
-    this.activeRentalParcels = ["in",'parcelno'];
+    this.activeFilter = [];
+    this.userSources = {
+      rental: null,
+      cert: null
+    };
+    this.activeRentalParcels = ["in","parcelno"];
+    this.activeCertParcels = ["in", "parcelno"];
     this.defaultSettings = {
       zipcodes: zipcodes,
       escrows: escrows,
-      activeLayers: ['parcel-fill']
+      activeLayers: ['parcel-fill','rental','cert']
     };
     this.panel = new Panel();
     this.dataManager = new DataManager();
@@ -103,44 +109,36 @@ export default class Controller {
     for (var zip in controller.dataManager.initialDataBank.rentals) {
       if (controller.dataManager.initialDataBank.rentals.hasOwnProperty(zip)) {
         console.log(zip);
-        controller.dataManager.initialDataBank.rentals[zip].features.forEach(function(parcel){
-          controller.activeRentalParcels.push(parcel.properties.parcelnum);
-        });
+        if(!controller.activeFilter.includes(zip)){
+          controller.activeFilter.push(zip);
+          controller.dataManager.initialDataBank.rentals[zip].features.forEach(function(parcel){
+            controller.activeRentalParcels.push(parcel.properties.parcelnum);
+          });
+          if(controller.defaultSettings.escrows.includes(zip))
+          controller.dataManager.initialDataBank.certificates[zip].data.features.forEach(function(parcel){
+            controller.activeCertParcels.push(parcel.properties.parcelnum);
+          });
+          if(controller.userSources.rental == null){
+            controller.userSources.rental = controller.dataManager.initialDataBank.rentals[zip];
+          }else{
+            controller.userSources.rental.features = controller.userSources.rental.features.concat(controller.dataManager.initialDataBank.rentals[zip].features);
+          }
+          if(controller.userSources.cert == null){
+            if(controller.defaultSettings.escrows.includes(zip))
+            controller.userSources.cert = controller.dataManager.initialDataBank.certificates[zip].data;
+          }else{
+            if(controller.defaultSettings.escrows.includes(zip))
+            controller.userSources.cert.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.certificates[zip].data.features);
+          }
+        }
       }
       // console.log(`rental-${zip}`);
-      let sources = [{
-        "id":  `rental-${zip}`,
-        "type": "geojson",
-        "data": controller.dataManager.initialDataBank.rentals[zip]
-      }];
-      controller.map.addSources(sources, controller);
-      tempNewLayers.push({
-        "id": `rental-${zip}`,
-        "source": `rental-${zip}`,
-        "maxzoom": 15.5,
-        "type": "circle",
-        "paint": {
-            "circle-radius": 6,
-            "circle-color": "#194ed7"
-        },
-        "event": true
-      });
-      controller.defaultSettings.activeLayers.push(`rental-${zip}`);
+      controller.map.map.getSource('rental').setData(controller.userSources.rental);
+      controller.map.map.getSource('cert').setData(controller.userSources.cert);
     }
-    tempNewLayers.push({
-      "id": "rental-parcels",
-      "type": "fill",
-      "source": "parcels",
-      "minzoom": 15.5,
-      'source-layer': 'parcelsgeojson',
-      'filter': controller.activeRentalParcels,
-      "paint": {
-        "fill-color":"#194ed7",
-        "fill-opacity":1
-      },
-      "event": true
-    });
-    controller.defaultSettings.activeLayers.push("rental-parcels");
+    controller.map.map.setFilter('rental-parcels', controller.activeRentalParcels);
+    controller.map.map.setFilter('cert-parcels', controller.activeCertParcels);
+    
     controller.map.addLayers(tempNewLayers, controller);
     controller.createZipcodesLayers(controller);
     document.getElementById('initial-loader-overlay').className = '';

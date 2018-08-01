@@ -22,6 +22,22 @@ import Controller from './controller.class.js';
         "id": "parcels",
         "type": "vector",
         "url": "mapbox://slusarskiddetroitmi.cwobdjn0"
+      },
+      {
+        "id":  `rental`,
+        "type": "geojson",
+        "data": {
+          "type": "FeatureCollection",
+          "features": []
+        } 
+      },
+      {
+        "id":  `cert`,
+        "type": "geojson",
+        "data": {
+          "type": "FeatureCollection",
+          "features": []
+        }
       }
     ],
     layers: [
@@ -63,6 +79,54 @@ import Controller from './controller.class.js';
          },
          "source-layer": "parcelsgeojson",
          "filter": ["==", "parcelno", ""]
+       },
+       {
+        "id": "rental",
+        "source": "rental",
+        "maxzoom": 15.5,
+        "type": "circle",
+        "paint": {
+            "circle-radius": 6,
+            "circle-color": "#194ed7"
+        },
+        "event": true
+       },
+       {
+        "id": "cert",
+        "source": "cert",
+        "maxzoom": 15.5,
+        "type": "circle",
+        "paint": {
+            "circle-radius": 6,
+            "circle-color": "#068A24"
+        },
+        "event": true
+       },
+       {
+        "id": "rental-parcels",
+        "type": "fill",
+        "source": "parcels",
+        "minzoom": 15.5,
+        'source-layer': 'parcelsgeojson',
+        'filter': ["in","parcelno"],
+        "paint": {
+          "fill-color":"#194ed7",
+          "fill-opacity":1
+        },
+        "event": false
+       },
+       {
+        "id": "cert-parcels",
+        "type": "fill",
+        "source": "parcels",
+        "minzoom": 15.5,
+        'source-layer': 'parcelsgeojson',
+        'filter': ["in","parcelno"],
+        "paint": {
+          "fill-color":"#068A24",
+          "fill-opacity":1
+        },
+        "event": false
        }
     ]
   },

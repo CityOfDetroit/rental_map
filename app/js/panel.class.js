@@ -4,7 +4,7 @@ export default class Panel {
   constructor() {
   }
 
-  creatPanel(type, controller, data = null, active = false, certified = false){
+  creatPanel(type, controller, data = null, active = false, certified = false, occupied = false){
     let markup = '';
     switch (type) {
       case 'initial':
@@ -17,11 +17,11 @@ export default class Panel {
 
         break;
       case 'parcel':
-        markup = controller.panel.createMarkup(type, controller, data, active, certified);
+        markup = controller.panel.createMarkup(type, controller, data, active, certified, occupied);
         document.querySelector('.info-container .info').innerHTML = '';
         break;
       case 'rental':
-        markup = controller.panel.createMarkup(type, controller, data, active, certified);
+        markup = controller.panel.createMarkup(type, controller, data, active, certified, occupied);
         document.querySelector('.info-container .info').innerHTML = '';
         break;
       default:
@@ -39,7 +39,7 @@ export default class Panel {
     }
     document.querySelector('#info').className = 'active';
   }
-  createMarkup(type, controller, data, active, certified){
+  createMarkup(type, controller, data, active, certified, occupied){
     console.log(data);
     let tempHTML = null;
     switch (type) {
@@ -98,17 +98,18 @@ export default class Panel {
         break;
       case 'parcel':
         console.log('parcel');
+        console.log(occupied);
         tempHTML = `
         <article class="info-items">
           <span>COMPLIANCE STATUS</span>
-          ${certified == true ? `<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item>` : `NOT APPROVED RENTAL<br>${data.register == true ? `<img src="img/done.png" alt="check"> <item>Registered on ${data.registrationDate}</item><br>`:`<img src="img/cancel.png" alt="x"> <item>Registered</item><br>`}<img src="img/cancel.png" alt="x"> <item>Compliance</item></article>`}
+          ${certified == true ? `<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item>` : `${occupied ? `${data.register ? `<img src="img/done.png" alt="x"> <item>APPROVED FOR RENTAL</item>`:`NOT APPROVED RENTAL<br><img src="img/done.png" alt="x"> <item>Occupancy</item><br><img src="img/cancel.png" alt="x"> <item>Registered</item>`}`:`NOT APPROVED RENTAL<br>${data.register == true ? `<img src="img/done.png" alt="check"> <item>Registered on ${data.registrationDate}</item><br>`:`<img src="img/cancel.png" alt="x"> <item>Registered</item><br>`}<img src="img/cancel.png" alt="x"> <item>Compliance</item><br><img src="img/cancel.png" alt="x"> <item>Occupancy</item></article>`}`}
         </article>
         ${data.zipcode === '48215' ? `
         <article class="info-items">
          <span>ENFORCEMENT DATES</span>
          <item>Must be Registered by May 1st, 2018</item><br>
          <item>Must be Compliant by Aug 1st, 2018</item>
-         ${!certified ? `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`:``}
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
         </article>` : ``}
         ${data.zipcode === '48224' ? `
         <article class="info-items">

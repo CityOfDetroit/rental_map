@@ -9,7 +9,8 @@ export default class DataManager {
     this.initialDataBank = {
       rentals: {},
       instpections: {},
-      certificates: {}
+      certificates: {},
+      occupancy: {}
     };
     this.tempDataBank = {
       rentals: {},
@@ -41,11 +42,27 @@ export default class DataManager {
           // console.log(zip);
           resolve({"id": zip.properties.GEOID10, "type": "certificates", "data": data});
         });
-      })
-      Promise.all([registrations, certificates]).then(values => {
+      });
+      let occupancy = new Promise((resolve, reject) => {
+        let url = `https://data.detroitmi.gov/resource/4tq8-6eaw.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcel_no IS NOT NULL AND  bld_type_use_calculated='Residential'`;
+        return fetch(url)
+        .then((resp) => resp.json()) // Transform the data into json
+        .then(function(data) {
+          // console.log(zip);
+          resolve({"id": zip.properties.GEOID10, "type": "occupancy", "data": data});
+        });
+      });
+      Promise.all([registrations, certificates, occupancy]).then(values => {
         console.log(values);
-          let rentals = values[0].data;
-          let tempRentals = [];
+          let rentals = {
+            "type": "FeatureCollection",
+            "features": []
+          };
+          let tempOccup = {
+            "type": "FeatureCollection",
+            "features": []
+          };
+          let approved = values[1].data;
           // console.log(tempRentals);
           values[0].data.features.forEach(function(value){
             let test = false;
@@ -55,24 +72,29 @@ export default class DataManager {
             // console.log(test);
             if(!test){
               // console.log(value);
-              tempRentals.push(value);
+              rentals.features.push(value);
             }
           });
-          // values[1].data.features.forEach(function(value){
-          //   let test = false;
-          //   tempRentals.features.forEach(function(item){
-          //     (item.properties.parcelnum === value.properties.parcelnum) ? test = true : 0;
-          //   });
-          //   // console.log(test);
-          //   if(!test){
-          //     // console.log(value);
-          //     tempRentals.features.push(value);
-          //   }
-          // });
-          console.log(tempRentals);
-          rentals.features = tempRentals;
+          // ==============================
+          // Separating occupied with registration and occupied without registration
+          // ==============================
+          values[2].data.features.forEach(function(value){
+            let test = false;
+            values[0].data.features.forEach(function(item){
+              (item.properties.parcelnum === value.properties.parcel_no) ? test = true : 0;
+            });
+            // console.log(test);
+            if(!test){
+              // console.log(value);
+              tempOccup.features.push(value);
+            }else{
+              approved.features.push(value);
+            }
+          });
+          console.log(tempOccup);
           controller.dataManager.initialDataBank.rentals[values[0].id] = rentals;
-          controller.dataManager.initialDataBank.certificates[values[1].id] = values[1];
+          controller.dataManager.initialDataBank.certificates[values[1].id] = approved;
+          controller.dataManager.initialDataBank.occupancy[values[2].id] = tempOccup;
           // console.log(controller.dataManager.initialDataBank);
           if(index == controller.activeAreas.features.length - 1){
             controller.panel.creatPanel('initial', controller);
@@ -102,6 +124,14 @@ export default class DataManager {
         resolve({"id": location.data.properties.parcelno, "type": "certified", "data": data});
       });
     });
+    let occupancy = new Promise((resolve, reject) => {
+      let url = `https://data.detroitmi.gov/resource/4tq8-6eaw.geojson?$query=SELECT * WHERE parcel_no='${encodeURI(location.data.properties.parcelno)}' AND  bld_type_use_calculated='Residential'`;
+      return fetch(url)
+      .then((resp) => resp.json()) // Transform the data into json
+      .then(function(data) {
+        resolve({"id": location.data.properties.parcelno, "type": "occupancy", "data": data});
+      });
+    });
     let assessors = new Promise((resolve, reject) => {
       let url = `https://apis.detroitmi.gov/assessments/parcel/${location.data.properties.parcelno}/`;
       fetch(url)
@@ -127,8 +157,9 @@ export default class DataManager {
     });
     switch (type) {
       case 'parcel':
-        Promise.all([registrations, certified, assessors]).then(values => {
-          // console.log(values);
+        Promise.all([registrations, certified, assessors, occupancy]).then(values => {
+          console.log(values);
+          let occupied = false;
           let certified = false;
           let tempData = {
             register: false,
@@ -143,13 +174,16 @@ export default class DataManager {
           if(values[1].data.length){
             certified = true;
           }
-          controller.panel.creatPanel('parcel', controller, tempData, location.active, certified);
+          if(values[3].data.features.length){
+            occupied = true;
+          }
+          controller.panel.creatPanel('parcel', controller, tempData, location.active, certified, occupied);
         }).catch(reason => {
           console.log(reason);
         });
         break;
       case 'rental-parcels':
-        Promise.all([registrations, certified, assessors]).then(values => {
+        Promise.all([registrations, certified, assessors, occupancy]).then(values => {
           // console.log(values);
           let certified = false;
           let tempData = {
@@ -171,7 +205,7 @@ export default class DataManager {
         });
         break;
       case 'rental':
-        Promise.all([certified, assessors]).then(values => {
+        Promise.all([certified, assessors, occupancy]).then(values => {
           // console.log(values);
           let certified = false;
           let tempData = {

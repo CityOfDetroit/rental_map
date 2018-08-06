@@ -38,6 +38,14 @@ import Controller from './controller.class.js';
           "type": "FeatureCollection",
           "features": []
         }
+      },
+      {
+        "id":  `occupied`,
+        "type": "geojson",
+        "data": {
+          "type": "FeatureCollection",
+          "features": []
+        }
       }
     ],
     layers: [
@@ -68,19 +76,6 @@ import Controller from './controller.class.js';
           'source-layer': 'parcelsgeojson'
        },
        {
-         "id": "parcel-fill-selected",
-         "type": "line",
-         "source": "parcels",
-         "minzoom": 15.5,
-         "layout": {},
-         "paint": {
-           "line-color": "#BD0019",
-           "line-width": 4
-         },
-         "source-layer": "parcelsgeojson",
-         "filter": ["==", "parcelno", ""]
-       },
-       {
         "id": "rental",
         "source": "rental",
         "maxzoom": 15.5,
@@ -99,6 +94,17 @@ import Controller from './controller.class.js';
         "paint": {
             "circle-radius": 6,
             "circle-color": "#068A24"
+        },
+        "event": true
+       },
+       {
+        "id": "occupied",
+        "source": "occupied",
+        "maxzoom": 15.5,
+        "type": "circle",
+        "paint": {
+            "circle-radius": 6,
+            "circle-color": "#ff932d"
         },
         "event": true
        },
@@ -127,7 +133,33 @@ import Controller from './controller.class.js';
           "fill-opacity":1
         },
         "event": false
-       }
+       },
+       {
+        "id": "occup-parcels",
+        "type": "fill",
+        "source": "parcels",
+        "minzoom": 15.5,
+        'source-layer': 'parcelsgeojson',
+        'filter': ["in","parcelno"],
+        "paint": {
+          "fill-color":"#ff932d",
+          "fill-opacity":1
+        },
+        "event": false
+       },
+       {
+        "id": "parcel-fill-selected",
+        "type": "line",
+        "source": "parcels",
+        "minzoom": 15.5,
+        "layout": {},
+        "paint": {
+          "line-color": "#BD0019",
+          "line-width": 4
+        },
+        "source-layer": "parcelsgeojson",
+        "filter": ["==", "parcelno", ""]
+      }
     ]
   },
   ['48215','48224','48223'],

@@ -462,20 +462,25 @@ main {
   position: absolute;
   top: .6em;
   right: 3em;
-  width: 10.5em;
+  width: 15em;
   z-index: 2; }
 
 #legend > strong {
   padding: 0 .2em;
   background-color: rgba(255, 255, 255, 0.7); }
 
+.legend label {
+  height: 2.5em; }
+
+.legend span {
+  height: .75em; }
+
 .legend label,
 .legend span {
   background-color: rgba(255, 255, 255, 0.7);
   display: block;
   float: left;
-  height: 15px;
-  width: 50%;
+  width: 33.33334%;
   text-align: center;
   font-size: .75em; }
 

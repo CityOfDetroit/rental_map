@@ -12,14 +12,16 @@ export default class Controller {
     this.activeFilter = [];
     this.userSources = {
       rental: null,
-      cert: null
+      cert: null,
+      occupied: null
     };
     this.activeRentalParcels = ["in","parcelno"];
     this.activeCertParcels = ["in", "parcelno"];
+    this.activeOccupParcels = ["in", "parcelno"];
     this.defaultSettings = {
       zipcodes: zipcodes,
       escrows: escrows,
-      activeLayers: ['parcel-fill','rental','cert']
+      activeLayers: ['parcel-fill','rental','cert','occupied']
     };
     this.panel = new Panel();
     this.dataManager = new DataManager();
@@ -114,10 +116,18 @@ export default class Controller {
           controller.dataManager.initialDataBank.rentals[zip].features.forEach(function(parcel){
             controller.activeRentalParcels.push(parcel.properties.parcelnum);
           });
-          if(controller.defaultSettings.escrows.includes(zip))
-          controller.dataManager.initialDataBank.certificates[zip].data.features.forEach(function(parcel){
-            controller.activeCertParcels.push(parcel.properties.parcelnum);
-          });
+          if(controller.defaultSettings.escrows.includes(zip)){
+            controller.dataManager.initialDataBank.certificates[zip].features.forEach(function(parcel){
+              if(parcel.properties.parcelnum){
+                controller.activeCertParcels.push(parcel.properties.parcelnum);
+              }else{
+                controller.activeCertParcels.push(parcel.properties.parcel_no);
+              }
+            });
+            controller.dataManager.initialDataBank.occupancy[zip].features.forEach(function(parcel){
+              controller.activeOccupParcels.push(parcel.properties.parcel_no);
+            });
+          }
           if(controller.userSources.rental == null){
             controller.userSources.rental = controller.dataManager.initialDataBank.rentals[zip];
           }else{
@@ -125,19 +135,27 @@ export default class Controller {
           }
           if(controller.userSources.cert == null){
             if(controller.defaultSettings.escrows.includes(zip))
-            controller.userSources.cert = controller.dataManager.initialDataBank.certificates[zip].data;
+            controller.userSources.cert = controller.dataManager.initialDataBank.certificates[zip];
           }else{
             if(controller.defaultSettings.escrows.includes(zip))
-            controller.userSources.cert.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.certificates[zip].data.features);
+            controller.userSources.cert.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.certificates[zip].features);
+          }
+          if(controller.userSources.occupied == null){
+            if(controller.defaultSettings.escrows.includes(zip))
+            controller.userSources.occupied = controller.dataManager.initialDataBank.occupancy[zip];
+          }else{
+            if(controller.defaultSettings.escrows.includes(zip))
+            controller.userSources.occupied.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.occupancy[zip].features);
           }
         }
       }
-      // console.log(`rental-${zip}`);
       controller.map.map.getSource('rental').setData(controller.userSources.rental);
       controller.map.map.getSource('cert').setData(controller.userSources.cert);
+      controller.map.map.getSource('occupied').setData(controller.userSources.occupied);
     }
     controller.map.map.setFilter('rental-parcels', controller.activeRentalParcels);
     controller.map.map.setFilter('cert-parcels', controller.activeCertParcels);
+    controller.map.map.setFilter('occup-parcels', controller.activeOccupParcels);
     
     controller.map.addLayers(tempNewLayers, controller);
     controller.createZipcodesLayers(controller);
@@ -146,8 +164,8 @@ export default class Controller {
 
   checkLayerType(ev, layerID, layer, controller){
     // console.log(ev);
-    // console.log(layerID);
-    // console.log(layer);
+    console.log(layerID);
+    console.log(layer);
     controller.panel.clearPanel();
     switch (layer.layer.id) {
       case 'parcel-fill':
@@ -175,40 +193,10 @@ export default class Controller {
         if(layer.properties.parcelnum != undefined){
           controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelnum]);
           controller.dataManager.buildTempData('parcel', {active: true, data: {properties:{parcelno: layer.properties.parcelnum}}}, controller);
-          // let url = `https://apis.detroitmi.gov/assessments/parcel/${layer.properties.parcelnum}/`;
-          // fetch(url)
-          // .then((resp) => resp.json()) // Transform the data into json
-          // .then(function(data) {
-          //   console.log(data);
-          //   controller.parcelData = data;
-          //   let tempParam = {data: layer, zip: null};
-          //   let tempAddr = data.propstreetcombined.split(",");
-          //   tempAddr = tempAddr[0];
-          //   tempAddr = tempAddr.split(" ");
-          //   let newTempAddr = '';
-          //   let size = tempAddr.length;
-          //   tempAddr.forEach(function(item, index) {
-          //     newTempAddr += item;
-          //     ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
-          //   });
-          //   let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=${tempAddr}&category=&outFields=ZIP&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=json`;
-          //   fetch(url)
-          //   .then((resp) => resp.json()) // Transform the data into json
-          //   .then(function(zip) {
-          //     tempParam.zip = zip.candidates[0].attributes.ZIP;
-          //     let url = `https://data.detroitmi.gov/resource/baxk-dxw9.json?$where=parcelnum = '${encodeURI(layer.properties.parcelnum)}'`;
-          //     fetch(url)
-          //     .then((resp) => resp.json()) // Transform the data into json
-          //     .then(function(data) {
-          //       console.log(data);
-          //       if(data.length){
-          //         controller.panel.creatPanel('rental', controller, tempParam, true, true);
-          //       }else{
-          //         controller.panel.creatPanel('rental', controller, tempParam, true);
-          //       }
-          //     });
-          //   });
-          // });
+        }
+        if(layer.properties.parcel_no != undefined){
+          controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcel_no]);
+          controller.dataManager.buildTempData('parcel', {active: true, data: {properties:{parcelno: layer.properties.parcel_no}}}, controller);
         }
     }
     controller.map.map.flyTo({

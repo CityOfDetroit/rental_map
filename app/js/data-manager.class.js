@@ -53,7 +53,7 @@ export default class DataManager {
         });
       });
       Promise.all([registrations, certificates, occupancy]).then(values => {
-        console.log(values);
+        // console.log(values);
           let rentals = {
             "type": "FeatureCollection",
             "features": []
@@ -91,7 +91,7 @@ export default class DataManager {
               approved.features.push(value);
             }
           });
-          console.log(tempOccup);
+          // console.log(tempOccup);
           controller.dataManager.initialDataBank.rentals[values[0].id] = rentals;
           controller.dataManager.initialDataBank.certificates[values[1].id] = approved;
           controller.dataManager.initialDataBank.occupancy[values[2].id] = tempOccup;

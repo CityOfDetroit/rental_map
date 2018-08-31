@@ -1,5 +1,6 @@
 'use strict';
 import Controller from './controller.class.js';
+
 (function(){
   let controller = new Controller({
     styleURL: 'mapbox://styles/mapbox',
@@ -87,17 +88,6 @@ import Controller from './controller.class.js';
         "event": true
        },
        {
-        "id": "cert",
-        "source": "cert",
-        "maxzoom": 15.5,
-        "type": "circle",
-        "paint": {
-            "circle-radius": 6,
-            "circle-color": "#068A24"
-        },
-        "event": true
-       },
-       {
         "id": "occupied",
         "source": "occupied",
         "maxzoom": 15.5,
@@ -105,6 +95,17 @@ import Controller from './controller.class.js';
         "paint": {
             "circle-radius": 6,
             "circle-color": "#ff932d"
+        },
+        "event": true
+       },
+       {
+        "id": "cert",
+        "source": "cert",
+        "maxzoom": 15.5,
+        "type": "circle",
+        "paint": {
+            "circle-radius": 6,
+            "circle-color": "#068A24"
         },
         "event": true
        },
@@ -122,19 +123,6 @@ import Controller from './controller.class.js';
         "event": false
        },
        {
-        "id": "cert-parcels",
-        "type": "fill",
-        "source": "parcels",
-        "minzoom": 15.5,
-        'source-layer': 'parcelsgeojson',
-        'filter': ["in","parcelno"],
-        "paint": {
-          "fill-color":"#068A24",
-          "fill-opacity":1
-        },
-        "event": false
-       },
-       {
         "id": "occup-parcels",
         "type": "fill",
         "source": "parcels",
@@ -143,6 +131,19 @@ import Controller from './controller.class.js';
         'filter': ["in","parcelno"],
         "paint": {
           "fill-color":"#ff932d",
+          "fill-opacity":1
+        },
+        "event": false
+       },
+       {
+        "id": "cert-parcels",
+        "type": "fill",
+        "source": "parcels",
+        "minzoom": 15.5,
+        'source-layer': 'parcelsgeojson',
+        'filter': ["in","parcelno"],
+        "paint": {
+          "fill-color":"#068A24",
           "fill-opacity":1
         },
         "event": false
@@ -162,8 +163,8 @@ import Controller from './controller.class.js';
       }
     ]
   },
-  ['48215','48224','48223'],
-  ['48215']);
+  ['48215','48224','48223','48219'],
+  ['48215','48224']);
   let closeInfo = function closeInfo() {
     //console.log('closing');
     (document.querySelector('#info').className === 'active') ? document.querySelector('#info').className = '' : document.querySelector('#info').className = 'active';

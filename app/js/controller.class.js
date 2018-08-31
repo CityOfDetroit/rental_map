@@ -15,37 +15,39 @@ export default class Controller {
       cert: null,
       occupied: null
     };
-    this.activeRentalParcels = ["in","parcelno"];
+    this.activeRentalParcels = ["in", "parcelno"];
     this.activeCertParcels = ["in", "parcelno"];
     this.activeOccupParcels = ["in", "parcelno"];
     this.defaultSettings = {
       zipcodes: zipcodes,
       escrows: escrows,
-      activeLayers: ['parcel-fill','rental','cert','occupied']
+      activeLayers: ['parcel-fill', 'rental', 'cert', 'occupied']
     };
     this.panel = new Panel();
     this.dataManager = new DataManager();
     this.map = new Map(map, this);
     this.initialLoad(this);
   }
-  initialLoad(controller){
+
+  initialLoad(controller) {
+
     document.getElementById('initial-loader-overlay').className = 'active';
     let queryStr = '';
-    controller.defaultSettings.zipcodes.forEach(function(zip,index){
-      queryStr +=  `%27${zip}%27${index < controller.defaultSettings.zipcodes.length - 1 ? `,` : ''}`;
+    controller.defaultSettings.zipcodes.forEach(function (zip, index) {
+      queryStr += `%27${zip}%27${index < controller.defaultSettings.zipcodes.length - 1 ? `,` : ''}`;
     });
     let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/MetroZipCodes/MapServer/0/query?where=ZCTA5CE10+in+%28${queryStr}%29&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
     fetch(url)
-    .then((resp) => resp.json()) // Transform the data into json
-    .then(function(data) {
-      controller.activeAreas = data;
-      controller.defaultSettings.startDate = '2017-12-31';
-      controller.dataManager.buildData('initial', controller);
-    });
+      .then((resp) => resp.json()) // Transform the data into json
+      .then(function (data) {
+        controller.activeAreas = data;
+        controller.defaultSettings.startDate = '2017-12-31';
+        controller.dataManager.buildData('initial', controller);
+      });
   }
-  createZipcodesLayers(controller){
+  createZipcodesLayers(controller) {
     let sources = [{
-      "id":  "zip-borders",
+      "id": "zip-borders",
       "type": "geojson",
       "data": controller.activeAreas
     }];
@@ -70,20 +72,20 @@ export default class Controller {
       var tempPolygon = turf.polygon([controller.activeAreas.features[i].geometry.coordinates[0]]);
       var tempCenter = turf.centroid(tempPolygon);
       var tempFeature = {
-          "type": "Feature",
-          "geometry": {
-              "type": "Point",
-              "coordinates": tempCenter.geometry.coordinates
-          },
-          "properties":{
-            "name": controller.activeAreas.features[i].properties.ZCTA5CE10
-          }
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": tempCenter.geometry.coordinates
+        },
+        "properties": {
+          "name": controller.activeAreas.features[i].properties.ZCTA5CE10
+        }
       };
       zipLabes.features.push(tempFeature);
     }
     // console.log(zipLabes);
     let zipLabesSource = [{
-      "id":  "zip-codes-labels",
+      "id": "zip-codes-labels",
       "type": "geojson",
       "data": zipLabes
     }];
@@ -104,68 +106,71 @@ export default class Controller {
     }];
     controller.map.addLayers(zipLabelsLayers, controller);
   }
-  
-  createRentalsLayer(controller){
-    console.log(controller.dataManager.initialDataBank);
+
+  createRentalsLayer(controller) {
+    // console.log(controller.dataManager.initialDataBank);
     let tempNewLayers = [];
     for (var zip in controller.dataManager.initialDataBank.rentals) {
       if (controller.dataManager.initialDataBank.rentals.hasOwnProperty(zip)) {
-        console.log(zip);
-        if(!controller.activeFilter.includes(zip)){
+        // console.log(zip);
+        if (!controller.activeFilter.includes(zip)) {
           controller.activeFilter.push(zip);
-          controller.dataManager.initialDataBank.rentals[zip].features.forEach(function(parcel){
+          controller.dataManager.initialDataBank.rentals[zip].features.forEach(function (parcel) {
             controller.activeRentalParcels.push(parcel.properties.parcelnum);
           });
-          if(controller.defaultSettings.escrows.includes(zip)){
-            controller.dataManager.initialDataBank.certificates[zip].features.forEach(function(parcel){
-              if(parcel.properties.parcelnum){
+          if (controller.defaultSettings.escrows.includes(zip)) {
+            controller.dataManager.initialDataBank.certificates[zip].features.forEach(function (parcel) {
+              if (parcel.properties.parcelnum) {
                 controller.activeCertParcels.push(parcel.properties.parcelnum);
-              }else{
+              } else {
                 controller.activeCertParcels.push(parcel.properties.parcel_no);
               }
             });
-            controller.dataManager.initialDataBank.occupancy[zip].features.forEach(function(parcel){
+            controller.dataManager.initialDataBank.occupancy[zip].features.forEach(function (parcel) {
               controller.activeOccupParcels.push(parcel.properties.parcel_no);
             });
           }
-          if(controller.userSources.rental == null){
+          if (controller.userSources.rental == null) {
             controller.userSources.rental = controller.dataManager.initialDataBank.rentals[zip];
-          }else{
+          } else {
             controller.userSources.rental.features = controller.userSources.rental.features.concat(controller.dataManager.initialDataBank.rentals[zip].features);
           }
-          if(controller.userSources.cert == null){
-            if(controller.defaultSettings.escrows.includes(zip))
-            controller.userSources.cert = controller.dataManager.initialDataBank.certificates[zip];
-          }else{
-            if(controller.defaultSettings.escrows.includes(zip))
-            controller.userSources.cert.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.certificates[zip].features);
+          if (controller.userSources.cert == null) {
+            if (controller.defaultSettings.escrows.includes(zip))
+              controller.userSources.cert = controller.dataManager.initialDataBank.certificates[zip];
+          } else {
+            if (controller.defaultSettings.escrows.includes(zip))
+              controller.userSources.cert.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.certificates[zip].features);
           }
-          if(controller.userSources.occupied == null){
-            if(controller.defaultSettings.escrows.includes(zip))
-            controller.userSources.occupied = controller.dataManager.initialDataBank.occupancy[zip];
-          }else{
-            if(controller.defaultSettings.escrows.includes(zip))
-            controller.userSources.occupied.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.occupancy[zip].features);
+          if (controller.userSources.occupied == null) {
+            if (controller.defaultSettings.escrows.includes(zip))
+              controller.userSources.occupied = controller.dataManager.initialDataBank.occupancy[zip];
+          } else {
+            if (controller.defaultSettings.escrows.includes(zip))
+              controller.userSources.occupied.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.occupancy[zip].features);
           }
         }
       }
+      // console.log(controller.userSources.cert);
+      // console.log(controller.userSources.occupied);
       controller.map.map.getSource('rental').setData(controller.userSources.rental);
-      controller.map.map.getSource('cert').setData(controller.userSources.cert);
       controller.map.map.getSource('occupied').setData(controller.userSources.occupied);
+      controller.map.map.getSource('cert').setData(controller.userSources.cert);
+      
     }
     controller.map.map.setFilter('rental-parcels', controller.activeRentalParcels);
     controller.map.map.setFilter('cert-parcels', controller.activeCertParcels);
     controller.map.map.setFilter('occup-parcels', controller.activeOccupParcels);
-    
+
     controller.map.addLayers(tempNewLayers, controller);
     controller.createZipcodesLayers(controller);
     document.getElementById('initial-loader-overlay').className = '';
   }
 
-  checkLayerType(ev, layerID, layer, controller){
+  checkLayerType(ev, layerID, layer, controller) {
     // console.log(ev);
-    console.log(layerID);
-    console.log(layer);
+    // console.log(layerID);
+    // console.log(layer);
     controller.panel.clearPanel();
     switch (layer.layer.id) {
       case 'parcel-fill':
@@ -174,52 +179,75 @@ export default class Controller {
         let url = `
         https://gis.detroitmi.gov/arcgis/rest/services/DoIT/MetroZipCodes/MapServer/0/query?where=&text=&objectIds=&time=&geometry=${ev.lngLat.lng}%2C+${ev.lngLat.lat}%0D%0A&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=ZCTA5CE10&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=json`;
         fetch(url)
-        .then((resp) => resp.json()) // Transform the data into json
-        .then(function(data) {
-          // console.log(data);
-          if(controller.defaultSettings.zipcodes.includes(data.features[0].attributes.ZCTA5CE10)){
-            controller.dataManager.buildTempData('parcel', {active: true, data: layer}, controller);
-          }else {
-            controller.dataManager.buildTempData('parcel', {active: false, data: layer}, controller);
-          }
-        });
+          .then((resp) => resp.json()) // Transform the data into json
+          .then(function (data) {
+            // console.log(data);
+            if (controller.defaultSettings.zipcodes.includes(data.features[0].attributes.ZCTA5CE10)) {
+              controller.dataManager.buildTempData('parcel', {
+                active: true,
+                data: layer
+              }, controller);
+            } else {
+              controller.dataManager.buildTempData('parcel', {
+                active: false,
+                data: layer
+              }, controller);
+            }
+          });
         break;
       case 'rental-parcels':
-        controller.dataManager.buildTempData('rental-parcel', {active: true, data: layer}, controller);
+        controller.dataManager.buildTempData('rental-parcel', {
+          active: true,
+          data: layer
+        }, controller);
         break;
       default:
         // console.log('rental');
         // console.log(layer);
-        if(layer.properties.parcelnum != undefined){
+        if (layer.properties.parcelnum != undefined) {
           controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelnum]);
-          controller.dataManager.buildTempData('parcel', {active: true, data: {properties:{parcelno: layer.properties.parcelnum}}}, controller);
+          controller.dataManager.buildTempData('parcel', {
+            active: true,
+            data: {
+              properties: {
+                parcelno: layer.properties.parcelnum
+              }
+            }
+          }, controller);
         }
-        if(layer.properties.parcel_no != undefined){
+        if (layer.properties.parcel_no != undefined) {
           controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcel_no]);
-          controller.dataManager.buildTempData('parcel', {active: true, data: {properties:{parcelno: layer.properties.parcel_no}}}, controller);
+          controller.dataManager.buildTempData('parcel', {
+            active: true,
+            data: {
+              properties: {
+                parcelno: layer.properties.parcel_no
+              }
+            }
+          }, controller);
         }
     }
     controller.map.map.flyTo({
-        // These options control the ending camera position: centered at
-        // the target, at zoom level 9, and north up.
-        center: [ev.lngLat.lng, ev.lngLat.lat],
-        zoom: 16.5,
-        bearing: 0,
+      // These options control the ending camera position: centered at
+      // the target, at zoom level 9, and north up.
+      center: [ev.lngLat.lng, ev.lngLat.lat],
+      zoom: 16.5,
+      bearing: 0,
 
-        // These options control the flight curve, making it move
-        // slowly and zoom out almost completely before starting
-        // to pan.
-        speed: 2, // make the flying slow
-        curve: 1, // change the speed at which it zooms out
+      // These options control the flight curve, making it move
+      // slowly and zoom out almost completely before starting
+      // to pan.
+      speed: 2, // make the flying slow
+      curve: 1, // change the speed at which it zooms out
 
-        // This can be any easing function: it takes a number between
-        // 0 and 1 and returns another number between 0 and 1.
-        easing: function (t) {
-            return t;
-        }
+      // This can be any easing function: it takes a number between
+      // 0 and 1 and returns another number between 0 and 1.
+      easing: function (t) {
+        return t;
+      }
     });
   }
-  switchParcelDataViews(e, controller){
+  switchParcelDataViews(e, controller) {
     // console.log(e);
     switch (e.target.attributes[1].value) {
       case 'owner':
@@ -235,7 +263,7 @@ export default class Controller {
       case 'building':
         var tempBuldingData = '';
         tempBuldingData += '<article class="info-items"><span>PARCEL NUMBER</span> ' + controller.parcelData.pnum + '</article>';
-        if(controller.parcelData.resb_calcvalue !== 0){
+        if (controller.parcelData.resb_calcvalue !== 0) {
           tempBuldingData += '<article class="info-items"><span>BASEMENT AREA</span> ' + controller.parcelData.resb_basementarea + '</article>';
           tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.resb_bldgclass + '</article>';
           tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.resb_calcvalue).toLocaleString() + '</article>';
@@ -248,7 +276,7 @@ export default class Controller {
           tempBuldingData += '<article class="info-items"><span>HALF BATHS</span> ' + controller.parcelData.resb_halfbaths + '</article>';
           tempBuldingData += '<article class="info-items"><span>NUMBER OF BEDROOMS</span> ' + controller.parcelData.resb_nbed + '</article>';
           tempBuldingData += '<article class="info-items"><span>YEAR BUILD</span> ' + controller.parcelData.resb_yearbuilt + '</article>';
-        }else{
+        } else {
           tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.cib_bldgclass + '</article>';
           tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.cib_calcvalue).toLocaleString() + '</article>';
           tempBuldingData += '<article class="info-items"><span>FLOOR AREA</span> ' + controller.parcelData.cib_floorarea.toLocaleString() + '</article>';
@@ -264,7 +292,7 @@ export default class Controller {
 
     }
   }
-  loadSuggestedAddr(e, controller){
+  loadSuggestedAddr(e, controller) {
     // console.log(e);
     let tempArr = e.target.innerHTML.split(' ');
     let addr = '';
@@ -273,69 +301,87 @@ export default class Controller {
       ((i < tempArr.length) && (i + 1) !== tempArr.length) ? addr += '+': 0;
     }
     // console.log(addr);
-    let ev = {'result':{'geometry':{'coordinates':[e.target.attributes[1], e.target.attributes[2]]},'place_name': `${e.target.innerHTML},`}};
+    let ev = {
+      'result': {
+        'geometry': {
+          'coordinates': [e.target.attributes[1], e.target.attributes[2]]
+        },
+        'place_name': `${e.target.innerHTML},`
+      }
+    };
     controller.starGeocoder(ev, controller);
   }
-  starGeocoder(e, controller){
+  starGeocoder(e, controller) {
     let tempAddr = e.result.place_name.split(",");
     tempAddr = tempAddr[0];
     tempAddr = tempAddr.split(" ");
     let newTempAddr = '';
     let size = tempAddr.length;
-    tempAddr.forEach(function(item, index) {
+    tempAddr.forEach(function (item, index) {
       newTempAddr += item;
       ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
     });
     let url = "https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=" + newTempAddr + "&category=&outFields=User_fld&maxLocations=&outSR=4326&searchExtent=&location=&distance=&magicKey=&f=json";
     fetch(url)
-    .then((resp) => resp.json()) // Transform the data into json
-    .then(function(data) {
-      // console.log(data);
-      if(data.candidates.length){
-        if(data.candidates[0].attributes.User_fld != ""){
-          // console.log('parcel found');
-          controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
-          controller.dataManager.buildTempData('parcel',{data:{properties:{parcelno: data.candidates[0].attributes.User_fld}}}, controller);
-          controller.panel.clearPanel();
-        }else{
+      .then((resp) => resp.json()) // Transform the data into json
+      .then(function (data) {
+        // console.log(data);
+        if (data.candidates.length) {
+          if (data.candidates[0].attributes.User_fld != "") {
+            // console.log('parcel found');
+            controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", data.candidates[0].attributes.User_fld]);
+            controller.dataManager.buildTempData('parcel', {
+              data: {
+                properties: {
+                  parcelno: data.candidates[0].attributes.User_fld
+                }
+              }
+            }, controller);
+            controller.panel.clearPanel();
+          } else {
+            let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+${e.result.geometry.coordinates[0]}%2C%22y%22%3A+${e.result.geometry.coordinates[1]}%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=json`;
+            fetch(url)
+              .then((resp) => resp.json()) // Transform the data into json
+              .then(function (data) {
+                // console.log(data);
+                var displaySearchAddr = '';
+                var splitAddr = addr.split('+');
+                for (var i = 0; i < splitAddr.length; i++) {
+                  displaySearchAddr += splitAddr[i] + ' ';
+                }
+                document.querySelector('.info-container > .street-name').innerHTML = displaySearchAddr;
+                document.querySelector('.parcel-info.rental-info').innerHTML = '<article class="info-items"><span>SEARCH STATUS</span> NO DATA FOUND<br><br>Did you mean?<br><initial><i id="suggested-addr"  data-lng="' + e.result.geometry.coordinates[0] + '" data-lat="' + e.result.geometry.coordinates[1] + '">' + data.address.Street + '</i></initial></article>';
+
+                document.getElementById('suggested-addr').addEventListener('click', function (e) {
+                  controller.loadSuggestedAddr(e, controller);
+                });
+              });
+          }
+        } else {
+          // console.log("no parcel found");
           let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+${e.result.geometry.coordinates[0]}%2C%22y%22%3A+${e.result.geometry.coordinates[1]}%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=json`;
           fetch(url)
-          .then((resp) => resp.json()) // Transform the data into json
-          .then(function(data) {
-            // console.log(data);
-            var displaySearchAddr = '';
-            var splitAddr = addr.split('+');
-            for (var i = 0; i < splitAddr.length; i++) {
-              displaySearchAddr += splitAddr[i] + ' ';
-            }
-            document.querySelector('.info-container > .street-name').innerHTML = displaySearchAddr;
-            document.querySelector('.parcel-info.rental-info').innerHTML = '<article class="info-items"><span>SEARCH STATUS</span> NO DATA FOUND<br><br>Did you mean?<br><initial><i id="suggested-addr"  data-lng="'+e.result.geometry.coordinates[0]+'" data-lat="'+e.result.geometry.coordinates[1]+'">'+ data.address.Street +'</i></initial></article>';
-
-            document.getElementById('suggested-addr').addEventListener('click', function(e){
-              controller.loadSuggestedAddr(e, controller);
+            .then((resp) => resp.json()) // Transform the data into json
+            .then(function (data) {
+              let displaySearchAddr = '';
+              let splitAddr = newTempAddr.split('+');
+              for (let i = 0; i < splitAddr.length; i++) {
+                displaySearchAddr += splitAddr[i] + ' ';
+              }
+              controller.panel.suggestedAddress({
+                old: displaySearchAddr,
+                lng: e.result.geometry.coordinates[0],
+                lat: e.result.geometry.coordinates[1],
+                new: data.address.Street
+              }, controller);
             });
-          });
         }
-      }else{
-        // console.log("no parcel found");
-        let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/reverseGeocode?location=%7B%22x%22%3A+${e.result.geometry.coordinates[0]}%2C%22y%22%3A+${e.result.geometry.coordinates[1]}%2C%22spatialReference%22%3A+%7B%22wkid%22%3A+4326%7D%7D&distance=&langCode=&outSR=4326&returnIntersection=false&f=json`;
-        fetch(url)
-        .then((resp) => resp.json()) // Transform the data into json
-        .then(function(data) {
-          let displaySearchAddr = '';
-          let splitAddr = newTempAddr.split('+');
-          for (let i = 0; i < splitAddr.length; i++) {
-            displaySearchAddr += splitAddr[i] + ' ';
-          }
-          controller.panel.suggestedAddress({old: displaySearchAddr, lng: e.result.geometry.coordinates[0], lat: e.result.geometry.coordinates[1], new: data.address.Street}, controller);
-        });
-      }
-    });
+      });
   }
-  geocoderResults(e, controller){
+  geocoderResults(e, controller) {
     controller.starGeocoder(e, controller);
   }
-  closeAlert(ev){
+  closeAlert(ev) {
     (ev.target.parentNode.parentNode.id === 'alert-overlay') ? document.getElementById('alert-overlay').className = '': document.getElementById('drill-down-overlay').className = '';
   }
 }

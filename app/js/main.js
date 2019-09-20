@@ -64,40 +64,53 @@ import Controller from './controller.class.js';
           'source-layer': 'parcelsgeojson',
           "event": true
        },
-       {
-          "id": "parcel-line",
-          "type": "line",
-          "source": "parcels",
-          "minzoom": 15.5,
-          "layout": {
-          },
-          "paint": {
-               "line-color":"#cbcbcb",
-          },
-          'source-layer': 'parcelsgeojson'
-       },
-       {
-        "id": "rental",
-        "source": "rental",
-        "maxzoom": 15.5,
-        "type": "circle",
-        "paint": {
-            "circle-radius": 6,
-            "circle-color": "#194ed7"
+         {
+           "id": "Residential_Inspections_(combined)_0",
+           "type": "circle",
+           "source": "parcels",
+           "minzoom": 15.5,
+           "layout": {
+           },
+           "paint": {
+                "line-color":"#cbcbcb",
+           },
+           'source-layer': 'parcelsgeojson'
         },
-        "event": true
-       },
-       {
-        "id": "occupied",
-        "source": "occupied",
-        "maxzoom": 15.5,
-        "type": "circle",
-        "paint": {
-            "circle-radius": 6,
-            "circle-color": "#ff932d"
-        },
-        "event": true
-       },
+
+       // {
+       //    "id": "parcel-line",
+       //    "type": "line",
+       //    "source": "parcels",
+       //    "minzoom": 15.5,
+       //    "layout": {
+       //    },
+       //    "paint": {
+       //         "line-color":"#cbcbcb",
+       //    },
+       //    'source-layer': 'parcelsgeojson'
+       // },
+       // {
+       //  "id": "rental",
+       //  "source": "rental",
+       //  "maxzoom": 15.5,
+       //  "type": "circle",
+       //  "paint": {k
+       //      "circle-radius": 6,
+       //      "circle-color": "#194ed7"
+       //  },
+       //  "event": true
+       // },
+       // {
+       //  "id": "occupied",
+       //  "source": "occupied",
+       //  "maxzoom": 15.5,
+       //  "type": "circle",
+       //  "paint": {
+       //      "circle-radius": 6,
+       //      "circle-color": "#ff932d"
+       //  },
+       //  "event": true
+       // },
        {
         "id": "cert",
         "source": "cert",

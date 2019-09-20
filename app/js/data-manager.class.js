@@ -48,7 +48,7 @@ export default class DataManager {
         return fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          // console.log(zip);
+           console.log(zip);
           resolve({"id": zip.properties.GEOID10, "type": "occupancy", "data": data});
         });
       });

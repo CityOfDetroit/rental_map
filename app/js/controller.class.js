@@ -116,7 +116,11 @@ export default class Controller {
         if (!controller.activeFilter.includes(zip)) {
           controller.activeFilter.push(zip);
           controller.dataManager.initialDataBank.rentals[zip].features.forEach(function (parcel) {
-            controller.activeRentalParcels.push(parcel.properties.parcelnum);
+            //changes v1 : changed from parcelnum to parcel_number
+
+            if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
+                  controller.activeRentalParcels.push(parcel.properties.parcel_number);
+
           });
           if (controller.defaultSettings.escrows.includes(zip)) {
             controller.dataManager.initialDataBank.certificates[zip].features.forEach(function (parcel) {

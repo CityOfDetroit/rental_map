@@ -21,19 +21,33 @@ export default class DataManager {
     (type === 'initial') ? controller.dataManager.buildInitialData(controller) : controller.dataManager.buildTempData(location, controller);
   }
   buildInitialData(controller){
+    let queryStr = '';
+    let numberofzipcodes = controller.defaultSettings.zipcodes.length;
+    controller.defaultSettings.zipcodes.forEach(function(zip,index){
+      switch(index){
+        case numberofzipcodes-1:queryStr +=zip;
+        break;
+        default:queryStr +=zip+",";
+      }
+    });
     // NOTE: Fetching initial data
     // console.log(controller.activeAreas);
     controller.activeAreas.features.forEach(function(zip, index){
       let socrataPolygon = WKT.convert(zip.geometry);
+      //console.log(socrataPolygon)
       let registrations = new Promise((resolve, reject) => {
-        let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
+        //let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
+        let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Residential_Inspections_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})`;
+        //console.log(url)
         return fetch(url)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          // console.log(zip);
+          console.log(data);
           resolve({"id": zip.properties.GEOID10, "type": "rentals", "data": data});
         });
+
       });
+
       let certificates = new Promise((resolve, reject) => {
         let url = `https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
         return fetch(url)
@@ -67,7 +81,7 @@ export default class DataManager {
           values[0].data.features.forEach(function(value){
             let test = false;
             values[1].data.features.forEach(function(item){
-              (item.properties.parcelnum === value.properties.parcelnum) ? test = true : 0;
+              (item.properties.parcelnum === value.properties.parcel_number) ? test = true : 0;
             });
             // console.log(test);
             if(!test){
@@ -81,7 +95,7 @@ export default class DataManager {
           values[2].data.features.forEach(function(value){
             let test = false;
             values[0].data.features.forEach(function(item){
-              (item.properties.parcelnum === value.properties.parcel_no) ? test = true : 0;
+              (item.properties.parcel_number === value.properties.parcel_no) ? test = true : 0;
             });
             // console.log(test);
             if(!test){

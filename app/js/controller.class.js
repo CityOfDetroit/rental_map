@@ -15,9 +15,9 @@ export default class Controller {
       cert: null,
       occupied: null
     };
-    this.activeRentalParcels = ["in", "parcelno"];
-    this.activeCertParcels = ["in", "parcelno"];
-    this.activeOccupParcels = ["in", "parcelno"];
+    this.activeRentalParcels = ["in", "parcel_number"];
+    this.activeCertParcels = ["in", "parcel_number"];
+    this.activeOccupParcels = ["in", "parcel_number"];
     this.defaultSettings = {
       zipcodes: zipcodes,
       escrows: escrows,
@@ -116,22 +116,26 @@ export default class Controller {
         if (!controller.activeFilter.includes(zip)) {
           controller.activeFilter.push(zip);
           controller.dataManager.initialDataBank.rentals[zip].features.forEach(function (parcel) {
-            //changes v1 : changed from parcelnum to parcel_number
-
-            if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
+                if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
                   controller.activeRentalParcels.push(parcel.properties.parcel_number);
-
           });
+
+
           if (controller.defaultSettings.escrows.includes(zip)) {
             controller.dataManager.initialDataBank.certificates[zip].features.forEach(function (parcel) {
-              if (parcel.properties.parcelnum) {
-                controller.activeCertParcels.push(parcel.properties.parcelnum);
-              } else {
-                controller.activeCertParcels.push(parcel.properties.parcel_no);
-              }
+                //console.log("parcel",parcel);
+              // if (parcel.properties.parcelnum) {
+              //   controller.activeCertParcels.push(parcel.properties.parcelnum);
+              // } else {
+              //   controller.activeCertParcels.push(parcel.properties.parcel_no);
+              // }
+
+              if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
+                controller.activeCertParcels.push(parcel.properties.parcel_number);
             });
             controller.dataManager.initialDataBank.occupancy[zip].features.forEach(function (parcel) {
-              controller.activeOccupParcels.push(parcel.properties.parcel_no);
+              if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
+                controller.activeOccupParcels.push(parcel.properties.parcel_number);
             });
           }
           if (controller.userSources.rental == null) {
@@ -160,8 +164,9 @@ export default class Controller {
       controller.map.map.getSource('rental').setData(controller.userSources.rental);
       controller.map.map.getSource('occupied').setData(controller.userSources.occupied);
       controller.map.map.getSource('cert').setData(controller.userSources.cert);
-      
+
     }
+
     controller.map.map.setFilter('rental-parcels', controller.activeRentalParcels);
     controller.map.map.setFilter('cert-parcels', controller.activeCertParcels);
     controller.map.map.setFilter('occup-parcels', controller.activeOccupParcels);
@@ -207,29 +212,40 @@ export default class Controller {
         break;
       default:
         // console.log('rental');
-        // console.log(layer);
-        if (layer.properties.parcelnum != undefined) {
-          controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelnum]);
+        //console.log(layer);
+        if (layer.properties.parcel_number != undefined) {
+          controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcel_number]);
           controller.dataManager.buildTempData('parcel', {
             active: true,
             data: {
               properties: {
-                parcelno: layer.properties.parcelnum
+                parcelno: layer.properties.parcel_number
               }
             }
           }, controller);
         }
-        if (layer.properties.parcel_no != undefined) {
-          controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcel_no]);
-          controller.dataManager.buildTempData('parcel', {
-            active: true,
-            data: {
-              properties: {
-                parcelno: layer.properties.parcel_no
-              }
-            }
-          }, controller);
-        }
+        // if (layer.properties.parcelnum != undefined) {
+        //   controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcelnum]);
+        //   controller.dataManager.buildTempData('parcel', {
+        //     active: true,
+        //     data: {
+        //       properties: {
+        //         parcelno: layer.properties.parcelnum
+        //       }
+        //     }
+        //   }, controller);
+        // }
+        // if (layer.properties.parcel_no != undefined) {
+        //   controller.map.map.setFilter("parcel-fill-selected", ["==", "parcelno", layer.properties.parcel_no]);
+        //   controller.dataManager.buildTempData('parcel', {
+        //     active: true,
+        //     data: {
+        //       properties: {
+        //         parcelno: layer.properties.parcel_no
+        //       }
+        //     }
+        //   }, controller);
+        // }
     }
     controller.map.map.flyTo({
       // These options control the ending camera position: centered at

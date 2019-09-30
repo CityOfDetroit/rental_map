@@ -21,6 +21,8 @@ export default class DataManager {
     (type === 'initial') ? controller.dataManager.buildInitialData(controller) : controller.dataManager.buildTempData(location, controller);
   }
   buildInitialData(controller){
+    // NOTE: Fetching initial data
+    // console.log(controller.activeAreas);
     let queryStr = '';
     let numberofzipcodes = controller.defaultSettings.zipcodes.length;
     controller.defaultSettings.zipcodes.forEach(function(zip,index){
@@ -30,44 +32,46 @@ export default class DataManager {
         default:queryStr +=zip+",";
       }
     });
-    // NOTE: Fetching initial data
-    // console.log(controller.activeAreas);
+    //console.log(queryStr);
     controller.activeAreas.features.forEach(function(zip, index){
       let socrataPolygon = WKT.convert(zip.geometry);
       //console.log(socrataPolygon)
       let registrations = new Promise((resolve, reject) => {
         //let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
-        let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Residential_Inspections_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})`;
-        //console.log(url)
-        return fetch(url)
+        let url2 = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Registrations_(Combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})`;
+        //console.log(url2)
+        return fetch(url2)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          console.log(data);
+          //console.log(data);
           resolve({"id": zip.properties.GEOID10, "type": "rentals", "data": data});
         });
 
       });
 
+      //console.log(registrations);
       let certificates = new Promise((resolve, reject) => {
-        let url = `https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
-        return fetch(url)
+        //let url = `https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
+        let url2 =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Certificate_of_Occupancy_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})`;
+        return fetch(url2)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-          // console.log(zip);
+           //console.log(data);
           resolve({"id": zip.properties.GEOID10, "type": "certificates", "data": data});
         });
       });
       let occupancy = new Promise((resolve, reject) => {
-        let url = `https://data.detroitmi.gov/resource/4tq8-6eaw.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcel_no IS NOT NULL AND  bld_type_use_calculated='Residential'`;
-        return fetch(url)
+        //let url = `https://data.detroitmi.gov/resource/4tq8-6eaw.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcel_no IS NOT NULL AND  bld_type_use_calculated='Residential'`;
+        let url2 =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Residential_Inspections_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})`;
+        return fetch(url2)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
-           console.log(zip);
+           //console.log(zip);
           resolve({"id": zip.properties.GEOID10, "type": "occupancy", "data": data});
         });
       });
       Promise.all([registrations, certificates, occupancy]).then(values => {
-        // console.log(values);
+        //console.log(values);
           let rentals = {
             "type": "FeatureCollection",
             "features": []
@@ -81,7 +85,7 @@ export default class DataManager {
           values[0].data.features.forEach(function(value){
             let test = false;
             values[1].data.features.forEach(function(item){
-              (item.properties.parcelnum === value.properties.parcel_number) ? test = true : 0;
+              (item.properties.parcel_number === value.properties.parcel_number) ? test = true : 0;
             });
             // console.log(test);
             if(!test){
@@ -95,7 +99,7 @@ export default class DataManager {
           values[2].data.features.forEach(function(value){
             let test = false;
             values[0].data.features.forEach(function(item){
-              (item.properties.parcel_number === value.properties.parcel_no) ? test = true : 0;
+              (item.properties.parcel_number === value.properties.parcel_number) ? test = true : 0;
             });
             // console.log(test);
             if(!test){
@@ -113,15 +117,17 @@ export default class DataManager {
           if(index == controller.activeAreas.features.length - 1){
             controller.panel.creatPanel('initial', controller);
           }
+          //console.log(controller);
           controller.createRentalsLayer(controller);
-          
+
       }).catch(reason => {
         console.log(reason);
       });
     });
   }
   buildTempData(type, location, controller){
-    // console.log(location);
+     console.log(location);
+
     let registrations = new Promise((resolve, reject) => {
       let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$where=parcelnum = '${encodeURI(location.data.properties.parcelno)}'`;
       return fetch(url)

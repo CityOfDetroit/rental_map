@@ -9,29 +9,25 @@
   "author": "Edgar Montes, Dexter Slursarski",
   "license": "ISC",
   "devDependencies": {
-    "@mapbox/mapbox-gl-draw": "^1.0.7",
-    "@turf/simplify": "^4.7.3",
-    "@turf/turf": "^5.1.6",
-    "babel-core": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-es2015": "^6.24.1",
-    "babelify": "^8.0.0",
-    "basic-authorization-header": "^0.2.7",
-    "browser-sync": "^2.23.6",
-    "browserify": "^16.2.0",
-    "gulp": "^3.9.1",
-    "gulp-sass": "^4.0.1",
+    "@mapbox/mapbox-gl-geocoder": "^4.4.2",
+    "@turf/simplify": "^5.1.5",
+    "babel-polyfill": "^6.23.0",
+    "es6-promise": "^4.2.8",
+    "geojson": "^0.5.0",
+    "img": "^3.0.3",
     "isomorphic-fetch": "^2.2.1",
-    "leaflet": "^1.3.0",
-    "mapbox-gl": "^0.41.0",
-    "mapbox-gl-geocoder": "^2.0.1",
-    "moment": "^2.20.1",
-    "terraformer-arcgis-parser": "^1.0.5",
-    "terraformer-wkt-parser": "^1.1.2",
-    "vinyl-source-stream": "^2.0.0"
+    "mapbox-gl": "^1.4.0",
+    "terraformer-arcgis-parser": "^1.1.0"
   },
   "dependencies": {
-    "envify": "^4.1.0"
+    "@mapbox/mapbox-gl-draw": "^1.1.2",
+    "@turf/turf": "^5.1.6",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "cssnano": "^4.1.10",
+    "mapbox-gl-geocoder": "^2.0.1",
+    "moment": "^2.24.0",
+    "sass": "^1.22.12",
+    "terraformer-wkt-parser": "^1.2.0"
   }
 }

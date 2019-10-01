@@ -22,7 +22,7 @@ import Controller from './js/controller.class.js';
       {
         "id": "parcels",
         "type": "vector",
-        "url": "mapbox://slusarskiddetroitmi.cwobdjn0"
+        "url": "mapbox://cityofdetroit.assessor_parcels"
       },
       {
         "id":  `rental`,
@@ -61,7 +61,7 @@ import Controller from './js/controller.class.js';
                "fill-color":"#fff",
                "fill-opacity":0
           },
-          'source-layer': 'parcelsgeojson',
+          'source-layer': 'parcel_map_mapbox',
           "event": true
        },
        {
@@ -74,7 +74,46 @@ import Controller from './js/controller.class.js';
           "paint": {
                "line-color":"#cbcbcb",
           },
-          'source-layer': 'parcelsgeojson'
+          'source-layer': 'parcel_map_mapbox'
+       },
+       {
+        "id": "rental-parcels",
+        "type": "fill",
+        "source": "parcels",
+        "minzoom": 15.5,
+        'source-layer': 'parcel_map_mapbox',
+        'filter': ["in","parcelno"],
+        "paint": {
+          "fill-color":"#194ed7",
+          "fill-opacity":1
+        },
+        "event": false
+       },
+       {
+        "id": "occup-parcels",
+        "type": "fill",
+        "source": "parcels",
+        "minzoom": 15.5,
+        'source-layer': 'parcel_map_mapbox',
+        'filter': ["in","parcelno"],
+        "paint": {
+          "fill-color":"#ff932d",
+          "fill-opacity":1
+        },
+        "event": false
+       },
+       {
+        "id": "cert-parcels",
+        "type": "fill",
+        "source": "parcels",
+        "minzoom": 15.5,
+        'source-layer': 'parcel_map_mapbox',
+        'filter': ["in","parcelno"],
+        "paint": {
+          "fill-color":"#068A24",
+          "fill-opacity":1
+        },
+        "event": false
        },
        {
         "id": "rental",
@@ -119,13 +158,13 @@ import Controller from './js/controller.class.js';
           "line-color": "#BD0019",
           "line-width": 4
         },
-        "source-layer": "parcelsgeojson",
+        "source-layer": "parcel_map_mapbox",
         "filter": ["==", "parcelno", ""]
       }
     ]
   },
-  ['48215','48224','48223','48219'],
-  ['48215','48224']);
+  ['48215','48224','48223','48219','48209','48210','48206','48214','48202','48204','48213','48238'],
+  ['48215','48224','48223','48219','48209','48210','48206','48214','48202','48204']);
   let closeInfo = function closeInfo() {
     //console.log('closing');
     (document.querySelector('#info').className === 'active') ? document.querySelector('#info').className = '' : document.querySelector('#info').className = 'active';

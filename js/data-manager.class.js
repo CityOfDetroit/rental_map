@@ -126,7 +126,7 @@ export default class DataManager {
     });
   }
   buildTempData(type, location, controller){
-     console.log(location);
+    //  console.log(location);
 
     let registrations = new Promise((resolve, reject) => {
       let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Registrations_(Combined)/FeatureServer/0/query?where=parcel_number+%3D+%27${encodeURI(location.data.properties.parcelno)}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
@@ -178,7 +178,7 @@ export default class DataManager {
     switch (type) {
       case 'parcel':
         Promise.all([registrations, certified, assessors, occupancy]).then(values => {
-          console.log(values);
+          // console.log(values);
           let occupied = false;
           let certified = false;
           let tempData = {
@@ -191,7 +191,7 @@ export default class DataManager {
             tempData.register = true;
             tempData.registrationDate = moment(values[0].data.features[0].properties.csa_date3).format('MMM Do,YYYY');
           }
-          if(values[1].data.length){
+          if(values[1].data.features.length){
             certified = true;
           }
           if(values[3].data.features.length){
@@ -214,9 +214,9 @@ export default class DataManager {
           controller.parcelData = values[2].data;
           if(values[0].data.features.length){
             tempData.register = true;
-            tempData.registrationDate = moment(values[0].data.features[0].properties.csa_date3).format('MMM Do,YYYY');
+            tempData.registrationDate = moment(values[0].data.features[0].properties.date).format('MMM Do,YYYY');
           }
-          if(values[1].data.length){
+          if(values[1].data.features.length){
             certified = true;
           }
           controller.panel.creatPanel('parcel', controller, tempData, location.active, certified);
@@ -236,9 +236,9 @@ export default class DataManager {
           controller.parcelData = values[2].data;
           if(values[0].data.features.length){
             tempData.register = true;
-            tempData.registrationDate = moment(values[0].data.features[0].properties.csa_date3).format('MMM Do,YYYY');
+            tempData.registrationDate = moment(values[0].data.features[0].properties.date).format('MMM Do,YYYY');
           }
-          if(values[1].data.length){
+          if(values[1].data.features.length){
             certified = true;
           }
           controller.panel.creatPanel('parcel', controller, tempData, location.active, certified);

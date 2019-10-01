@@ -40,7 +40,7 @@ export default class Panel {
     document.querySelector('#info').className = 'active';
   }
   createMarkup(type, controller, data, active, certified, occupied){
-    console.log(data);
+    // console.log(data);
     let tempHTML = null;
     switch (type) {
       case 'rental':

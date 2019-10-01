@@ -108,7 +108,7 @@ export default class Controller {
   }
 
   createRentalsLayer(controller) {
-    console.log(controller.dataManager.initialDataBank);
+    // console.log(controller.dataManager.initialDataBank);
     let tempNewLayers = [];
     for (var zip in controller.dataManager.initialDataBank.rentals) {
       if (controller.dataManager.initialDataBank.rentals.hasOwnProperty(zip)) {
@@ -150,7 +150,6 @@ export default class Controller {
           }
         }
       }
-      console.log(controller);
       // console.log(controller.userSources.cert);
       // console.log(controller.userSources.occupied);
       controller.map.map.getSource('rental').setData(controller.userSources.rental);
@@ -265,7 +264,6 @@ export default class Controller {
       case 'owner':
         var tempOwnerData = '';
         tempOwnerData += '<article class="info-items"><span>OWNER CITY</span> ' + controller.parcelData.ownercity + '</article>';
-        tempOwnerData += '<article class="info-items"><span>OWNER NAME</span> ' + controller.parcelData.ownername1 + '</article>';
         tempOwnerData += '<article class="info-items"><span>OWNER STATE</span> ' + controller.parcelData.ownerstate + '</article>';
         tempOwnerData += '<article class="info-items"><span>OWNER ADDRESS</span> ' + controller.parcelData.ownerstreetaddr + '</article>';
         tempOwnerData += '<article class="info-items"><span>OWNER ZIP</span> ' + controller.parcelData.ownerzip + '</article>';
@@ -275,18 +273,10 @@ export default class Controller {
       case 'building':
         var tempBuldingData = '';
         tempBuldingData += '<article class="info-items"><span>PARCEL NUMBER</span> ' + controller.parcelData.pnum + '</article>';
-        if (controller.parcelData.resb_calcvalue !== 0) {
-          tempBuldingData += '<article class="info-items"><span>BASEMENT AREA</span> ' + controller.parcelData.resb_basementarea + '</article>';
+        if (controller.parcelData.resb_value !== 0) {
           tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.resb_bldgclass + '</article>';
-          tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.resb_calcvalue).toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>EXTERIOR</span> ' + controller.parcelData.resb_exterior + '</article>';
-          tempBuldingData += '<article class="info-items"><span>NUMBER OF FIREPLACES</span> ' + controller.parcelData.resb_fireplaces + '</article>';
+          tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.resb_value).toLocaleString() + '</article>';
           tempBuldingData += '<article class="info-items"><span>FLOOR AREA</span> ' + controller.parcelData.resb_floorarea.toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>GARAGE AREA</span> ' + controller.parcelData.resb_garagearea.toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>GARAGE TYPE</span> ' + controller.parcelData.resb_gartype + '</article>';
-          tempBuldingData += '<article class="info-items"><span>GROUND AREA</span> ' + controller.parcelData.resb_groundarea.toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>HALF BATHS</span> ' + controller.parcelData.resb_halfbaths + '</article>';
-          tempBuldingData += '<article class="info-items"><span>NUMBER OF BEDROOMS</span> ' + controller.parcelData.resb_nbed + '</article>';
           tempBuldingData += '<article class="info-items"><span>YEAR BUILD</span> ' + controller.parcelData.resb_yearbuilt + '</article>';
         } else {
           tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.cib_bldgclass + '</article>';

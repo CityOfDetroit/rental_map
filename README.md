@@ -27,4 +27,4 @@ This project was created using:
 ## Resources
 
 * SLACK - #webteam
-* GitHub - https://github.com/CityOfDetroit/hydrant-dashboard
+* GitHub - https://github.com/CityOfDetroit/rental_map

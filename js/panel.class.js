@@ -12,7 +12,7 @@ export default class Panel {
       case 'initial':
         document.querySelector('.info-container .info').innerHTML = `Welcome to the Detroit Rental Dashboard. Please use this tool
         look up the status of a rental property. For more information, please
-        visit the <a href="https://data.detroitmi.gov/resource/vphr-kg52" target="_blank">Detroit Open Data Portal</a>.`;
+        visit the <a href="https://data.detroitmi.gov/datasets/rental-registrations" target="_blank">Detroit Open Data Portal</a>.`;
         document.querySelector('.info-container > .rental').innerHTML = ``;
         break;
       case 'district':

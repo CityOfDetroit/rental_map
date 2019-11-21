@@ -96,7 +96,7 @@ export default class Panel {
 
         document.querySelector('.parcel-data.building').innerHTML = '<div class="data-view-btn" data-view="building">PROPERTY INFORMATION <span>&#10095;</span></div>';
 
-        document.querySelector('.street-name').innerText = controller.parcelData.propstreetcombined;
+        document.querySelector('.street-name').innerText = controller.parcelData.propaddr;
         break;
       case 'parcel':
         // console.log('parcel');
@@ -158,7 +158,7 @@ export default class Panel {
 
         document.querySelector('.parcel-data.building').innerHTML = '<div class="data-view-btn" data-view="building">PROPERTY INFORMATION <span>&#10095;</span></div>';
 
-        document.querySelector('.street-name').innerText = controller.parcelData.propstreetcombined;
+        document.querySelector('.street-name').innerText = controller.parcelData.propaddr;
         break;
       default:
 

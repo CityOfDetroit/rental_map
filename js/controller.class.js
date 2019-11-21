@@ -2,9 +2,7 @@
 import Map from './map.class.js';
 import Panel from './panel.class.js';
 import DataManager from './data-manager.class.js';
-import mapboxgl from 'mapbox-gl';
 const turf = require('@turf/turf');
-const moment = require('moment');
 export default class Controller {
   constructor(map, zipcodes, escrows) {
     this.parcelData = null;
@@ -15,9 +13,9 @@ export default class Controller {
       cert: null,
       occupied: null
     };
-    this.activeRentalParcels = ["in", "parcel_number"];
-    this.activeCertParcels = ["in", "parcel_number"];
-    this.activeOccupParcels = ["in", "parcel_number"];
+    this.activeRentalParcels = ["in", "parcelno"];
+    this.activeCertParcels = ["in", "parcelno"];
+    this.activeOccupParcels = ["in", "parcelno"];
     this.defaultSettings = {
       zipcodes: zipcodes,
       escrows: escrows,
@@ -345,7 +343,7 @@ export default class Controller {
             fetch(url)
               .then((resp) => resp.json()) // Transform the data into json
               .then(function (data) {
-                // console.log(data);
+                console.log(data);
                 var displaySearchAddr = '';
                 var splitAddr = addr.split('+');
                 for (var i = 0; i < splitAddr.length; i++) {

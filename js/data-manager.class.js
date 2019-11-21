@@ -1,8 +1,5 @@
 'use strict';
 const moment = require('moment');
-const turf = require('@turf/turf');
-const arcGIS = require('terraformer-arcgis-parser');
-const WKT = require('terraformer-wkt-parser');
 export default class DataManager {
   constructor() {
     // NOTE: rental data
@@ -34,12 +31,8 @@ export default class DataManager {
     });
     //console.log(queryStr);
     controller.activeAreas.features.forEach(function(zip, index){
-      let socrataPolygon = WKT.convert(zip.geometry);
-      //console.log(socrataPolygon)
       let registrations = new Promise((resolve, reject) => {
-        //let url = `https://data.detroitmi.gov/resource/vphr-kg52.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
         let url2 = ` https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Registrations_(Combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})&resultRecordCount=300000`;
-        //console.log(url2)
         return fetch(url2)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
@@ -51,7 +44,6 @@ export default class DataManager {
 
       //console.log(registrations);
       let certificates = new Promise((resolve, reject) => {
-        //let url = `https://data.detroitmi.gov/resource/baxk-dxw9.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcelnum IS NOT NULL`;
         let url2 =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Residential_Inspections_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=result+%3D+%27OK%27+and+parcel_number+<>+null+and+zipcode%20IN%20(${queryStr})&resultRecordCount=300000`;
         return fetch(url2)
         .then((resp) => resp.json()) // Transform the data into json
@@ -61,8 +53,7 @@ export default class DataManager {
         });
       });
       let occupancy = new Promise((resolve, reject) => {
-        //let url = `https://data.detroitmi.gov/resource/4tq8-6eaw.geojson?$query=SELECT * WHERE intersects(location, '${socrataPolygon}') AND parcel_no IS NOT NULL AND  bld_type_use_calculated='Residential'`;
-        let url2 =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Certificate_of_Occupancy_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})&resultRecordCount=300000`;
+       let url2 =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Certificate_of_Occupancy_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})&resultRecordCount=300000`;
         return fetch(url2)
         .then((resp) => resp.json()) // Transform the data into json
         .then(function(data) {
@@ -158,7 +149,7 @@ export default class DataManager {
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
         // console.log(data);
-        let tempAddr = data.propstreetcombined.split(",");
+        let tempAddr = data.propaddr.split(",");
         tempAddr = tempAddr[0];
         tempAddr = tempAddr.split(" ");
         let newTempAddr = '';

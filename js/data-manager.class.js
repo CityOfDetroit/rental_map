@@ -148,22 +148,31 @@ export default class DataManager {
       fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
-        // console.log(data);
-        let tempAddr = data.propaddr.split(",");
-        tempAddr = tempAddr[0];
-        tempAddr = tempAddr.split(" ");
-        let newTempAddr = '';
-        let size = tempAddr.length;
-        tempAddr.forEach(function(item, index) {
-          newTempAddr += item;
-          ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
-        });
-        let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=${tempAddr}&category=&outFields=ZIP&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=json`;
-        return fetch(url)
-        .then((resp) => resp.json()) // Transform the data into json
-        .then(function(zip) {
-          resolve({"id": location.data.properties.parcelno, "type": "assessors", "data": data, "zip": zip.candidates[0].attributes.ZIP});
-        });
+        if(data.detail == "Not found."){
+          let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/Parcels/FeatureServer/0/query?where=parcel_number%3D%27${location.data.properties.parcelno}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=&f=pjson`;
+          return fetch(url)
+          .then((resp) => resp.json()) // Transform the data into json
+          .then(function(parcel) {
+            resolve({"id": location.data.properties.parcelno, "type": "assessors", "data": parcel, "zip": parcel.features[0].attributes.zip_code});
+          });
+        }else{
+          let tempAddr = data.propaddr.split(",");
+          tempAddr = tempAddr[0];
+          tempAddr = tempAddr.split(" ");
+          let newTempAddr = '';
+          let size = tempAddr.length;
+          tempAddr.forEach(function(item, index) {
+            newTempAddr += item;
+            ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
+          });
+          let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=${tempAddr}&category=&outFields=ZIP&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=json`;
+          return fetch(url)
+          .then((resp) => resp.json()) // Transform the data into json
+          .then(function(zip) {
+            resolve({"id": location.data.properties.parcelno, "type": "assessors", "data": data, "zip": zip.candidates[0].attributes.ZIP});
+          });
+        }
+        
       });
     });
     switch (type) {

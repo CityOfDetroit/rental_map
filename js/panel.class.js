@@ -158,7 +158,9 @@ export default class Panel {
 
         document.querySelector('.parcel-data.building').innerHTML = '<div class="data-view-btn" data-view="building">PROPERTY INFORMATION <span>&#10095;</span></div>';
 
-        document.querySelector('.street-name').innerText = controller.parcelData.propaddr;
+        let addresss = null;
+        (controller.parcelData.propaddr) ? addresss = controller.parcelData.propaddr : addresss = controller.parcelData.features[0].attributes.address;
+        document.querySelector('.street-name').innerText = addresss;
         break;
       default:
 

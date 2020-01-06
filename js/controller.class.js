@@ -36,8 +36,8 @@ export default class Controller {
     });
     let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/MetroZipCodes/MapServer/0/query?where=ZCTA5CE10+in+%28${queryStr}%29&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
     fetch(url)
-      .then((resp) => resp.json()) // Transform the data into json
-      .then(function (data) {
+      .then((resp) => resp.json())
+      .then((data) => {
         controller.activeAreas = data;
         controller.defaultSettings.startDate = '2017-12-31';
         controller.dataManager.buildData('initial', controller);
@@ -260,30 +260,35 @@ export default class Controller {
     // console.log(e);
     switch (e.target.attributes[1].value) {
       case 'owner':
-        var tempOwnerData = '';
-        tempOwnerData += '<article class="info-items"><span>OWNER CITY</span> ' + controller.parcelData.ownercity + '</article>';
-        tempOwnerData += '<article class="info-items"><span>OWNER STATE</span> ' + controller.parcelData.ownerstate + '</article>';
-        tempOwnerData += '<article class="info-items"><span>OWNER ADDRESS</span> ' + controller.parcelData.ownerstreetaddr + '</article>';
-        tempOwnerData += '<article class="info-items"><span>OWNER ZIP</span> ' + controller.parcelData.ownerzip + '</article>';
-        document.querySelector('.parcel-info.display-section').innerHTML = tempOwnerData;
+        document.querySelector('.parcel-info.display-section').innerHTML = `<article class="info-items"><span>OWNER CITY</span> ${controller.parcelData.ownercity ? `${controller.parcelData.ownercity}` : `${controller.parcelData.features[0].attributes.taxpayer_city}`}</article><article class="info-items"><span>OWNER STATE</span> ${controller.parcelData.ownerstate ? `${controller.parcelData.ownerstate}`:`${controller.parcelData.features[0].attributes.taxpayer_state}`}</article><article class="info-items"><span>OWNER ADDRESS</span> ${controller.parcelData.ownerstreetaddr ? `${controller.parcelData.ownerstreetaddr}`:`${controller.parcelData.features[0].attributes.taxpayer_street}`}</article><article class="info-items"><span>OWNER ZIP</span> ${controller.parcelData.ownerzip ? `${controller.parcelData.ownerzip}`:`${controller.parcelData.features[0].attributes.taxpayer_zip}`}</article>`;
         //cons.log(controller.parcelData);
         break;
       case 'building':
-        var tempBuldingData = '';
-        tempBuldingData += '<article class="info-items"><span>PARCEL NUMBER</span> ' + controller.parcelData.pnum + '</article>';
-        if (controller.parcelData.resb_value !== 0) {
-          tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.resb_bldgclass + '</article>';
-          tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.resb_value).toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>FLOOR AREA</span> ' + controller.parcelData.resb_floorarea.toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>YEAR BUILD</span> ' + controller.parcelData.resb_yearbuilt + '</article>';
-        } else {
-          tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.cib_bldgclass + '</article>';
-          tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.cib_calcvalue).toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>FLOOR AREA</span> ' + controller.parcelData.cib_floorarea.toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>COMMERCIAL OCCUPANT</span> ' + controller.parcelData.cib_occ + '</article>';
-          tempBuldingData += '<article class="info-items"><span>COMMERCIAL FLOOR PRICE</span> $' + controller.parcelData.cib_pricefloor.toLocaleString() + '</article>';
-          tempBuldingData += '<article class="info-items"><span>NUMBER OF STORIES</span> ' + controller.parcelData.cib_stories + '</article>';
-          tempBuldingData += '<article class="info-items"><span>YEAR BUILD</span> ' + controller.parcelData.cib_yearbuilt + '</article>';
+        let tempBuldingData = '';
+        if(controller.parcelData.pnum){
+          tempBuldingData += '<article class="info-items"><span>PARCEL NUMBER</span> ' + controller.parcelData.pnum + '</article>';
+          if (controller.parcelData.resb_value !== 0) {
+            tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.resb_bldgclass + '</article>';
+            tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.resb_value).toLocaleString() + '</article>';
+            tempBuldingData += '<article class="info-items"><span>FLOOR AREA</span> ' + controller.parcelData.resb_floorarea.toLocaleString() + '</article>';
+            tempBuldingData += '<article class="info-items"><span>YEAR BUILD</span> ' + controller.parcelData.resb_yearbuilt + '</article>';
+          } else {
+            tempBuldingData += '<article class="info-items"><span>BUILDING CLASS</span> ' + controller.parcelData.cib_bldgclass + '</article>';
+            tempBuldingData += '<article class="info-items"><span>CALCULATED VALUE</span> $' + parseInt(controller.parcelData.cib_calcvalue).toLocaleString() + '</article>';
+            tempBuldingData += '<article class="info-items"><span>FLOOR AREA</span> ' + controller.parcelData.cib_floorarea.toLocaleString() + '</article>';
+            tempBuldingData += '<article class="info-items"><span>COMMERCIAL OCCUPANT</span> ' + controller.parcelData.cib_occ + '</article>';
+            tempBuldingData += '<article class="info-items"><span>COMMERCIAL FLOOR PRICE</span> $' + controller.parcelData.cib_pricefloor.toLocaleString() + '</article>';
+            tempBuldingData += '<article class="info-items"><span>NUMBER OF STORIES</span> ' + controller.parcelData.cib_stories + '</article>';
+            tempBuldingData += '<article class="info-items"><span>YEAR BUILD</span> ' + controller.parcelData.cib_yearbuilt + '</article>';
+          }
+        }else{
+         tempBuldingData = `
+         <article class="info-items"><span>PARCEL NUMBER</span> ${controller.parcelData.features[0].attributes.parcel_number}</article>
+         <article class="info-items"><span>BUILDING CLASS</span> ${controller.parcelData.features[0].attributes.property_class_desc}</article>
+         <article class="info-items"><span>CALCULATED VALUE</span> $${parseInt(controller.parcelData.features[0].attributes.assessed_value).toLocaleString()}</article>
+         <article class="info-items"><span>FLOOR AREA</span> ${controller.parcelData.features[0].attributes.total_floor_area.toLocaleString()}</article>
+         <article class="info-items"><span>YEAR BUILD</span> ${controller.parcelData.features[0].attributes.year_built}</article>
+         `; 
         }
         document.querySelector('.parcel-info.display-section').innerHTML = tempBuldingData;
         //cons.log(controller.parcelData);

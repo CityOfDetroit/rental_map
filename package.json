@@ -1,13 +1,26 @@
 {
   "name": "rental_map",
   "version": "1.0.0",
-  "description": "Web map to display data and information about rental properties in Detroit.",
+  "description": "Web map to display information about rental propertiesa and enforcement in Detroit.",
   "main": "index.js",
   "scripts": {
-    "test": "\"echo \\\"Error: no test specified\\\" && exit 1\""
+    "start": "parcel index.html --https --no-cache --no-source-maps -p 3000",
+    "build": "parcel build index.js --no-cache --public-url '.' --no-source-maps -d build"
   },
-  "author": "Edgar Montes, Dexter Slursarski",
-  "license": "ISC",
+  "keywords": [
+    "sms",
+    "dashboard",
+    "alerts",
+    "js",
+    "react",
+    "jest"
+  ],
+  "bugs": {
+    "url": "https://github.com/CityOfDetroit/rental_map/issues"
+  },
+  "homepage": "https://github.com/CityOfDetroit/rental_map#readme",
+  "author": "Edgar Montes",
+  "license": "MIT",
   "devDependencies": {
     "@mapbox/mapbox-gl-geocoder": "^4.5.0",
     "@turf/simplify": "^5.1.5",

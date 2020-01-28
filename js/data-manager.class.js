@@ -4,10 +4,10 @@ export default class DataManager {
   constructor() {
     // NOTE: rental data
     this.initialDataBank = {
-      rentals: {},
-      instpections: {},
-      certificates: {},
-      occupancy: {}
+      rentals: null,
+      instpections: null,
+      certificates: null,
+      occupancy: null
     };
     this.tempDataBank = {
       rentals: {},
@@ -18,102 +18,48 @@ export default class DataManager {
     (type === 'initial') ? controller.dataManager.buildInitialData(controller) : controller.dataManager.buildTempData(location, controller);
   }
   buildInitialData(controller){
-    // NOTE: Fetching initial data
-    // console.log(controller.activeAreas);
-    let queryStr = '';
-    let numberofzipcodes = controller.defaultSettings.zipcodes.length;
-    controller.defaultSettings.zipcodes.forEach(function(zip,index){
-      switch(index){
-        case numberofzipcodes-1:queryStr +=zip;
-        break;
-        default:queryStr +=zip+",";
-      }
+    let registrations = new Promise((resolve, reject) => {
+      let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Registrations_(Combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
+      return fetch(url)
+      .then((resp) => resp.json()) // Transform the data into json
+      .then(function(data) {
+        //console.log(data);
+        resolve({"id": "rentals", "data": data});
+      });
+
     });
-    //console.log(queryStr);
-    controller.activeAreas.features.forEach(function(zip, index){
-      let registrations = new Promise((resolve, reject) => {
-        let url2 = ` https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Registrations_(Combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})&resultRecordCount=300000`;
-        return fetch(url2)
-        .then((resp) => resp.json()) // Transform the data into json
-        .then(function(data) {
-          //console.log(data);
-          resolve({"id": zip.properties.GEOID10, "type": "rentals", "data": data});
-        });
 
+    //console.log(registrations);
+    let certificates = new Promise((resolve, reject) => {
+      let url =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Residential_Inspections_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=result+%3D+%27OK%27+and+parcel_number+<>+null&resultRecordCount=300000`;
+      return fetch(url)
+      .then((resp) => resp.json()) // Transform the data into json
+      .then(function(data) {
+         //console.log(data);
+        resolve({"id": "certificates", "data": data});
       });
+    });
+    let occupancy = new Promise((resolve, reject) => {
+     let url =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Certificate_of_Occupancy_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
+      return fetch(url)
+      .then((resp) => resp.json()) // Transform the data into json
+      .then(function(data) {
+         //console.log(zip);
+        resolve({"id": "occupancy", "data": data});
+      });
+    });
+    Promise.all([registrations, certificates, occupancy]).then(values => {
+      console.log(values);
+        controller.dataManager.initialDataBank.rentals = values[0].data;
+        controller.dataManager.initialDataBank.certificates = values[1].data;
+        controller.dataManager.initialDataBank.occupancy = values[2].data;
+        // console.log(controller.dataManager.initialDataBank);
+        controller.panel.creatPanel('initial', controller);
+        //console.log(controller);
+        controller.createRentalsLayer(controller);
 
-      //console.log(registrations);
-      let certificates = new Promise((resolve, reject) => {
-        let url2 =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Residential_Inspections_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=result+%3D+%27OK%27+and+parcel_number+<>+null+and+zipcode%20IN%20(${queryStr})&resultRecordCount=300000`;
-        return fetch(url2)
-        .then((resp) => resp.json()) // Transform the data into json
-        .then(function(data) {
-           //console.log(data);
-          resolve({"id": zip.properties.GEOID10, "type": "certificates", "data": data});
-        });
-      });
-      let occupancy = new Promise((resolve, reject) => {
-       let url2 =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Certificate_of_Occupancy_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=zipcode%20IN%20(${queryStr})&resultRecordCount=300000`;
-        return fetch(url2)
-        .then((resp) => resp.json()) // Transform the data into json
-        .then(function(data) {
-           //console.log(zip);
-          resolve({"id": zip.properties.GEOID10, "type": "occupancy", "data": data});
-        });
-      });
-      Promise.all([registrations, certificates, occupancy]).then(values => {
-        //console.log(values);
-          let rentals = {
-            "type": "FeatureCollection",
-            "features": []
-          };
-          let tempOccup = {
-            "type": "FeatureCollection",
-            "features": []
-          };
-          let approved = values[1].data;
-          // console.log(tempRentals);
-          values[0].data.features.forEach(function(value){
-            let test = false;
-            values[1].data.features.forEach(function(item){
-              (item.properties.parcel_number === value.properties.parcel_number) ? test = true : 0;
-            });
-            // console.log(test);
-            if(!test){
-              // console.log(value);
-              rentals.features.push(value);
-            }
-          });
-          // ==============================
-          // Separating occupied with registration and occupied without registration
-          // ==============================
-          values[2].data.features.forEach(function(value){
-            let test = false;
-            values[0].data.features.forEach(function(item){
-              (item.properties.parcel_number === value.properties.parcel_number) ? test = true : 0;
-            });
-            // console.log(test);
-            if(!test){
-              // console.log(value);
-              tempOccup.features.push(value);
-            }else{
-              approved.features.push(value);
-            }
-          });
-          // console.log(tempOccup);
-          controller.dataManager.initialDataBank.rentals[values[0].id] = rentals;
-          controller.dataManager.initialDataBank.certificates[values[1].id] = approved;
-          controller.dataManager.initialDataBank.occupancy[values[2].id] = tempOccup;
-          // console.log(controller.dataManager.initialDataBank);
-          if(index == controller.activeAreas.features.length - 1){
-            controller.panel.creatPanel('initial', controller);
-          }
-          //console.log(controller);
-          controller.createRentalsLayer(controller);
-
-      }).catch(reason => {
-        console.log(reason);
-      });
+    }).catch(reason => {
+      console.log(reason);
     });
   }
   buildTempData(type, location, controller){

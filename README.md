@@ -1,6 +1,6 @@
 # Rental Map
 
-The Rental Map display all the current register rental properties in the city as well as the parcel data for all the properties in the city of Detroit..
+The Rental Map display all the current register rental properties in the city as well as the parcel data for all the properties in the city of Detroit.
 
 ## Getting Started
 
@@ -22,7 +22,12 @@ This project was created using:
 
 3. Run local instance.
     ```
-    $ parcel index.html
+    $ npm start
+    ```
+
+4. Run build.
+    ```
+    $ npm build
     ```
 ## Resources
 

@@ -1,4 +1,7 @@
 'use strict';
+import './node_modules/mapbox-gl/dist/mapbox-gl.css';
+import './node_modules/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import './scss/styles.scss';
 import Controller from './js/controller.class.js';
 
 (function(){
@@ -163,8 +166,8 @@ import Controller from './js/controller.class.js';
       }
     ]
   },
-  ['48215','48224','48223','48219','48209','48210','48206','48214','48202','48204','48213','48238'],
-  ['48215','48224','48223','48219','48209','48210','48206','48214','48202','48204']);
+  ['48215','48224','48223','48219','48209','48210','48206','48214','48202','48204','48213','48238','48203','48211','48208','48212'],
+  ['48215','48224','48223','48219','48209','48210','48206','48214','48202','48204','48213','48238','48203','48211']);
   let closeInfo = function closeInfo() {
     //console.log('closing');
     (document.querySelector('#info').className === 'active') ? document.querySelector('#info').className = '' : document.querySelector('#info').className = 'active';

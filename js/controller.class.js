@@ -30,11 +30,7 @@ export default class Controller {
   initialLoad(controller) {
 
     document.getElementById('initial-loader-overlay').className = 'active';
-    let queryStr = '';
-    controller.defaultSettings.zipcodes.forEach(function (zip, index) {
-      queryStr += `%27${zip}%27${index < controller.defaultSettings.zipcodes.length - 1 ? `,` : ''}`;
-    });
-    let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/MetroZipCodes/MapServer/0/query?where=ZCTA5CE10+in+%28${queryStr}%29&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
+    let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/ZipCodes/FeatureServer/0/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=zipcode&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=geojson`;
     fetch(url)
       .then((resp) => resp.json())
       .then((data) => {
@@ -66,8 +62,7 @@ export default class Controller {
       "features": []
     };
     for (var i = 0; i < controller.activeAreas.features.length; i++) {
-      // console.log(controller.activeAreas.features[i].geometry.coordinates[0]);
-      var tempPolygon = turf.polygon([controller.activeAreas.features[i].geometry.coordinates[0]]);
+      var tempPolygon = turf.polygon(controller.activeAreas.features[i].geometry.coordinates);
       var tempCenter = turf.centroid(tempPolygon);
       var tempFeature = {
         "type": "Feature",
@@ -76,7 +71,7 @@ export default class Controller {
           "coordinates": tempCenter.geometry.coordinates
         },
         "properties": {
-          "name": controller.activeAreas.features[i].properties.ZCTA5CE10
+          "name": controller.activeAreas.features[i].properties.zipcode
         }
       };
       zipLabes.features.push(tempFeature);
@@ -108,57 +103,27 @@ export default class Controller {
   createRentalsLayer(controller) {
     // console.log(controller.dataManager.initialDataBank);
     let tempNewLayers = [];
-    for (var zip in controller.dataManager.initialDataBank.rentals) {
-      if (controller.dataManager.initialDataBank.rentals.hasOwnProperty(zip)) {
-        // console.log(zip);
-        if (!controller.activeFilter.includes(zip)) {
-          controller.activeFilter.push(zip);
-          controller.dataManager.initialDataBank.rentals[zip].features.forEach(function (parcel) {
-            if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
-              controller.activeRentalParcels.push(parcel.properties.parcel_number);
-          });
-          if (controller.defaultSettings.escrows.includes(zip)) {
-            controller.dataManager.initialDataBank.certificates[zip].features.forEach(function (parcel) {
-              if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
-                controller.activeCertParcels.push(parcel.properties.parcel_number);
-            });
-            controller.dataManager.initialDataBank.occupancy[zip].features.forEach(function (parcel) {
-              if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
-                controller.activeOccupParcels.push(parcel.properties.parcel_number);
-            });
-          }
-          if (controller.userSources.rental == null) {
-            controller.userSources.rental = controller.dataManager.initialDataBank.rentals[zip];
-          } else {
-            controller.userSources.rental.features = controller.userSources.rental.features.concat(controller.dataManager.initialDataBank.rentals[zip].features);
-          }
-          if (controller.userSources.cert == null) {
-            if (controller.defaultSettings.escrows.includes(zip))
-              controller.userSources.cert = controller.dataManager.initialDataBank.certificates[zip];
-          } else {
-            if (controller.defaultSettings.escrows.includes(zip))
-              controller.userSources.cert.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.certificates[zip].features);
-          }
-          if (controller.userSources.occupied == null) {
-            if (controller.defaultSettings.escrows.includes(zip))
-              controller.userSources.occupied = controller.dataManager.initialDataBank.occupancy[zip];
-          } else {
-            if (controller.defaultSettings.escrows.includes(zip))
-              controller.userSources.occupied.features = controller.userSources.cert.features.concat(controller.dataManager.initialDataBank.occupancy[zip].features);
-          }
-        }
-      }
-      // console.log(controller.userSources.cert);
-      // console.log(controller.userSources.occupied);
-      controller.map.map.getSource('rental').setData(controller.userSources.rental);
-      controller.map.map.getSource('occupied').setData(controller.userSources.occupied);
-      controller.map.map.getSource('cert').setData(controller.userSources.cert);
-
-    }
+      // console.log(zip);
+      controller.dataManager.initialDataBank.rentals.features.forEach(function (parcel) {
+        if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
+          controller.activeRentalParcels.push(parcel.properties.parcel_number);
+      });
+      
+      controller.dataManager.initialDataBank.certificates.features.forEach(function (parcel) {
+        if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
+          controller.activeCertParcels.push(parcel.properties.parcel_number);
+      });
+      controller.dataManager.initialDataBank.occupancy.features.forEach(function (parcel) {
+        if (typeof parcel.properties.parcel_number !== undefined && parcel.properties.parcel_number !== null)
+          controller.activeOccupParcels.push(parcel.properties.parcel_number);
+      });
+    controller.map.map.getSource('rental').setData(controller.dataManager.initialDataBank.rentals);
+    // controller.map.map.getSource('occupied').setData(controller.dataManager.initialDataBank.occupancy);
+    controller.map.map.getSource('cert').setData(controller.dataManager.initialDataBank.certificates);
 
     controller.map.map.setFilter('rental-parcels', controller.activeRentalParcels);
     controller.map.map.setFilter('cert-parcels', controller.activeCertParcels);
-    controller.map.map.setFilter('occup-parcels', controller.activeOccupParcels);
+    // controller.map.map.setFilter('occup-parcels', controller.activeOccupParcels);
 
     controller.map.addLayers(tempNewLayers, controller);
     controller.createZipcodesLayers(controller);

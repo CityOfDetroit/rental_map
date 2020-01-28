@@ -104,7 +104,7 @@ export default class Panel {
         tempHTML = `
         <article class="info-items">
           <span>COMPLIANCE STATUS</span>
-          ${certified == true ? `<img src="${pass}" alt="x"> <item>APPROVED FOR RENTAL</item>` : `${occupied ? `${data.register ? `<img src="${pass}" alt="x"> <item>APPROVED FOR RENTAL</item>`:`NOT APPROVED RENTAL<br><img src="${pass}" alt="x"> <item>Occupancy</item><br><img src="${fail}" alt="x"> <item>Registered</item>`}`:`NOT APPROVED RENTAL<br>${data.register == true ? `<img src="${pass}" alt="check"> <item>Registered on ${data.registrationDate}</item><br>`:`<img src="${fail}" alt="x"> <item>Registered</item><br>`}<img src="${fail}" alt="x"> <item>Compliance</item><br><img src="${fail}" alt="x"> <item>Occupancy</item></article>`}`}
+          ${certified == true ? `<img src="${pass}" alt="x"> <item>APPROVED FOR RENTAL</item>` : `${occupied ? `${data.register ? `<img src="${pass}" alt="x"> <item>APPROVED FOR RENTAL</item>`:`NOT APPROVED RENTAL<br><img src="${fail}" alt="x"> <item>Registered</item>`}`:`NOT APPROVED RENTAL<br>${data.register == true ? `<img src="${pass}" alt="check"> <item>Registered</item><br>`:`<img src="${fail}" alt="x"> <item>Registered</item><br>`}<img src="${fail}" alt="x"> <item>Compliance</item></article>`}`}
         </article>
         ${data.zipcode === '48215' ? `
         <article class="info-items">
@@ -123,26 +123,100 @@ export default class Panel {
         ${data.zipcode === '48223' ? `
         <article class="info-items">
          <span>ENFORCEMENT DATES</span>
-         <item>Must be Registered by Aug 1st, 2018</item><br>
-         <item>Must be Compliant by Nov 1st, 2018</item>
+         <item>Must be Registered by Oct 4th, 2018</item><br>
+         <item>Must be Compliant by Jan 2nd, 2019</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
         </article>` : ``}
         ${data.zipcode === '48219' ? `
         <article class="info-items">
          <span>ENFORCEMENT DATES</span>
-         <item>Must be Registered by Sep 1st, 2018</item><br>
-         <item>Must be Compliant by Dec 1st, 2018</item>
+         <item>Must be Registered by Nov 3rd, 2018</item><br>
+         <item>Must be Compliant by Feb 1st, 2019</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
         </article>` : ``}
         ${data.zipcode === '48209' ? `
         <article class="info-items">
          <span>ENFORCEMENT DATES</span>
-         <item>Must be Registered by Oct 1st, 2018</item><br>
-         <item>Must be Compliant by Jan 1st, 2019</item>
+         <item>Must be Registered by Jan 31st, 2019</item><br>
+         <item>Must be Compliant by May 1st, 2019</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
         </article>` : ``}
         ${data.zipcode === '48210' ? `
         <article class="info-items">
          <span>ENFORCEMENT DATES</span>
-         <item>Must be Registered by Nov 1st, 2018</item><br>
-         <item>Must be Compliant by Feb 1st, 2019</item>
+         <item>Must be Registered by Mar 5th, 2019</item><br>
+         <item>Must be Compliant by Jun 3rd, 2019</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48206' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Jun 5th, 2019</item><br>
+         <item>Must be Compliant by Sep 3rd, 2019</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48214' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Jun 5th, 2019</item><br>
+         <item>Must be Compliant by Sep 3rd, 2019</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48202' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Jul 3rd, 2019</item><br>
+         <item>Must be Compliant by Oct 1st, 2019</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48204' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Jul 3rd, 2019</item><br>
+         <item>Must be Compliant by Oct 1st, 2019</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48213' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Oct 4th, 2019</item><br>
+         <item>Must be Compliant by Jan 2nd, 2020</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48238' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Oct 4th, 2019</item><br>
+         <item>Must be Compliant by Jan 2nd, 2020</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48203' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Nov 3rd, 2019</item><br>
+         <item>Must be Compliant by Feb 1st, 2020</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48211' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Nov 3rd, 2019</item><br>
+         <item>Must be Compliant by Feb 1st, 2020</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48208' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Feb 1st,2020</item><br>
+         <item>Must be Compliant by May 1st, 2020</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
+        </article>` : ``}
+        ${data.zipcode === '48212' ? `
+        <article class="info-items">
+         <span>ENFORCEMENT DATES</span>
+         <item>Must be Registered by Feb 1st,2020</item><br>
+         <item>Must be Compliant by May 1st, 2020</item>
+         ${!certified ? `${occupied ? `${data.register ? ``: `<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:`<a href="http://www.detroitmi.gov/Government/Departments-and-Agencies/BSEED/Rental-Property-Escrow" target="_blank"><article class="form-btn">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`}`:``}
         </article>` : ``}
         `;
         if(active){

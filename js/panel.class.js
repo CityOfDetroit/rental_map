@@ -1,7 +1,5 @@
 'use strict';
 const moment = require('moment');
-const pass =  require('../img/done.png');
-const fail =  require('../img/cancel.png');
 export default class Panel {
   constructor() {
   }
@@ -50,7 +48,7 @@ export default class Panel {
         tempHTML = `
         <article class="info-items">
           <span>COMPLIANCE STATUS</span>
-          ${certified != false ? `<img src="${pass}" alt="x"> <item>APPROVED FOR RENTAL</item>` : `NOT APPROVED RENTAL<br><img src="${pass}" alt="check"> <item>Registered on ${moment(data.properties.csa_date3).format('MMM Do,YYYY')}</item><br><img src="${fail}" alt="x"> <item>Compliance</item></article>`}
+          ${certified != false ? `<i class="far fa-check-circle"></i> <item>APPROVED FOR RENTAL</item>` : `NOT APPROVED RENTAL<br><i class="far fa-check-circle"></i>" alt="check"> <item>Registered on ${moment(data.properties.csa_date3).format('MMM Do,YYYY')}</item><br><i class="far fa-times-circle"></i> <item>Compliance</item></article>`}
         </article>
         ${controller.defaultSettings.escrows.includes(data.zipcode) ? `escrow`:`not escrow`}
          ${data.zipcode === '48215' ? `
@@ -104,7 +102,7 @@ export default class Panel {
         tempHTML = `
         <article class="info-items">
           <span>COMPLIANCE STATUS</span>
-          ${certified == true ? `<img src="${pass}" alt="x"> <item>APPROVED FOR RENTAL</item>` : `${occupied ? `${data.register ? `<img src="${pass}" alt="x"> <item>APPROVED FOR RENTAL</item>`:`NOT APPROVED RENTAL<br><img src="${fail}" alt="x"> <item>Registered</item>`}`:`NOT APPROVED RENTAL<br>${data.register == true ? `<img src="${pass}" alt="check"> <item>Registered</item><br>`:`<img src="${fail}" alt="x"> <item>Registered</item><br>`}<img src="${fail}" alt="x"> <item>Compliance</item></article>`}`}
+          ${certified == true ? `<i class="far fa-check-circle"></i> <item>APPROVED FOR RENTAL</item>` : `${occupied ? `${data.register ? `<i class="far fa-check-circle"></i> <item>APPROVED FOR RENTAL</item>`:`NOT APPROVED RENTAL<br><i class="far fa-times-circle"></i> <item>Registered</item>`}`:`NOT APPROVED RENTAL<br>${data.register == true ? `<i class="far fa-check-circle"></i> <item>Registered</item><br>`:`<i class="far fa-times-circle"></i> <item>Registered</item><br>`}<i class="far fa-times-circle"></i> <item>Compliance</item></article>`}`}
         </article>
         ${data.zipcode === '48215' ? `
         <article class="info-items">

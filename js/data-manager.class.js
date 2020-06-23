@@ -19,19 +19,18 @@ export default class DataManager {
   }
   buildInitialData(controller){
     let registrations = new Promise((resolve, reject) => {
-      let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Registrations_(Combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
+      let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/RentalStatuses/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
       return fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
         //console.log(data);
         resolve({"id": "rentals", "data": data});
       });
-
     });
 
     //console.log(registrations);
     let certificates = new Promise((resolve, reject) => {
-      let url =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Residential_Inspections_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=result+%3D+%27OK%27+and+parcel_number+<>+null&resultRecordCount=300000`;
+      let url =`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/ResidentialInspections/FeatureServer/0/query?where=parcel_id+IS+NOT+null&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=4326&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=300000&f=geojson`;
       return fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
@@ -40,7 +39,7 @@ export default class DataManager {
       });
     });
     let occupancy = new Promise((resolve, reject) => {
-     let url =`https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Certificate_of_Occupancy_(combined)/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
+     let url =`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/CertificateOfOccupancy/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
       return fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
@@ -49,7 +48,7 @@ export default class DataManager {
       });
     });
     Promise.all([registrations, certificates, occupancy]).then(values => {
-      console.log(values);
+      // console.log(values);
         controller.dataManager.initialDataBank.rentals = values[0].data;
         controller.dataManager.initialDataBank.certificates = values[1].data;
         controller.dataManager.initialDataBank.occupancy = values[2].data;
@@ -66,7 +65,7 @@ export default class DataManager {
     //  console.log(location);
 
     let registrations = new Promise((resolve, reject) => {
-      let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Rental_Registrations_(Combined)/FeatureServer/0/query?where=parcel_number+%3D+%27${encodeURI(location.data.properties.parcelno)}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
+      let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/RentalStatuses/FeatureServer/0/query?where=parcel_id+%3D+%27${encodeURI(location.data.properties.parcelno)}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
       return fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
@@ -74,7 +73,7 @@ export default class DataManager {
       });
     });
     let certified = new Promise((resolve, reject) => {
-      let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Residential_Inspections_(combined)/FeatureServer/0/query?where=result+%3D+%27OK%27+and+parcel_number+%3D+%27${encodeURI(location.data.properties.parcelno)}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
+      let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/ResidentialInspections/FeatureServer/0/query?where=parcel_id+%3D+%27${encodeURI(location.data.properties.parcelno)}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
       return fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
@@ -82,7 +81,7 @@ export default class DataManager {
       });
     });
     let occupancy = new Promise((resolve, reject) => {
-      let url = `https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Certificate_of_Occupancy_(combined)/FeatureServer/0/query?where=parcel_number+%3D+%27${encodeURI(location.data.properties.parcelno)}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
+      let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/CertificateOfOccupancy/FeatureServer/0/query?where=parcel_id+%3D+%27${encodeURI(location.data.properties.parcelno)}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=geojson&token=`;
       return fetch(url)
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
@@ -95,7 +94,7 @@ export default class DataManager {
       .then((resp) => resp.json()) // Transform the data into json
       .then(function(data) {
         if(data.detail == "Not found."){
-          let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/Parcels/FeatureServer/0/query?where=parcel_number%3D%27${location.data.properties.parcelno}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=&f=pjson`;
+          let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/Parcels/FeatureServer/0/query?where=parcel_id%3D%27${location.data.properties.parcelno}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=&f=pjson`;
           return fetch(url)
           .then((resp) => resp.json()) // Transform the data into json
           .then(function(parcel) {

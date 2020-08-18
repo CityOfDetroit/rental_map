@@ -22,7 +22,7 @@
   "author": "Edgar Montes",
   "license": "MIT",
   "devDependencies": {
-    "@mapbox/mapbox-gl-geocoder": "^4.5.0",
+    "@mapbox/mapbox-gl-geocoder": "^4.7.0",
     "@turf/simplify": "^5.1.5",
     "babel-core": "^6.26.3",
     "babel-polyfill": "^6.23.0",
@@ -31,16 +31,16 @@
     "geojson": "^0.5.0",
     "img": "^3.0.3",
     "isomorphic-fetch": "^2.2.1",
-    "mapbox-gl": "^1.11.0",
+    "mapbox-gl": "^1.12.0",
     "terraformer-arcgis-parser": "^1.1.0"
   },
   "dependencies": {
-    "@mapbox/mapbox-gl-draw": "^1.1.2",
+    "@mapbox/mapbox-gl-draw": "^1.2.0",
     "@turf/turf": "^5.1.6",
     "cssnano": "^4.1.10",
     "mapbox-gl-geocoder": "^2.0.1",
     "moment": "^2.27.0",
-    "sass": "^1.23.7",
+    "sass": "^1.26.10",
     "terraformer-wkt-parser": "^1.2.1"
   }
 }

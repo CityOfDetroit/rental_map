@@ -1,6 +1,6 @@
 {
   "name": "rental_map",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Web map to display information about rental propertiesa and enforcement in Detroit.",
   "main": "index.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "@mapbox/mapbox-gl-draw": "^1.2.0",
     "@turf/turf": "^5.1.6",
     "cssnano": "^4.1.10",
+    "is-obj": "^2.0.0",
     "mapbox-gl-geocoder": "^2.0.1",
     "moment": "^2.27.0",
     "sass": "^1.26.10",

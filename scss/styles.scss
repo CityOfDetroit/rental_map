@@ -103,9 +103,11 @@ main {position: relative; width: 100%; height: 100vh; overflow: hidden;}
 .mapboxgl-ctrl-top-left, .mapboxgl-ctrl-top-right, .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right{z-index: 4;}
 .mapboxgl-ctrl-geocoder.mapboxgl-ctrl{border-radius: 0;}
 .mapboxgl-ctrl-geocoder{box-shadow: 0 0 0 2px rgba(0, 97, 144,.5)}
-.mapboxgl-ctrl-geocoder input[type='text']{color: #000;}
+.mapboxgl-ctrl-geocoder input[type='text']{color: #000;width: 100%;border:none;padding: .25em;}
+.mapboxgl-ctrl-geocoder input[type='text']:focus{outline:none;}
 .mapboxgl-ctrl-top-left{width: 25em;}
 .mapboxgl-ctrl-geocoder{width: 100%;}
+.mapboxgl-ctrl-geocoder .geocoder-pin-right{display: none;}
 .mapboxgl-ctrl-top-left > .mapboxgl-ctrl-geocoder.mapboxgl-ctrl > input[type='text'],.mapboxgl-ctrl-geocoder input[type='text'] {font-size: 18px;}
 #basemap-toggle{position: absolute;bottom: 4em;right: 2em;display: flex;}
 #basemap-toggle > article{width: 3em; height: 3em; background-color: #EB002B; border-radius: 50%; padding: .5em; cursor: pointer;transition: all .2s ease-in-out;}

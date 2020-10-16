@@ -1,12 +1,8 @@
 {
   "name": "rental_map",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Web map to display information about rental propertiesa and enforcement in Detroit.",
   "main": "index.js",
-  "scripts": {
-    "start": "parcel index.html --https --no-cache --no-source-maps -p 3000",
-    "build": "parcel build index.js --no-cache --public-url '.' --no-source-maps -d build"
-  },
   "keywords": [
     "sms",
     "dashboard",
@@ -21,27 +17,21 @@
   "homepage": "https://github.com/CityOfDetroit/rental_map#readme",
   "author": "Edgar Montes",
   "license": "MIT",
+  "scripts": {
+    "start": "parcel src/index.html --https --no-cache -p 3000 --open",
+    "test": "./node_modules/.bin/cypress open",
+    "build": "parcel build src/index.js --no-cache --public-url '.' --no-source-maps -d build"
+  },
   "devDependencies": {
-    "@mapbox/mapbox-gl-geocoder": "^4.7.0",
-    "@turf/simplify": "^5.1.5",
     "babel-core": "^6.26.3",
-    "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.7.0",
-    "es6-promise": "^4.2.8",
-    "geojson": "^0.5.0",
-    "img": "^3.0.3",
-    "isomorphic-fetch": "^2.2.1",
-    "mapbox-gl": "^1.12.0",
-    "terraformer-arcgis-parser": "^1.1.0"
+    "cssnano": "^4.1.10",
+    "sass": "^1.26.12"
   },
   "dependencies": {
-    "@mapbox/mapbox-gl-draw": "^1.2.0",
     "@turf/turf": "^5.1.6",
-    "cssnano": "^4.1.10",
-    "is-obj": "^2.0.0",
-    "mapbox-gl-geocoder": "^2.0.1",
-    "moment": "^2.27.0",
-    "sass": "^1.26.10",
-    "terraformer-wkt-parser": "^1.2.1"
+    "esri-leaflet": "^2.5.0",
+    "leaflet": "^1.7.1",
+    "moment": "^2.29.0"
   }
 }

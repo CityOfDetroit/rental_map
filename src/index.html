@@ -7,10 +7,9 @@
   <meta name="description" content="Web map to display information about rental propertiesa and enforcement in Detroit.">
   <meta name="author" content="Edgar Montes">
   <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0' />
-  <link href="./local/fontawesome/css/all.css" rel="stylesheet">
 </head>
 <body>
-  <section id="initial-loader-overlay" class="active">
+  <!-- <section id="initial-loader-overlay" class="active">
     <article>
       <div>
         <div class="loader">
@@ -56,6 +55,24 @@
       </nav>
     </div>
   </main>
+  <script src="index.js"></script> -->
+  <section id="app">
+    <article id="geocoder"></article>
+    <article class="panel">
+      <div class="panel-box"></div>
+    </article>
+    <article id="map"></article>
+    <div id='legend'>
+      <strong>GARBAGE PICK UP DAY</strong>
+      <nav class='legend clearfix'>
+        <span style='background:#194ed7;'></span>
+        <span style='background:#068A24;'></span>
+        <label>Registered</label>
+        <label>Approved</label>
+      </nav>
+    </div>
+  </section>
+  
   <script src="index.js"></script>
 </body>
 </html>

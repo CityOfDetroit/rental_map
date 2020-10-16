@@ -5,8 +5,12 @@ The Rental Map display all the current register rental properties in the city as
 ## Getting Started
 
 This project was created using:
-    [Mapbox](https://docs.mapbox.com/mapbox-gl-js/api/) for web map rendering.
-    [Parcel](https://parceljs.org/) as a web application bundler.
+ - [Leaflet](https://leafletjs.com/) for WebGL map rendering.
+ - [Esri-Leaflet](https://github.com/Esri/esri-leaflet) for Esri connections.
+ - [Parcel](https://parceljs.org/) as a web application bundler.
+ - [Yarn](https://yarnpkg.com/en/) for 3rd party library use and management.
+
+Please make sure these are installed locally
 
 ## Setup Local Environment.
 
@@ -17,17 +21,22 @@ This project was created using:
 2. Install node dependencies.
 
     ```
-    $ npm install
+    $ yarn install
     ```
 
 3. Run local instance.
     ```
-    $ npm start
+    $ yarn start
     ```
 
-4. Run build.
+4. Run test suite.
     ```
-    $ npm build
+    $ yarn test
+    ```
+
+4. Create production build.
+    ```
+    $ yarn build
     ```
 ## Resources
 

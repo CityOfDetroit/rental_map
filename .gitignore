@@ -60,4 +60,5 @@ typings/
 # local files
 local/
 
+# temp files
 dist/

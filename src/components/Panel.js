@@ -1,15 +1,9 @@
 import moment from 'moment';
-import SignForm from './SignForm';
 import './Panel.scss';
 export default class Panel {
     constructor(app) {
         this.app = app;
-        this.location = {
-            lat: null,
-            lng: null
-        };
-        this.address = null;
-        this.signup = new SignForm();
+        this.data = null;
         this.currentProvider = null;
         this.providers = {
             gfl : {
@@ -74,43 +68,37 @@ export default class Panel {
             _panel.closePanel(e, _panel);
         });
         
-        let nextPickups = _panel.buildNextPickup(_panel);
+        let nextPickups = _panel.buildRentalStatus(_panel);
         tempPanel.innerHTML = `
-            <h2>${_panel.address}</h2>
-            <section class="sms-signup-box">
-            </section>
+            <h2>${_panel.data.address}</h2>
             ${nextPickups}
         `;
         tempPanel.prepend(closeBtn);
-        _panel.signup.buildForm(_panel);
-        document.querySelector('.panel .panel-box .sms-signup-box').appendChild(_panel.signup.form);
         document.querySelector('#app .panel').className = "panel active";
     }
 
-    buildNextPickup(_panel){
+    buildRentalStatus(_panel){
         return `
-        <section class="waste-services">
-        <div class="group">
-            <span class="header">PROVIDER</span>
-            <p><a href="${_panel.providers[_panel.currentProvider].url}" target="_blank">${_panel.currentProvider}</a> - ${_panel.providers[_panel.currentProvider].phone}</p>
-        </div>
-        <div class="group">
-            <span class="header">GARBAGE</span>
-            <p>${moment(_panel.data.next_pickups.trash.next_pickup).format('dddd - MMM Do')}</p>
-        </div>
-        <div class="group">
-            <span class="header">CURBSIDE RECYCLE</span>
-            <p>${moment(_panel.data.next_pickups.recycling.next_pickup).format('dddd - MMM Do')}</p>
-        </div>
-        <div class="group">
-            <span class="header">BULK</span>
-            <p>${moment(_panel.data.next_pickups.bulk.next_pickup).format('dddd - MMM Do')}</p>
-        </div>
-        ${(_panel.data.next_pickups['yard waste']) ? `
-        <div class="group">
-            <span class="header">YARD</span>
-            <p>${moment(_panel.data.next_pickups['yard waste'].next_pickup).format('dddd - MMM Do')}</p>
-        </div></sections>` : ``}
+        <section class="renta-status">
+            ${(_panel.data.type == null) ? `<a href="https://app.smartsheet.com/b/form/91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn color-4">REPORT SUSPECTED RENTAL</article></a>`: `<a href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn color-4">SUBMIT RENTAL COMPLAINT</article></a>`}
+            <div class="group">
+                <span class="header">COMPLIANCE STATUS</span>
+                ${(_panel.data.type == 'Issue CofC') ? `
+                <p class="valid"><i class="far fa-check-circle"></i> APPROVED FOR RENTAL</p>
+                `: ``}
+                ${(_panel.data.type == 'Issue Registration') ? `
+                <p>NOT APPROVED RENTAL</p>
+                <p class="valid"><i class="far fa-check-circle"></i> Registered</p>
+                <p class="invalid"><i class="far fa-times-circle"></i> Compliance</p>
+                `: ``}
+                ${(_panel.data.type == null) ? `
+                <p>NOT APPROVED RENTAL</p>
+                <p class="invalid"><i class="far fa-times-circle"></i> Registered</p>
+                <p class="invalid"><i class="far fa-times-circle"></i> Compliance</p>
+                `: ``}
+            </div>
+            ${(_panel.data.type == null) ? `<a href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow" target="_blank"><article class="form-btn color-3">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`: ``}
+        </section>
         `;
     }
 }

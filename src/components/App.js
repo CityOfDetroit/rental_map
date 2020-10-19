@@ -5,6 +5,7 @@ import Panel from './Panel';
 import Geocoder from './Geocoder';
 import './App.scss';
 import '../../node_modules/leaflet/dist/leaflet.css';
+import { feature } from '@turf/turf';
 
 export default class App {
     constructor() {
@@ -29,6 +30,7 @@ export default class App {
 
         _app.layers['zipCodes'] = esri.featureLayer({
             url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/ZipCodes/FeatureServer/0',
+            interactive:false,
             style: {
               color : '#004445',
               fill: false  
@@ -64,35 +66,86 @@ export default class App {
             }
         });
 
-        fetch(`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/RentalStatuses/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=300000&f=geojson`)
-        .then((res) => {
-            res.json().then(data => {
-                console.log(data);
-                L.geoJSON(data, {
-                    pointToLayer: function (geojson, latlng) {
-                        return L.circleMarker(latlng, {
-                            fillColor: '#194ed7',
-                            fillOpacity: 1,
-                            stroke: false,
-                            radius: 5
-                        });
-                    }
-                }).on('click',function (layer) {
-                    console.log(layer)
-                    // return layer.feature.properties;
-                }).addTo(_app.map);
-        
-                // _app.map.on('click', function (e) {
-                //     _app.queryLayer(_app, 'rentalRegistrations',e.latlng);
-                // });
+      
+        let registrations = new Promise((resolve, reject) => {
+            let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/RentalStatuses/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
+            return fetch(url)
+            .then((resp) => resp.json()) // Transform the data into json
+            .then(function(data) {
+            //console.log(data);
+            resolve({"id": "rentals", "data": data});
             });
-        })
-        .catch((error) => {
-            console.log(error);
+        });
+    
+        //console.log(registrations);
+        let certificates = new Promise((resolve, reject) => {
+            let url =`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/CertificateOfCompliance/FeatureServer/0/query?where=parcel_id+IS+NOT+null&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=4326&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=300000&f=geojson`;
+            return fetch(url)
+            .then((resp) => resp.json()) // Transform the data into json
+            .then(function(data) {
+                //console.log(data);
+            resolve({"id": "certificates", "data": data});
+            });
+        });
+        let occupancy = new Promise((resolve, reject) => {
+            let url =`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/CertificateOfOccupancy/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
+            return fetch(url)
+            .then((resp) => resp.json()) // Transform the data into json
+            .then(function(data) {
+                //console.log(zip);
+            resolve({"id": "occupancy", "data": data});
+            });
+        });
+        Promise.all([registrations, certificates]).then(values => {
+            L.geoJSON(values[0].data, {
+                pointToLayer: function (geojson, latlng) {
+                    return L.circleMarker(latlng, {
+                        fillColor: '#194ed7',
+                        fillOpacity: 1,
+                        stroke: false,
+                        radius: 5
+                    });
+                }
+            }).on('click',function (layer) {
+                _app.panel.data = {
+                    address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
+                    parcel: layer.propagatedFrom.feature.properties.parcel_id,
+                    date: moment(layer.propagatedFrom.feature.properties.record_status_date).format('MMM Do, YYYY'),
+                    type: layer.propagatedFrom.feature.properties.task
+                };
+                _app.panel.createPanel(_app.panel);
+                _app.queryLayer(_app, layer.latlng);
+            }).addTo(_app.map);
+
+            L.geoJSON(values[1].data, {
+                pointToLayer: function (geojson, latlng) {
+                    return L.circleMarker(latlng, {
+                        fillColor: '#068A24',
+                        fillOpacity: 1,
+                        stroke: false,
+                        radius: 5
+                    });
+                }
+            }).on('click',function (layer) {
+                console.log(layer)
+                _app.panel.data = {
+                    address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
+                    parcel: layer.propagatedFrom.feature.properties.parcel_id,
+                    date: moment(layer.propagatedFrom.feature.properties.record_status_date).format('MMM Do, YYYY'),
+                    type: layer.propagatedFrom.feature.properties.task
+                };
+                _app.panel.createPanel(_app.panel);
+                _app.queryLayer(_app, layer.latlng);
+            }).addTo(_app.map);
+            document.getElementById('initial-loader-overlay').className = '';
+        }).catch(reason => {
+            console.log(reason);
         });
     }
 
-    queryLayer(_app, layer, latlng){
+
+
+    queryLayer(_app, latlng){
         let needAdress = false;
         let myIcon = L.icon({
             iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
@@ -111,44 +164,65 @@ export default class App {
             tempLocation = latlng;
         }
         let userPoint = L.layerGroup().addTo(_app.map);
-        _app.layers[layer].query().intersects(latlng).run(function (error, featureCollection, response) {
-            if (error) {
-              console.log(error);
-              return;
-            }
-            if(_app.point){
-                _app.point.clearLayers();
-                _app.point = userPoint.addLayer(L.marker(tempLocation,{icon: myIcon}));
-            }else{ 
-                _app.point = userPoint.addLayer(L.marker(tempLocation,{icon: myIcon}));
-            }
-            _app.map.flyTo(tempLocation, 15);
-            _app.panel.currentProvider = featureCollection.features[0].properties.contractor;
-            fetch(`https://apis.detroitmi.gov/waste_schedule/details/${featureCollection.features[0].properties.FID}/year/${_app.year}/month/${_app.month}/`)
-            .then((res) => {
-                res.json().then(data => {
-                    _app.panel.location.lat = tempLocation.lat;
-                    _app.panel.location.lng = tempLocation.lng;
-                    _app.panel.data = data;
-                    if(needAdress){
-                        fetch(`https://gis.detroitmi.gov/arcgis/rest/services/DoIT/StreetCenterlineLatLng/GeocodeServer/reverseGeocode?location=${_app.panel.location.lng}%2C+${_app.panel.location.lat}&distance=&outSR=&f=pjson`)
-                        .then((res) => {
-                            res.json().then(data => {
-                                _app.panel.address = data.address.Street;
-                                _app.panel.createPanel(_app.panel);
-                            });
-                        }).catch((error) => {
-                            console.log(error);
-                        });
-                    }else{
+        if(_app.point){
+            _app.point.clearLayers();
+            _app.point = userPoint.addLayer(L.marker(tempLocation,{icon: myIcon}));
+        }else{ 
+            _app.point = userPoint.addLayer(L.marker(tempLocation,{icon: myIcon}));
+        }
+        _app.map.flyTo(tempLocation, 15);
+        if(_app.panel.data.type == null){
+            esri.query({ url:'https://gis.detroitmi.gov/arcgis/rest/services/OpenData/CertificateOfCompliance/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
+                if (error) {
+                  console.log(error);
+                  return;
+                }
+                if(featureCollection.features.length){
+                    _app.panel.data.date = moment(featureCollection.features[0].properties.record_status_date).format('MMM Do, YYYY');
+                    _app.panel.data.type = featureCollection.features[0].properties.task;
+                    _app.panel.createPanel(_app.panel);
+                }else{
+                    esri.query({ url:'https://gis.detroitmi.gov/arcgis/rest/services/OpenData/RentalStatuses/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
+                        if (error) {
+                        console.log(error);
+                        return;
+                        }
+
+                        if(featureCollection.features.length){
+                            _app.panel.data.date = moment(featureCollection.features[0].properties.record_status_date).format('MMM Do, YYYY');
+                            _app.panel.data.type = featureCollection.features[0].properties.task;
+                        }else{
+                            _app.panel.data.type = null;
+                        }
                         _app.panel.createPanel(_app.panel);
-                    }
-                });
-            })
-            .catch((error) => {
-                console.log(error);
+                    });
+                }
+                // fetch(`https://apis.detroitmi.gov/waste_schedule/details/${featureCollection.features[0].properties.FID}/year/${_app.year}/month/${_app.month}/`)
+                // .then((res) => {
+                //     res.json().then(data => {
+                //         _app.panel.location.lat = tempLocation.lat;
+                //         _app.panel.location.lng = tempLocation.lng;
+                //         _app.panel.data = data;
+                //         if(needAdress){
+                //             fetch(`https://gis.detroitmi.gov/arcgis/rest/services/DoIT/StreetCenterlineLatLng/GeocodeServer/reverseGeocode?location=${_app.panel.location.lng}%2C+${_app.panel.location.lat}&distance=&outSR=&f=pjson`)
+                //             .then((res) => {
+                //                 res.json().then(data => {
+                //                     _app.panel.address = data.address.Street;
+                //                     _app.panel.createPanel(_app.panel);
+                //                 });
+                //             }).catch((error) => {
+                //                 console.log(error);
+                //             });
+                //         }else{
+                //             _app.panel.createPanel(_app.panel);
+                //         }
+                //     });
+                // })
+                // .catch((error) => {
+                //     console.log(error);
+                // });
             });
-        });
+        }
     }
 
     checkParcelValid(parcel){

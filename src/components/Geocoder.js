@@ -93,8 +93,13 @@ export default class Geocoder {
                             });
                             (parcel == null) ? location = data.candidates[0].location : location = null;
                             let point = turf.point([parcel.location.x, parcel.location.y]);
-                            geocoder._controller.panel.address = parcel.address;
-                            geocoder._controller.queryLayer(geocoder._controller, 'wasteRoutes',point);
+                            geocoder._controller.panel.data = {
+                                address : parcel.address,
+                                parcel: parcel.attributes.User_fld,
+                                date: null,
+                                type: null
+                            }
+                            geocoder._controller.queryLayer(geocoder._controller,point);
                         }else{
                             geocoder._controller.panel.createErrorMsg(geocoder._controller.panel);
                         }

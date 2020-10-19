@@ -7,56 +7,26 @@
   <meta name="description" content="Web map to display information about rental propertiesa and enforcement in Detroit.">
   <meta name="author" content="Edgar Montes">
   <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0' />
+  <link href="../local/fontawesome/css/all.css" rel="stylesheet">
 </head>
 <body>
-  <!-- <section id="initial-loader-overlay" class="active">
-    <article>
-      <div>
-        <div class="loader">
-          <div class="loader__bar"></div>
-          <div class="loader__bar"></div>
-          <div class="loader__bar"></div>
-          <div class="loader__bar"></div>
-          <div class="loader__bar"></div>
-          <div class="loader__ball"></div>
-        </div>
-        <p>LOADING</p>
-      </div>
-    </article>
-  </section>
-  <main>
-    <section id="info" class="active">
-      <section class="info-container">
-        <input type="hidden" name="route-id" value="">
-        <input type="hidden" name="lng" value="">
-        <input type="hidden" name="lat" value="">
-        <article class="street-name">Rental Dashboard</article>
-        <article class="info"></article>
-        <article id='geocoder' class='geocoder'></article>
-        <article class="rental"></article>
-        <article class="parcel-info rental-info"></article>
-        <article class="parcel-data btn-type owner"></article>
-        <article class="parcel-data btn-type building"></article>
-        <article class="parcel-info display-section"></article>
-        <article id="close-emergency-modal-btn">
-          <i class="fas fa-times-circle"></i>
-        </article>
-      </section>
-    </section>
-    <section id='map'></section>
-    <section id='mobile-geocoder'></section>
-    <div id='legend'>
-      <strong>RENTAL PROPERTIES</strong>
-      <nav class='legend clearfix'>
-        <span style='background:#194ed7;'></span>
-        <span style='background:#068A24;'></span>
-        <label>Registered</label>
-        <label>Approved</label>
-      </nav>
-    </div>
-  </main>
-  <script src="index.js"></script> -->
+  <style>body{margin: 0; padding: 0;}</style>
   <section id="app">
+    <section id="initial-loader-overlay" class="active">
+      <article>
+        <div>
+          <div class="loader">
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__ball"></div>
+          </div>
+          <p>LOADING</p>
+        </div>
+      </article>
+    </section>
     <article id="geocoder"></article>
     <article class="panel">
       <div class="panel-box"></div>

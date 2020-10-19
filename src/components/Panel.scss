@@ -1,6 +1,11 @@
 @import 'colors.scss';
 $base-duration: 300ms;
 $cubic: cubic-bezier(.64,.09,.08,1);
+@-webkit-keyframes animation-form-btn {
+    0% { padding: .75em}
+    50% { padding: 1em}
+    100% { padding: .75em}
+}
 .panel{
     z-index: 1002;
     position: absolute;
@@ -39,6 +44,50 @@ $cubic: cubic-bezier(.64,.09,.08,1);
                 padding: .25em;
                 font-weight: bold;
             }
+
+            .far {
+                font-size: 1.25em;
+                position: relative;
+                top: .1em;
+            }
+
+            .valid{
+                .far {
+                    color: #194ed7;
+                }
+            }
+
+            .invalid{
+                .far {
+                    color: $color-4;
+                }
+            }
+        }
+
+        a{
+            text-decoration: none;
+        }
+
+        .form-btn{
+            padding: .75em; 
+            text-align: center; 
+            font-weight: bold;
+            margin-bottom: 2em;
+        }
+
+        .form-btn.color-3{
+            background-color: $color-3;
+            color: $black;
+        }
+
+        .form-btn.color-4{
+            background-color: $color-4;
+            color: $white;
+        }
+
+        .form-btn:hover{
+            -webkit-animation: animation-form-btn 1s ease forwards; 
+            animation: animation-form-btn 1s ease forwards;
         }
     }
 

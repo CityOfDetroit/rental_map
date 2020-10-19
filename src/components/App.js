@@ -5,7 +5,6 @@ import Panel from './Panel';
 import Geocoder from './Geocoder';
 import './App.scss';
 import '../../node_modules/leaflet/dist/leaflet.css';
-import { feature } from '@turf/turf';
 
 export default class App {
     constructor() {
@@ -127,7 +126,6 @@ export default class App {
                     });
                 }
             }).on('click',function (layer) {
-                console.log(layer)
                 _app.panel.data = {
                     address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
                     parcel: layer.propagatedFrom.feature.properties.parcel_id,
@@ -197,30 +195,6 @@ export default class App {
                         _app.panel.createPanel(_app.panel);
                     });
                 }
-                // fetch(`https://apis.detroitmi.gov/waste_schedule/details/${featureCollection.features[0].properties.FID}/year/${_app.year}/month/${_app.month}/`)
-                // .then((res) => {
-                //     res.json().then(data => {
-                //         _app.panel.location.lat = tempLocation.lat;
-                //         _app.panel.location.lng = tempLocation.lng;
-                //         _app.panel.data = data;
-                //         if(needAdress){
-                //             fetch(`https://gis.detroitmi.gov/arcgis/rest/services/DoIT/StreetCenterlineLatLng/GeocodeServer/reverseGeocode?location=${_app.panel.location.lng}%2C+${_app.panel.location.lat}&distance=&outSR=&f=pjson`)
-                //             .then((res) => {
-                //                 res.json().then(data => {
-                //                     _app.panel.address = data.address.Street;
-                //                     _app.panel.createPanel(_app.panel);
-                //                 });
-                //             }).catch((error) => {
-                //                 console.log(error);
-                //             });
-                //         }else{
-                //             _app.panel.createPanel(_app.panel);
-                //         }
-                //     });
-                // })
-                // .catch((error) => {
-                //     console.log(error);
-                // });
             });
         }
     }

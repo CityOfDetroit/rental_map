@@ -19,6 +19,9 @@ export default class App {
     }
 
     initialLoad(_app){
+        document.getElementById('close-welcome').addEventListener('click', ()=>{
+            document.getElementById('welcome-panel').className = '';
+        });
         _app.map = L.map('map', {
             renderer: L.canvas()
         }).setView([42.36, -83.1], 12);

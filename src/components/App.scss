@@ -1,9 +1,85 @@
 @import "./loader.scss";
 @import "./colors.scss";
+$base-duration: 300ms;
+$cubic: cubic-bezier(.64,.09,.08,1);
 #app{
     height: calc(100vh - 5em);
     width: 100vw;
     position: relative;
+
+    #welcome-panel{
+        transition: all 5s ease-in-out;
+        top: 200vh;
+      
+        .welcome-panel-container{
+          display: none;
+        }
+    }
+    #welcome-panel.active{
+        position: absolute;
+        z-index: 1006;
+        top: 5em;
+        display: flex;
+        width: 100vw;
+        transition: all 5s ease-in-out;
+      
+        .welcome-panel-container{
+          background-color: $color-3;
+          margin: auto;
+          box-shadow: -2px 2px 10px 1px rgba($color-1, 0.5);
+          display: flex;
+              width: 35em;
+              max-width: 100%;
+          min-height: 75vh;
+          padding: 1em;
+          overflow: hidden;;
+      
+          div{
+            margin: auto;
+            display: flex;
+      
+            article{
+                      text-align: center;
+              width: 100%;
+              position: relative;
+              padding: 1em;
+              transition: all $base-duration $cubic;
+      
+              h2{
+                text-align: center;
+                text-transform: uppercase;
+              }
+            }
+      
+            article.move-left{
+              left: -33em;
+              transition: all $base-duration $cubic;
+            }
+          }
+      
+          .login-form{
+            input{
+              border: none;
+              padding: 1em;
+              display: block;
+              width: 100%;
+              margin-bottom: 1em;
+            }
+            button{
+              width: 100%;
+            }
+          }
+      
+          .welcome-panel-btns{
+            display: flex;
+            justify-content: center;
+      
+            span{
+              padding: 1.5em;
+            }
+          }
+        }
+    }
 }
 #map{
     margin:0; 

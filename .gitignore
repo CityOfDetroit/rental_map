@@ -62,3 +62,4 @@ local/
 
 # temp files
 dist/
+.parcel-cache

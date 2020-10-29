@@ -7,6 +7,7 @@ The Rental Map display all the current register rental properties in the city as
 This project was created using:
  - [Leaflet](https://leafletjs.com/) for WebGL map rendering.
  - [Esri-Leaflet](https://github.com/Esri/esri-leaflet) for Esri connections.
+ - [Turf](https://turfjs.org/) for geospacial analysis.
  - [Parcel](https://parceljs.org/) as a web application bundler.
  - [Yarn](https://yarnpkg.com/en/) for 3rd party library use and management.
 

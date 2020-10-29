@@ -7,6 +7,7 @@ $cubic: cubic-bezier(.64,.09,.08,1);
     100% { padding: .75em}
 }
 .panel{
+    border-right: .2em solid $color-1;
     z-index: 1002;
     position: absolute;
     top: 0;

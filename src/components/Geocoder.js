@@ -89,6 +89,9 @@ export default class Geocoder {
                                     if(geocoder._controller.checkParcelValid(item.attributes.User_fld)){
                                         parcel = item;
                                     }
+                                    if(item.attributes.User_fld == 'CONDO BUILDING'){
+                                        parcel = item;
+                                    }
                                 }
                             });
                             (parcel == null) ? location = data.candidates[0].location : location = null;

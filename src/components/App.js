@@ -81,7 +81,7 @@ export default class App {
     
         //console.log(registrations);
         let certificates = new Promise((resolve, reject) => {
-            let url =`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/CertificateOfCompliance/FeatureServer/0/query?where=parcel_id+IS+NOT+null&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=4326&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=300000&f=geojson`;
+            let url =`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/ResidentialInspections/FeatureServer/0/query?where=parcel_id+IS+NOT+null&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=4326&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=300000&f=geojson`;
             return fetch(url)
             .then((resp) => resp.json()) // Transform the data into json
             .then(function(data) {
@@ -112,7 +112,7 @@ export default class App {
                 _app.panel.data = {
                     address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
                     parcel: layer.propagatedFrom.feature.properties.parcel_id,
-                    date: moment(layer.propagatedFrom.feature.properties.record_status_date).format('MMM Do, YYYY'),
+                    date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
                     type: layer.propagatedFrom.feature.properties.task
                 };
                 _app.panel.createPanel(_app.panel);
@@ -132,7 +132,7 @@ export default class App {
                 _app.panel.data = {
                     address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
                     parcel: layer.propagatedFrom.feature.properties.parcel_id,
-                    date: moment(layer.propagatedFrom.feature.properties.record_status_date).format('MMM Do, YYYY'),
+                    date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
                     type: layer.propagatedFrom.feature.properties.task
                 };
                 _app.panel.createPanel(_app.panel);
@@ -179,7 +179,7 @@ export default class App {
                   return;
                 }
                 if(featureCollection.features.length){
-                    _app.panel.data.date = moment(featureCollection.features[0].properties.record_status_date).format('MMM Do, YYYY');
+                    _app.panel.data.date = moment(featureCollection.features[0].properties.date_status).format('MMM Do, YYYY');
                     _app.panel.data.type = featureCollection.features[0].properties.task;
                     _app.panel.createPanel(_app.panel);
                 }else{
@@ -190,7 +190,7 @@ export default class App {
                         }
 
                         if(featureCollection.features.length){
-                            _app.panel.data.date = moment(featureCollection.features[0].properties.record_status_date).format('MMM Do, YYYY');
+                            _app.panel.data.date = moment(featureCollection.features[0].properties.date_status).format('MMM Do, YYYY');
                             _app.panel.data.type = featureCollection.features[0].properties.task;
                         }else{
                             _app.panel.data.type = null;

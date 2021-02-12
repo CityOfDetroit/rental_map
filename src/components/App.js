@@ -173,7 +173,7 @@ export default class App {
         }
         _app.map.flyTo(tempLocation, 15);
         if(_app.panel.data.type == null){
-            esri.query({ url:'https://gis.detroitmi.gov/arcgis/rest/services/OpenData/CertificateOfCompliance/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
+            esri.query({ url:'https://gis.detroitmi.gov/arcgis/rest/services/OpenData/ResidentialInspections/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
                 if (error) {
                   console.log(error);
                   return;

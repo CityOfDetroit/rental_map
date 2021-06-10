@@ -10,6 +10,7 @@ export default class App {
     constructor() {
         this.month = moment().month() + 1;
         this.year = moment().year();
+        this.lastUpdated = null;
         this.point = null;
         this.map = null;
         this.layers = {};
@@ -26,7 +27,7 @@ export default class App {
             renderer: L.canvas()
         }).setView([42.36, -83.1], 12);
         
-        esri.basemapLayer('Gray', {
+        esri.basemapLayer('Topographic', {
             detectRetina: true
         }).addTo(_app.map);
 
@@ -98,7 +99,17 @@ export default class App {
             resolve({"id": "occupancy", "data": data});
             });
         });
-        Promise.all([registrations, certificates]).then(values => {
+        let lastUpdated = new Promise((resolve, reject) => {
+            let url =`https://opendata.arcgis.com/api/v3/datasets/054d921838b74886be38caa888d0f83b_0`;
+            return fetch(url)
+            .then((resp) => resp.json()) // Transform the data into json
+            .then(function(data) {
+                //console.log(zip);
+            resolve({"id": "lastUpdated", "data": data});
+            });
+        });
+        Promise.all([registrations, certificates, lastUpdated]).then(values => {
+            _app.lastUpdated = moment(values[2].data.data.attributes.modified).format('MMM Do, YYYY');
             L.geoJSON(values[0].data, {
                 pointToLayer: function (geojson, latlng) {
                     return L.circleMarker(latlng, {
@@ -138,6 +149,7 @@ export default class App {
                 _app.panel.createPanel(_app.panel);
                 _app.queryLayer(_app, layer.latlng);
             }).addTo(_app.map);
+            document.querySelector('#legend nav p').innerHTML = `<strong>Last updated:</strong> ${_app.lastUpdated}`;
             document.getElementById('initial-loader-overlay').className = '';
         }).catch(reason => {
             console.log(reason);
@@ -171,7 +183,7 @@ export default class App {
         }else{ 
             _app.point = userPoint.addLayer(L.marker(tempLocation,{icon: myIcon}));
         }
-        _app.map.flyTo(tempLocation, 15);
+        _app.map.flyTo(tempLocation, 18);
         if(_app.panel.data.type == null){
             esri.query({ url:'https://gis.detroitmi.gov/arcgis/rest/services/OpenData/ResidentialInspections/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
                 if (error) {

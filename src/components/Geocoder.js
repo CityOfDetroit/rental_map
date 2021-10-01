@@ -51,7 +51,7 @@ export default class Geocoder {
       newTempAddr += item;
       ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
     }); 
-    let url = `https://opengis.detroitmi.gov/opengis/rest/services/Geocoders/AddressPointUpgrade/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&Address=${newTempAddr}&category=&outFields=parcel_number&maxLocations=4&outSR=4326&searchExtent=&location=&distance=&magicKey=&f=json`;
+    let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=${newTempAddr}&category=&outFields=User_fld&maxLocations=4&outSR=4326&searchExtent=&location=&distance=&magicKey=&f=json`;
     
     try {
         fetch(url)
@@ -80,12 +80,11 @@ export default class Geocoder {
                     .then((resp) => resp.json()) // Transform the data into json
                     .then(function(city) {
                         if(city.features.length){
-                            geocoder._controller.panel.createErrorMsg(geocoder._controller.panel);
                             let parcel = null;
                             let location;
                             data.candidates.forEach((item) => {
-                                if(item.attributes.parcel_number !== ''){
-                                    if(geocoder._controller.checkParcelValid(item.attributes.parcel_number)){
+                                if(item.attributes.User_fld !== ''){
+                                    if(geocoder._controller.checkParcelValid(item.attributes.User_fld)){
                                         parcel = item;
                                     }
                                 }
@@ -94,7 +93,7 @@ export default class Geocoder {
                             let point = turf.point([parcel.location.x, parcel.location.y]);
                             geocoder._controller.panel.data = {
                                 address : parcel.address,
-                                parcel: parcel.attributes.parcel_number,
+                                parcel: parcel.attributes.User_fld,
                                 date: null,
                                 type: null
                             }

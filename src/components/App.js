@@ -90,15 +90,6 @@ export default class App {
             resolve({"id": "certificates", "data": data});
             });
         });
-        let occupancy = new Promise((resolve, reject) => {
-            let url =`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/CertificateOfOccupancy/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
-            return fetch(url)
-            .then((resp) => resp.json()) // Transform the data into json
-            .then(function(data) {
-                //console.log(zip);
-            resolve({"id": "occupancy", "data": data});
-            });
-        });
         let lastUpdated = new Promise((resolve, reject) => {
             let url =`https://opendata.arcgis.com/api/v3/datasets/054d921838b74886be38caa888d0f83b_0`;
             return fetch(url)

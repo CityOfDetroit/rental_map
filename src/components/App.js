@@ -69,82 +69,47 @@ export default class App {
             }
         });
 
-      
-        let registrations = new Promise((resolve, reject) => {
-            let url = `https://gis.detroitmi.gov/arcgis/rest/services/OpenData/RentalStatuses/FeatureServer/0/query?outFields=*&outSR=4326&f=geojson&where=1%3D1&resultRecordCount=300000`;
-            return fetch(url)
-            .then((resp) => resp.json()) // Transform the data into json
-            .then(function(data) {
-            //console.log(data);
-            resolve({"id": "rentals", "data": data});
-            });
-        });
-    
-        //console.log(registrations);
-        let certificates = new Promise((resolve, reject) => {
-            let url =`https://gis.detroitmi.gov/arcgis/rest/services/OpenData/ResidentialInspections/FeatureServer/0/query?where=parcel_id+IS+NOT+null&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=4326&gdbVersion=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=&resultOffset=&resultRecordCount=300000&f=geojson`;
-            return fetch(url)
-            .then((resp) => resp.json()) // Transform the data into json
-            .then(function(data) {
-                //console.log(data);
-            resolve({"id": "certificates", "data": data});
-            });
-        });
-        let lastUpdated = new Promise((resolve, reject) => {
-            let url =`https://opendata.arcgis.com/api/v3/datasets/054d921838b74886be38caa888d0f83b_0`;
-            return fetch(url)
-            .then((resp) => resp.json()) // Transform the data into json
-            .then(function(data) {
-                //console.log(zip);
-            resolve({"id": "lastUpdated", "data": data});
-            });
-        });
-        Promise.all([registrations, certificates, lastUpdated]).then(values => {
-            _app.lastUpdated = moment(values[2].data.data.attributes.modified).format('MMM Do, YYYY');
-            L.geoJSON(values[0].data, {
-                pointToLayer: function (geojson, latlng) {
-                    return L.circleMarker(latlng, {
-                        fillColor: '#194ed7',
-                        fillOpacity: 1,
-                        stroke: false,
-                        radius: 5
-                    });
-                }
-            }).on('click',function (layer) {
-                _app.panel.data = {
-                    address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
-                    parcel: layer.propagatedFrom.feature.properties.parcel_id,
-                    date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
-                    type: layer.propagatedFrom.feature.properties.task
-                };
-                _app.panel.createPanel(_app.panel);
-                _app.queryLayer(_app, layer.latlng);
-            }).addTo(_app.map);
+        _app.layers['rentalRegistrations'] = esri.featureLayer({
+            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/RentalStatuses/FeatureServer/0',
+            pointToLayer: function (geojson, latlng) {
+                return L.circleMarker(latlng, {
+                    fillColor: '#194ed7',
+                    fillOpacity: 1,
+                    stroke: false,
+                    radius: 5
+                });
+            }
+        }).on('click',function (layer) {
+            _app.panel.data = {
+                address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
+                parcel: layer.propagatedFrom.feature.properties.parcel_id,
+                date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
+                type: layer.propagatedFrom.feature.properties.task
+            };
+            _app.panel.createPanel(_app.panel);
+            _app.queryLayer(_app, layer.latlng);
+        }).addTo(_app.map);
 
-            L.geoJSON(values[1].data, {
-                pointToLayer: function (geojson, latlng) {
-                    return L.circleMarker(latlng, {
-                        fillColor: '#068A24',
-                        fillOpacity: 1,
-                        stroke: false,
-                        radius: 5
-                    });
-                }
-            }).on('click',function (layer) {
-                _app.panel.data = {
-                    address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
-                    parcel: layer.propagatedFrom.feature.properties.parcel_id,
-                    date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
-                    type: layer.propagatedFrom.feature.properties.task
-                };
-                _app.panel.createPanel(_app.panel);
-                _app.queryLayer(_app, layer.latlng);
-            }).addTo(_app.map);
-            document.querySelector('#legend nav p').innerHTML = `<strong>Last updated:</strong> ${_app.lastUpdated}`;
-            document.getElementById('initial-loader-overlay').className = '';
-        }).catch(reason => {
-            console.log(reason);
-        });
+        _app.layers['rentalCoC'] = esri.featureLayer({
+            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/CertificateOfCompliance/FeatureServer/0',
+            pointToLayer: function (geojson, latlng) {
+                return L.circleMarker(latlng, {
+                    fillColor: '#068A24',
+                    fillOpacity: 1,
+                    stroke: false,
+                    radius: 5
+                });
+            }
+        }).on('click',function (layer) {
+            _app.panel.data = {
+                address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
+                parcel: layer.propagatedFrom.feature.properties.parcel_id,
+                date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
+                type: layer.propagatedFrom.feature.properties.task
+            };
+            _app.panel.createPanel(_app.panel);
+            _app.queryLayer(_app, layer.latlng);
+        }).addTo(_app.map);
     }
 
 
@@ -176,7 +141,7 @@ export default class App {
         }
         _app.map.flyTo(tempLocation, 18);
         if(_app.panel.data.type == null){
-            esri.query({ url:'https://gis.detroitmi.gov/arcgis/rest/services/OpenData/ResidentialInspections/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
+            esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/CertificateOfCompliance/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
                 if (error) {
                   console.log(error);
                   return;
@@ -186,7 +151,7 @@ export default class App {
                     _app.panel.data.type = featureCollection.features[0].properties.task;
                     _app.panel.createPanel(_app.panel);
                 }else{
-                    esri.query({ url:'https://gis.detroitmi.gov/arcgis/rest/services/OpenData/RentalStatuses/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
+                    esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/RentalStatuses/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
                         if (error) {
                         console.log(error);
                         return;

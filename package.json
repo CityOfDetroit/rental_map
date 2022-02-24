@@ -1,16 +1,8 @@
 {
   "name": "rental_map",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Web map to display information about rental propertiesa and enforcement in Detroit.",
-  "main": "index.js",
-  "keywords": [
-    "sms",
-    "dashboard",
-    "alerts",
-    "js",
-    "react",
-    "jest"
-  ],
+  "main": "main.js",
   "bugs": {
     "url": "https://github.com/CityOfDetroit/rental_map/issues"
   },
@@ -18,20 +10,44 @@
   "author": "Edgar Montes",
   "license": "MIT",
   "scripts": {
-    "start": "parcel src/index.html --https --no-cache -p 3000 --open",
-    "test": "./node_modules/.bin/cypress open",
-    "build": "parcel build src/index.js --no-cache --public-url '.' --no-source-maps -d build"
-  },
-  "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
-    "cssnano": "^4.1.10",
-    "sass": "^1.26.12"
+    "build": "webpack --mode production",
+    "start": "webpack-dev-server --mode development",
+    "cy:run": "./node_modules/.bin/cypress run --headed",
+    "test": "start-server-and-test start http://localhost:3000 cy:run"
   },
   "dependencies": {
     "@turf/turf": "^5.1.6",
-    "esri-leaflet": "^2.5.0",
+    "esri-leaflet": "^3.0.7",
     "leaflet": "^1.7.1",
     "moment": "^2.29.0"
-  }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-react-inline-elements": "^7.16.0",
+    "@babel/plugin-transform-runtime": "^7.15.8",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/runtime": "^7.15.4",
+    "@svgr/webpack": "^5.5.0",
+    "babel-loader": "^8.2.3",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "concurrently": "^7.0.0",
+    "css-loader": "^6.5.0",
+    "css-minimizer-webpack-plugin": "^3.4.1",
+    "cypress": "^9.5.0",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.5.3",
+    "sass": "^1.43.4",
+    "sass-loader": "^12.3.0",
+    "start-server-and-test": "^1.14.0",
+    "style-loader": "^3.3.1",
+    "terser-webpack-plugin": "^5.2.4",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.61.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.4.0"
+  },
+  "browserslist": "> 0.25%, not dead"
 }

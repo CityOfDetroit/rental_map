@@ -8,8 +8,9 @@ This project was created using:
  - [Leaflet](https://leafletjs.com/) for WebGL map rendering.
  - [Esri-Leaflet](https://github.com/Esri/esri-leaflet) for Esri connections.
  - [Turf](https://turfjs.org/) for geospacial analysis.
- - [Parcel](https://parceljs.org/) as a web application bundler.
- - [Yarn](https://yarnpkg.com/en/) for 3rd party library use and management.
+ - [Webpack](https://webpack.js.org/) as a web application bundler.
+ - [Yarn](https://classic.yarnpkg.com/en/) to manage project dependencies.
+ - [Cypress](https://www.cypress.io/) for testing.
 
 Please make sure these are installed locally
 

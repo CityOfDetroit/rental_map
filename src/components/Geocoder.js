@@ -51,7 +51,7 @@ export default class Geocoder {
       newTempAddr += item;
       ((index < size) && (index + 1) !== size) ? newTempAddr += '+': 0;
     }); 
-    let url = `https://gis.detroitmi.gov/arcgis/rest/services/DoIT/CompositeGeocoder/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&SingleLine=${newTempAddr}&category=&outFields=User_fld&maxLocations=4&outSR=4326&searchExtent=&location=&distance=&magicKey=&f=json`;
+    let url = `https://opengis.detroitmi.gov/opengis/rest/services/BaseUnits/BaseUnitGeocoder/GeocodeServer/findAddressCandidates?Address=&Address2=&Address3=&Neighborhood=&City=&Subregion=&Region=&Postal=&PostalExt=&CountryCode=&SingleLine=${newTempAddr}&outFields=*&maxLocations=&matchOutOfRange=true&langCode=&locationType=&sourceCountry=&category=&location=&distance=&searchExtent=&outSR=&magicKey=&f=json`;
     
     try {
         fetch(url)
@@ -83,8 +83,8 @@ export default class Geocoder {
                             let parcel = null;
                             let location;
                             data.candidates.forEach((item) => {
-                                if(item.attributes.User_fld !== ''){
-                                    if(geocoder._controller.checkParcelValid(item.attributes.User_fld)){
+                                if(item.attributes.parcel_id !== ''){
+                                    if(geocoder._controller.checkParcelValid(item.attributes.parcel_id)){
                                         parcel = item;
                                     }
                                 }
@@ -93,7 +93,7 @@ export default class Geocoder {
                             let point = turf.point([parcel.location.x, parcel.location.y]);
                             geocoder._controller.panel.data = {
                                 address : parcel.address,
-                                parcel: parcel.attributes.User_fld,
+                                parcel: parcel.attributes.parcel_id,
                                 date: null,
                                 type: null
                             }

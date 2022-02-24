@@ -1,0 +1,19 @@
+language: node_js
+  # Node env
+node_js:
+  # Node version
+  - 14
+
+cache:
+  yarn: true
+
+jobs:
+  include:
+    - script: yarn build
+      name: "Build app"
+    - script: yarn test:app
+      name: "Test app"
+      script:
+        - yarn cypress install
+        - yarn test
+        - kill $(jobs -p) || true

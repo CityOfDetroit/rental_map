@@ -1,0 +1,8 @@
+{
+    "baseUrl": "http://localhost:3000",
+    "defaultCommandTimeout": 100000,
+    "projectId": "rental_map",
+    "pageLoadTimeout": 100000,
+    "video": true,
+    "videoUploadOnPasses": false
+}

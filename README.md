@@ -1,4 +1,4 @@
-# Rental Map
+# Rental Map [![Build Status](https://app.travis-ci.com/CityOfDetroit/rental_map.svg?branch=dev)](https://travis-ci.com/CityOfDetroit/rental_map)
 
 The Rental Map display all the current register rental properties in the city as well as the parcel data for all the properties in the city of Detroit.
 

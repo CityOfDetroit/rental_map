@@ -80,7 +80,7 @@ export default class Panel {
     buildRentalStatus(_panel){
         return `
         <section class="renta-status">
-            ${(_panel.data.type == null) ? `<a href="https://app.smartsheet.com/b/form/91c0d55e47064373835ce198802764e2" target="_blank"><article class="form-btn color-4">REPORT SUSPECTED RENTAL</article></a>`: `<a href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn color-4">SUBMIT RENTAL COMPLAINT</article></a>`}
+            ${(_panel.data.type == null) ? `<a href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn color-4">REPORT SUSPECTED RENTAL</article></a>`: `<a href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn color-4">SUBMIT RENTAL COMPLAINT</article></a>`}
             <div class="group">
                 <span class="header">COMPLIANCE STATUS</span>
                 ${(_panel.data.type == 'Issue CofC') ? `

@@ -31,6 +31,9 @@ export default class App {
             detectRetina: true
         }).addTo(_app.map);
 
+        _app.map.createPane('reg').style.zIndex=600;
+        _app.map.createPane('coc').style.zIndex=650;
+
         _app.layers['zipCodes'] = esri.featureLayer({
             url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/ZipCodes/FeatureServer/0',
             interactive:false,
@@ -73,6 +76,7 @@ export default class App {
             url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/RentalStatuses/FeatureServer/0',
             pointToLayer: function (geojson, latlng) {
                 return L.circleMarker(latlng, {
+                    pane: 'reg',
                     fillColor: '#194ed7',
                     fillOpacity: 1,
                     stroke: false,
@@ -91,9 +95,10 @@ export default class App {
         }).addTo(_app.map);
 
         _app.layers['rentalCoC'] = esri.featureLayer({
-            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/CertificateOfCompliance/FeatureServer/0',
+            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/active_cofc/FeatureServer/0',
             pointToLayer: function (geojson, latlng) {
                 return L.circleMarker(latlng, {
+                    pane: 'coc',
                     fillColor: '#068A24',
                     fillOpacity: 1,
                     stroke: false,
@@ -102,7 +107,7 @@ export default class App {
             }
         }).on('click',function (layer) {
             _app.panel.data = {
-                address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
+                address : layer.propagatedFrom.feature.properties.address,
                 parcel: layer.propagatedFrom.feature.properties.parcel_id,
                 date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
                 type: layer.propagatedFrom.feature.properties.task
@@ -141,14 +146,14 @@ export default class App {
         }
         _app.map.flyTo(tempLocation, 18);
         if(_app.panel.data.type == null){
-            esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/CertificateOfCompliance/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
+            esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/active_cofc/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
                 if (error) {
                   console.log(error);
                   return;
                 }
                 if(featureCollection.features.length){
-                    _app.panel.data.date = moment(featureCollection.features[0].properties.date_status).format('MMM Do, YYYY');
-                    _app.panel.data.type = featureCollection.features[0].properties.task;
+                    _app.panel.data.date = moment(featureCollection.features[0].properties.issued_date).format('MMM Do, YYYY');
+                    _app.panel.data.type = 'Issue CofC';
                     _app.panel.createPanel(_app.panel);
                 }else{
                     esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/RentalStatuses/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {

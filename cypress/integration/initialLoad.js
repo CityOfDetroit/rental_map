@@ -8,7 +8,7 @@ describe('Test map functionality', () => {
       cy.visit('/') // change URL to match your dev URL
       cy.contains('Welcome to the City of Detroit Rental Map')
       cy.get('#close-welcome').click()
-      cy.get('canvas').click('center')
+      cy.get('#map').click('center')
     })
 
     it('enter address in geocoder', () => {

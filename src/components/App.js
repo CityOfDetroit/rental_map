@@ -146,29 +146,28 @@ export default class App {
         }
         _app.map.flyTo(tempLocation, 18);
         if(_app.panel.data.type == null){
-            esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/active_cofc/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
+            esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/active_cofc/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, cocs) {
                 if (error) {
                   console.log(error);
                   return;
                 }
-                if(featureCollection.features.length){
-                    _app.panel.data.date = moment(featureCollection.features[0].properties.issued_date).format('MMM Do, YYYY');
+                if(cocs.features.length){
+                    _app.panel.data.date = moment(cocs.features[0].properties.issued_date).format('MMM Do, YYYY');
                     _app.panel.data.type = 'Issue CofC';
                     _app.panel.createPanel(_app.panel);
                 }else{
-                    esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/RentalStatuses/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, featureCollection) {
-                        if (error) {
+                    esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/RentalStatuses/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, registration) {
+                    if (error) {
                         console.log(error);
                         return;
-                        }
-
-                        if(featureCollection.features.length){
-                            _app.panel.data.date = moment(featureCollection.features[0].properties.date_status).format('MMM Do, YYYY');
-                            _app.panel.data.type = featureCollection.features[0].properties.task;
-                        }else{
-                            _app.panel.data.type = null;
-                        }
-                        _app.panel.createPanel(_app.panel);
+                    }
+                    if(registration.features.length){
+                        _app.panel.data.date = moment(registration.features[0].properties.date_status).format('MMM Do, YYYY');
+                        _app.panel.data.type = 'Issue Registration';
+                    }else{
+                        _app.panel.data.type = null;
+                    }
+                    _app.panel.createPanel(_app.panel);
                     });
                 }
             });

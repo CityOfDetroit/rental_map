@@ -73,7 +73,7 @@ export default class App {
         });
 
         _app.layers['rentalRegistrations'] = esri.featureLayer({
-            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/RentalStatuses/FeatureServer/0',
+            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0',
             pointToLayer: function (geojson, latlng) {
                 return L.circleMarker(latlng, {
                     pane: 'reg',
@@ -82,20 +82,24 @@ export default class App {
                     stroke: false,
                     radius: 5
                 });
-            }
+            },
+            where: "has_rental_registration='True' AND has_residential_cofc='False'"
         }).on('click',function (layer) {
             _app.panel.data = {
                 address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
                 parcel: layer.propagatedFrom.feature.properties.parcel_id,
-                date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
-                type: layer.propagatedFrom.feature.properties.task
+                type: layer.propagatedFrom.feature.properties.task,
+                addressID: layer.propagatedFrom.feature.properties.address_id,
+                buildingID: layer.propagatedFrom.feature.properties.building_id,
+                record: layer.propagatedFrom.feature.properties.rental_registration_records,
+                registrationAddress: layer.propagatedFrom.feature.properties.rental_registration_addresses
             };
             _app.panel.createPanel(_app.panel);
             _app.queryLayer(_app, layer.latlng);
         }).addTo(_app.map);
 
         _app.layers['rentalCoC'] = esri.featureLayer({
-            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/active_cofc/FeatureServer/0',
+            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0',
             pointToLayer: function (geojson, latlng) {
                 return L.circleMarker(latlng, {
                     pane: 'coc',
@@ -104,13 +108,17 @@ export default class App {
                     stroke: false,
                     radius: 5
                 });
-            }
+            },
+            where: "has_residential_cofc='True'"
         }).on('click',function (layer) {
             _app.panel.data = {
-                address : layer.propagatedFrom.feature.properties.address,
+                address : layer.propagatedFrom.feature.properties.residential_cofc_addresses,
                 parcel: layer.propagatedFrom.feature.properties.parcel_id,
-                date: moment(layer.propagatedFrom.feature.properties.date_status).format('MMM Do, YYYY'),
-                type: layer.propagatedFrom.feature.properties.task
+                type: layer.propagatedFrom.feature.properties.task,
+                addressID: layer.propagatedFrom.feature.properties.address_id,
+                buildingID: layer.propagatedFrom.feature.properties.building_id,
+                record: layer.propagatedFrom.feature.properties.residential_cofc_records,
+                cofcAddress: layer.propagatedFrom.feature.properties.residential_cofc_addresses
             };
             _app.panel.createPanel(_app.panel);
             _app.queryLayer(_app, layer.latlng);
@@ -146,17 +154,16 @@ export default class App {
         }
         _app.map.flyTo(tempLocation, 18);
         if(_app.panel.data.type == null){
-            esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/active_cofc/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, cocs) {
+            esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}' AND has_residential_cofc='True'`).run(function (error, cocs) {
                 if (error) {
                   console.log(error);
                   return;
                 }
                 if(cocs.features.length){
-                    _app.panel.data.date = moment(cocs.features[0].properties.issued_date).format('MMM Do, YYYY');
                     _app.panel.data.type = 'Issue CofC';
                     _app.panel.createPanel(_app.panel);
                 }else{
-                    esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/RentalStatuses/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, registration) {
+                    esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, registration) {
                     if (error) {
                         console.log(error);
                         return;

@@ -86,15 +86,19 @@ export default class Panel {
                 <span class="header">COMPLIANCE STATUS</span>
                 ${(_panel.data.type == 'Issue CofC') ? `
                 <p class="valid"><i class="far fa-check-circle"></i> APPROVED FOR RENTAL</p>
-                <p><strong>Parcel:</strong> ${_panel.data.parcel}</p>
-                <p><strong>Record:</strong> ${_panel.data.record}</p>
+                <p><strong>Parcel:</strong> ${_panel.data.parcel}<br>
+                <strong>Record:</strong> ${_panel.data.record}<br>
+                <strong>Address Record:</strong> ${_panel.data.recordAddress}</p>
+                <p><strong>NOTE:</strong> IF THE <strong>ADDRESS</strong> DOES NOT MATCH THE <strong>ADRESS RECORD</strong> PLEASE CONTACT [SOME EMAIL]</p>
                 `: ``}
                 ${(_panel.data.type == 'Issue Registration') ? `
                 <p>NOT APPROVED RENTAL</p>
                 <p class="valid"><i class="far fa-check-circle"></i> Registered</p>
                 <p class="invalid"><i class="far fa-times-circle"></i> Compliance</p>
-                <p><strong>Parcel:</strong> ${_panel.data.parcel}</p>
-                <p><strong>Record:</strong> ${_panel.data.record}</p>
+                <p><strong>Parcel:</strong> ${_panel.data.parcel}<br>
+                <strong>Record:</strong> ${_panel.data.record}<br>
+                <strong>Address Record:</strong> ${_panel.data.recordAddress}</p>
+                <p><strong>NOTE:</strong> IF THE <strong>ADDRESS</strong> DOES NOT MATCH THE <strong>ADRESS RECORD</strong> PLEASE CONTACT [SOME EMAIL]</p>
                 `: ``}
                 ${(_panel.data.type == null) ? `
                 <p>NOT APPROVED RENTAL</p>

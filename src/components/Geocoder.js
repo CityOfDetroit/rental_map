@@ -95,7 +95,7 @@ export default class Geocoder {
                             geocoder._controller.panel.data = {
                                 address : parcel.address,
                                 parcel: parcel.attributes.parcel_id,
-                                date: null,
+                                buildingID: parcel.attributes.building_id,
                                 type: null
                             }
                             geocoder._controller.queryLayer(geocoder._controller,point);

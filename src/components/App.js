@@ -92,7 +92,7 @@ export default class App {
                 addressID: layer.propagatedFrom.feature.properties.address_id,
                 buildingID: layer.propagatedFrom.feature.properties.building_id,
                 record: layer.propagatedFrom.feature.properties.rental_registration_records,
-                registrationAddress: layer.propagatedFrom.feature.properties.rental_registration_addresses
+                recordAddress: layer.propagatedFrom.feature.properties.rental_registration_addresses
             };
             _app.panel.createPanel(_app.panel);
             _app.queryLayer(_app, layer.latlng);
@@ -118,7 +118,7 @@ export default class App {
                 addressID: layer.propagatedFrom.feature.properties.address_id,
                 buildingID: layer.propagatedFrom.feature.properties.building_id,
                 record: layer.propagatedFrom.feature.properties.residential_cofc_records,
-                cofcAddress: layer.propagatedFrom.feature.properties.residential_cofc_addresses
+                recordAddress: layer.propagatedFrom.feature.properties.residential_cofc_addresses
             };
             _app.panel.createPanel(_app.panel);
             _app.queryLayer(_app, layer.latlng);
@@ -160,8 +160,24 @@ export default class App {
                   return;
                 }
                 if(cocs.features.length){
-                    _app.panel.data.type = 'Issue CofC';
-                    _app.panel.createPanel(_app.panel);
+                    if(cocs.features.length > 1){
+                         esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0'}).where(`building_id = '${_app.panel.data.buildingID}' AND has_residential_cofc='True'`).run(function (error, multiCOC) {
+                            if (error) {
+                            console.log(error);
+                            return;
+                            }
+                            console.log(multiCOC);
+                            _app.panel.data.recordAddress = multiCOC.features[0].properties.residential_cofc_addresses
+                            _app.panel.data.record = multiCOC.features[0].properties.residential_cofc_records
+                            _app.panel.data.type = 'Issue CofC';
+                            _app.panel.createPanel(_app.panel);
+                         });
+                    }else{
+                        _app.panel.data.recordAddress = cocs.features[0].properties.residential_cofc_addresses
+                        _app.panel.data.record = cocs.features[0].properties.residential_cofc_records
+                        _app.panel.data.type = 'Issue CofC';
+                        _app.panel.createPanel(_app.panel);
+                    }
                 }else{
                     esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, registration) {
                     if (error) {
@@ -169,8 +185,23 @@ export default class App {
                         return;
                     }
                     if(registration.features.length){
-                        _app.panel.data.date = moment(registration.features[0].properties.date_status).format('MMM Do, YYYY');
-                        _app.panel.data.type = 'Issue Registration';
+                        if(registration.features.length > 1){
+                             esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0'}).where(`building_id = '${_app.panel.data.buildingID}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, multiRegistration) {
+                                if (error) {
+                                console.log(error);
+                                return;
+                                }
+                                _app.panel.data.recordAddress = multiRegistration.features[0].properties.rental_registration_addresses
+                                _app.panel.data.record = multiRegistration.features[0].properties.rental_registration_records
+                                _app.panel.data.type = 'Issue Registration';
+                                _app.panel.createPanel(_app.panel);
+                            });
+                        }else{
+                            _app.panel.data.recordAddress = registration.features[0].properties.rental_registration_addresses
+                            _app.panel.data.record = registration.features[0].properties.rental_registration_records
+                            _app.panel.data.type = 'Issue Registration';
+                            _app.panel.createPanel(_app.panel);
+                        }
                     }else{
                         _app.panel.data.type = null;
                     }

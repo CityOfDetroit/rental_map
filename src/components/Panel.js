@@ -59,6 +59,7 @@ export default class Panel {
     }
 
     createPanel(_panel){
+        console.log(_panel.data);
         let tempPanel = document.querySelector('.panel .panel-box');
         let closeBtn = document.createElement('button');
         closeBtn.innerText = 'x';
@@ -85,11 +86,15 @@ export default class Panel {
                 <span class="header">COMPLIANCE STATUS</span>
                 ${(_panel.data.type == 'Issue CofC') ? `
                 <p class="valid"><i class="far fa-check-circle"></i> APPROVED FOR RENTAL</p>
+                <p><strong>Parcel:</strong> ${_panel.data.parcel}</p>
+                <p><strong>Record:</strong> ${_panel.data.record}</p>
                 `: ``}
                 ${(_panel.data.type == 'Issue Registration') ? `
                 <p>NOT APPROVED RENTAL</p>
                 <p class="valid"><i class="far fa-check-circle"></i> Registered</p>
                 <p class="invalid"><i class="far fa-times-circle"></i> Compliance</p>
+                <p><strong>Parcel:</strong> ${_panel.data.parcel}</p>
+                <p><strong>Record:</strong> ${_panel.data.record}</p>
                 `: ``}
                 ${(_panel.data.type == null) ? `
                 <p>NOT APPROVED RENTAL</p>

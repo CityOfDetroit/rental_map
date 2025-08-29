@@ -80,6 +80,7 @@ export default class Geocoder {
                     .then((resp) => resp.json()) // Transform the data into json
                     .then(function(city) {
                         if(city.features.length){
+                            console.log(data);
                             let parcel = null;
                             let location;
                             data.candidates.forEach((item) => {

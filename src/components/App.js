@@ -86,7 +86,7 @@ export default class App {
             where: "has_rental_registration='True' AND has_residential_cofc='False'"
         }).on('click',function (layer) {
             _app.panel.data = {
-                address : `${layer.propagatedFrom.feature.properties.street_num} ${layer.propagatedFrom.feature.properties.street_name}`,
+                address : layer.propagatedFrom.feature.properties.rental_registration_addresses,
                 parcel: layer.propagatedFrom.feature.properties.parcel_id,
                 type: layer.propagatedFrom.feature.properties.task,
                 addressID: layer.propagatedFrom.feature.properties.address_id,

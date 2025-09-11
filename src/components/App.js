@@ -160,6 +160,7 @@ export default class App {
                   return;
                 }
                 if(cocs.features.length){
+                    console.log(cocs.features);
                     if(cocs.features.length > 1){
                          esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0'}).where(`building_id = '${_app.panel.data.buildingID}' AND has_residential_cofc='True'`).run(function (error, multiCOC) {
                             if (error) {
@@ -167,10 +168,42 @@ export default class App {
                             return;
                             }
                             console.log(multiCOC);
-                            _app.panel.data.recordAddress = multiCOC.features[0].properties.residential_cofc_addresses
-                            _app.panel.data.record = multiCOC.features[0].properties.residential_cofc_records
-                            _app.panel.data.type = 'Issue CofC';
+                            if(multiCOC.features.length){
+                                _app.panel.data.recordAddress = multiCOC.features[0].properties.residential_cofc_addresses
+                                _app.panel.data.record = multiCOC.features[0].properties.residential_cofc_records
+                                _app.panel.data.type = 'Issue CofC';
+                                _app.panel.createPanel(_app.panel);
+                            }else{
+ esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0'}).where(`parcel_id = '${_app.panel.data.parcel}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, registration) {
+                    if (error) {
+                        console.log(error);
+                        return;
+                    }
+                    if(registration.features.length){
+                        if(registration.features.length > 1){
+                             esri.query({ url:'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0'}).where(`building_id = '${_app.panel.data.buildingID}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, multiRegistration) {
+                                if (error) {
+                                console.log(error);
+                                return;
+                                }
+                                _app.panel.data.recordAddress = multiRegistration.features[0].properties.rental_registration_addresses
+                                _app.panel.data.record = multiRegistration.features[0].properties.rental_registration_records
+                                _app.panel.data.type = 'Issue Registration';
+                                _app.panel.createPanel(_app.panel);
+                            });
+                        }else{
+                            _app.panel.data.recordAddress = registration.features[0].properties.rental_registration_addresses
+                            _app.panel.data.record = registration.features[0].properties.rental_registration_records
+                            _app.panel.data.type = 'Issue Registration';
                             _app.panel.createPanel(_app.panel);
+                        }
+                    }else{
+                        _app.panel.data.type = null;
+                    }
+                    _app.panel.createPanel(_app.panel);
+                    });
+                            }
+                            
                          });
                     }else{
                         _app.panel.data.recordAddress = cocs.features[0].properties.residential_cofc_addresses

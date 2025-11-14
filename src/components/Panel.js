@@ -79,6 +79,7 @@ export default class Panel {
     }
 
     buildRentalStatus(_panel){
+        console.log(_panel.data);
         return `
         <section class="renta-status">
             ${(_panel.data.type == null) ? `<a href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn color-4">REPORT SUSPECTED RENTAL</article></a>`: `<a href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac" target="_blank"><article class="form-btn color-4">SUBMIT RENTAL COMPLAINT</article></a>`}
@@ -99,6 +100,7 @@ export default class Panel {
                 <p>NOT APPROVED RENTAL</p>
                 <p class="invalid"><i class="far fa-times-circle"></i> Registered</p>
                 <p class="invalid"><i class="far fa-times-circle"></i> Compliance</p>
+                <p>There are no Current Certificates of Compliance found for this building. Please reach out to <strong>[insert information here]</strong> to verify rental ordinance compliance.</p>
                 `: ``}
             </div>
             ${(_panel.data.type == null) ? `<a href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow" target="_blank"><article class="form-btn color-3">APPLY FOR RENTAL ESCROW PROGRAM</article></a>`: ``}

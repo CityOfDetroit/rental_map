@@ -72,34 +72,34 @@ export default class App {
             }
         });
 
-        _app.layers['rentalRegistrations'] = esri.featureLayer({
-            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0',
-            pointToLayer: function (geojson, latlng) {
-                return L.circleMarker(latlng, {
-                    pane: 'reg',
-                    fillColor: '#194ed7',
-                    fillOpacity: 1,
-                    stroke: false,
-                    radius: 5
-                });
-            },
-            where: "has_rental_registration='True' AND has_residential_cofc='False'"
-        }).on('click', function (layer) {
-            _app.panel.data = {
-                address: layer.propagatedFrom.feature.properties.rental_registration_addresses,
-                parcel: layer.propagatedFrom.feature.properties.parcel_id,
-                type: layer.propagatedFrom.feature.properties.task,
-                addressID: layer.propagatedFrom.feature.properties.address_id,
-                buildingID: layer.propagatedFrom.feature.properties.building_id,
-                recordRegistration: layer.propagatedFrom.feature.properties.rental_registration_records,
-                recordAddress: layer.propagatedFrom.feature.properties.rental_registration_addresses
-            };
-            _app.panel.createPanel(_app.panel);
-            _app.queryLayer(_app, layer.latlng);
-        }).addTo(_app.map);
+        // _app.layers['rentalRegistrations'] = esri.featureLayer({
+        //     url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0',
+        //     pointToLayer: function (geojson, latlng) {
+        //         return L.circleMarker(latlng, {
+        //             pane: 'reg',
+        //             fillColor: '#194ed7',
+        //             fillOpacity: 1,
+        //             stroke: false,
+        //             radius: 5
+        //         });
+        //     },
+        //     where: "has_rental_registration='True' AND has_residential_cofc='False'"
+        // }).on('click', function (layer) {
+        //     _app.panel.data = {
+        //         address: layer.propagatedFrom.feature.properties.rental_registration_addresses,
+        //         parcel: layer.propagatedFrom.feature.properties.parcel_id,
+        //         type: layer.propagatedFrom.feature.properties.task,
+        //         addressID: layer.propagatedFrom.feature.properties.address_id,
+        //         buildingID: layer.propagatedFrom.feature.properties.building_id,
+        //         recordRegistration: layer.propagatedFrom.feature.properties.rental_registration_records,
+        //         recordAddress: layer.propagatedFrom.feature.properties.rental_registration_addresses
+        //     };
+        //     _app.panel.createPanel(_app.panel);
+        //     _app.queryLayer(_app, layer.latlng);
+        // }).addTo(_app.map);
 
         _app.layers['rentalCoC'] = esri.featureLayer({
-            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0',
+            url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0',
             pointToLayer: function (geojson, latlng) {
                 return L.circleMarker(latlng, {
                     pane: 'coc',
@@ -108,18 +108,17 @@ export default class App {
                     stroke: false,
                     radius: 5
                 });
-            },
-            where: "has_residential_cofc='True'"
+            }
         }).on('click', function (layer) {
             _app.panel.data = {
-                address: layer.propagatedFrom.feature.properties.residential_cofc_addresses,
+                address: layer.propagatedFrom.feature.properties.cofc_addresses,
                 parcel: layer.propagatedFrom.feature.properties.parcel_id,
-                type: layer.propagatedFrom.feature.properties.task,
+                type: 'Issue CofC',
                 addressID: layer.propagatedFrom.feature.properties.address_id,
                 buildingID: layer.propagatedFrom.feature.properties.building_id,
-                recordCOC: layer.propagatedFrom.feature.properties.residential_cofc_records,
-                recordRegistration: layer.propagatedFrom.feature.properties.rental_registration_records,
-                recordAddress: layer.propagatedFrom.feature.properties.residential_cofc_addresses
+                recordCOC: layer.propagatedFrom.feature.properties.cofc_records,
+                recordRegistration: layer.propagatedFrom.feature.properties.reg_records,
+                recordAddress: layer.propagatedFrom.feature.properties.reg_addresses
             };
             _app.panel.createPanel(_app.panel);
             _app.queryLayer(_app, layer.latlng);
@@ -129,6 +128,7 @@ export default class App {
 
 
     queryLayer(_app, latlng) {
+        console.log(_app.panel.data);
         let needAdress = false;
         let myIcon = L.icon({
             iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
@@ -155,7 +155,7 @@ export default class App {
         }
         _app.map.flyTo(tempLocation, 18);
         if (_app.panel.data.type == null) {
-            esri.query({ url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0' }).where(`parcel_id = '${_app.panel.data.parcel}' AND has_residential_cofc='True'`).run(function (error, cocs) {
+            esri.query({ url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0' }).where(`parcel_id = '${_app.panel.data.parcel}'`).run(function (error, cocs) {
                 if (error) {
                     console.log(error);
                     return;
@@ -163,86 +163,30 @@ export default class App {
                 if (cocs.features.length) {
                     console.log(cocs.features);
                     if (cocs.features.length > 1) {
-                        esri.query({ url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0' }).where(`building_id = '${_app.panel.data.buildingID}' AND has_residential_cofc='True'`).run(function (error, multiCOC) {
+                        esri.query({ url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0' }).where(`building_id = '${_app.panel.data.buildingID}'`).run(function (error, multiCOC) {
                             if (error) {
                                 console.log(error);
                                 return;
                             }
                             console.log(multiCOC);
                             if (multiCOC.features.length) {
-                                _app.panel.data.recordAddress = multiCOC.features[0].properties.residential_cofc_addresses
-                                _app.panel.data.recordCOC = multiCOC.features[0].properties.residential_cofc_records
-                                _app.panel.data.recordRegistration = multiCOC.features[0].properties.rental_registration_records
+                                _app.panel.data.recordAddress = multiCOC.features[0].properties.cofc_addresses;
+                                _app.panel.data.recordCOC = multiCOC.features[0].properties.cofc_records;
+                                _app.panel.data.recordRegistration = multiCOC.features[0].properties.reg_records;
                                 _app.panel.data.type = 'Issue CofC';
                                 _app.panel.createPanel(_app.panel);
-                            } else {
-                                esri.query({ url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0' }).where(`parcel_id = '${_app.panel.data.parcel}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, registration) {
-                                    if (error) {
-                                        console.log(error);
-                                        return;
-                                    }
-                                    if (registration.features.length) {
-                                        if (registration.features.length > 1) {
-                                            esri.query({ url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0' }).where(`building_id = '${_app.panel.data.buildingID}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, multiRegistration) {
-                                                if (error) {
-                                                    console.log(error);
-                                                    return;
-                                                }
-                                                _app.panel.data.recordAddress = multiRegistration.features[0].properties.rental_registration_addresses
-                                                _app.panel.data.recordRegistration = multiRegistration.features[0].properties.rental_registration_records
-                                                _app.panel.data.type = 'Issue Registration';
-                                                _app.panel.createPanel(_app.panel);
-                                            });
-                                        } else {
-                                            _app.panel.data.recordAddress = registration.features[0].properties.rental_registration_addresses
-                                            _app.panel.data.recordRegistration = registration.features[0].properties.rental_registration_records
-                                            _app.panel.data.type = 'Issue Registration';
-                                            _app.panel.createPanel(_app.panel);
-                                        }
-                                    } else {
-                                        _app.panel.data.type = null;
-                                    }
-                                    _app.panel.createPanel(_app.panel);
-                                });
                             }
-
                         });
                     } else {
-                        _app.panel.data.recordAddress = cocs.features[0].properties.residential_cofc_addresses
-                        _app.panel.data.recordCOC = cocs.features[0].properties.residential_cofc_records
-                        _app.panel.data.recordRegistration = cocs.features[0].properties.rental_registration_records
+                        _app.panel.data.recordAddress = cocs.features[0].properties.cofc_addresses
+                        _app.panel.data.recordCOC = cocs.features[0].properties.cofc_records
+                        _app.panel.data.recordRegistration = cocs.features[0].properties.reg_records
                         _app.panel.data.type = 'Issue CofC';
                         _app.panel.createPanel(_app.panel);
                     }
-                } else {
-                    esri.query({ url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0' }).where(`parcel_id = '${_app.panel.data.parcel}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, registration) {
-                        if (error) {
-                            console.log(error);
-                            return;
-                        }
-                        if (registration.features.length) {
-                            if (registration.features.length > 1) {
-                                esri.query({ url: 'https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance/FeatureServer/0' }).where(`building_id = '${_app.panel.data.buildingID}' AND has_rental_registration='True' AND has_residential_cofc='False'`).run(function (error, multiRegistration) {
-                                    if (error) {
-                                        console.log(error);
-                                        return;
-                                    }
-                                    _app.panel.data.recordAddress = multiRegistration.features[0].properties.rental_registration_addresses
-                                    _app.panel.data.recordRegistration = multiRegistration.features[0].properties.rental_registration_records
-                                    _app.panel.data.type = 'Issue Registration';
-                                    _app.panel.createPanel(_app.panel);
-                                });
-                            } else {
-                                _app.panel.data.recordAddress = registration.features[0].properties.rental_registration_addresses
-                                _app.panel.data.recordRegistration = registration.features[0].properties.rental_registration_records
-                                _app.panel.data.type = 'Issue Registration';
-                                _app.panel.createPanel(_app.panel);
-                            }
-                        } else {
-                            _app.panel.data.type = null;
-                        }
-                        _app.panel.createPanel(_app.panel);
-                    });
+                }else{
+                    _app.panel.data.type = null;
+                    _app.panel.createPanel(_app.panel);
                 }
             });
         }

@@ -1,0 +1,103 @@
+rental-map {
+    position: relative;
+}
+.panel-title{
+    font-size: 1.5em;
+    font-weight: bold;
+    padding-left: .5em;
+    border-left: .2em solid #feb70d;
+}
+.welcome-title{
+    font-size: 1.5em;
+    font-weight: bold;
+    padding-left: .5em;
+    text-align: center;
+}
+.group{
+    border: .1em solid #004445;
+    margin-bottom: 1.25em;
+    position: relative;
+    padding: 1em;
+}
+
+.group  .header{
+    position: absolute;
+    top: -.85em;
+    background-color: #FFF;
+    padding: .25em;
+    font-weight: bold;
+}
+
+.group  .far {
+    font-size: 1.25em;
+    position: relative;
+    top: .1em;
+}
+
+.group  .valid  span {
+    color: #004445;
+}
+.group .invalid span {
+    color: #cb4d4f;
+}
+
+#app-wrapper {
+    position: relative;
+    display: flex;
+    -ms-flex-align: stretch;
+    height: 800px;
+}
+
+cod-map {
+    flex: 1;
+}
+
+#d6-map-nav {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 1em;
+    left: 1em;
+    z-index: 10;
+}
+
+.offcanvas-title img {
+    width: 6em;
+    position: relative;
+    left: 8em;
+}
+
+#d6-start-screen {
+    z-index: 11;
+}
+
+#welcome-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    background: rgba(0, 0, 0, .5);
+}
+
+#welcome-container.close {
+    display: none;
+}
+
+#d6-start-screen {
+    width: 35em;
+    background: white;
+    margin: 1em auto 7em auto;
+    padding: 1em;
+    max-width: 90%;
+    min-height: 42em;
+}
+
+#d6-start-screen-logo {
+    display: flex;
+}
+
+#d6-start-screen-logo img {
+    max-width: 15em;
+    margin: auto;
+}

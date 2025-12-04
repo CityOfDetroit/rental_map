@@ -4,7 +4,7 @@ import layers from './layers.json';
 
 export default class RentalMap extends HTMLElement {
     static get observedAttributes() {
-        return ['data-app-state', 'data-parcel-id', 'data-map-state', 'data-active-boundaries', 'data-active-filters','data-language'];
+        return ['data-app-state', 'data-parcel-id', 'data-current-interaction', 'data-map-state', 'data-panel-data', 'data-active-boundaries', 'data-active-filters','data-language'];
     }
 
     constructor() {
@@ -18,7 +18,7 @@ export default class RentalMap extends HTMLElement {
         const app = document.getElementsByTagName('rental-map');
         let tempState = app[0].getAttribute('data-app-state');
 
-        this.mainData = {"name":"d6","data":"https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson&token="};
+        this.mainData = {"name":"d6","data":"https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0/query?where=cofc_records<>null&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson&token="};
 
         this.layers = layers;
 
@@ -87,6 +87,15 @@ export default class RentalMap extends HTMLElement {
         this.map.setAttribute('data-map-state', 'init');
         app[0].setAttribute('data-active-boundaries', 'coucil-district-6-lines');
         this.appWrapper.appendChild(this.map);
+
+        // create geocoder component
+        this.geocoderContainer = document.createElement('section');
+        this.geocoderContainer.id = 'geocoder-box';
+        this.geocoder = document.createElement('cod-geocoder');
+        this.geocoder.setAttribute('data-parent-component', 'rental-map');
+        this.geocoderContainer.appendChild(this.geocoder);
+
+        this.appWrapper.appendChild(this.geocoderContainer);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -123,6 +132,19 @@ export default class RentalMap extends HTMLElement {
             case 'data-language':
                 this.setAttribute('data-app-state', this.getAttribute('data-app-state'));
                 break;
+
+            case 'data-parcel-id':
+                this.setAttribute('data-current-interaction', 'geocoder');
+                break;
+
+            case 'data-panel-data':
+                this.setAttribute('data-current-interaction', 'map');
+                break;
+            
+            case 'data-current-interaction':
+                this.setAttribute('data-app-state', 'active-panel');
+                break;
+
         
             default:
                 this.loadApp(this);
@@ -204,16 +226,118 @@ export default class RentalMap extends HTMLElement {
             case 'start-screen':
                 break;
             case 'active-panel':
-                let tempData = JSON.parse(this.getAttribute('data-panel-data'));
-                if(tempData.properties.cofc_records){
+                let currentInteraction = this.getAttribute('data-current-interaction');
+                console.log(JSON.parse(this.getAttribute('data-parcel-id')));
+                let tempData = null;
+                console.log(tempData);
+                if(currentInteraction == 'geocoder'){
+                    tempData = JSON.parse(this.getAttribute('data-parcel-id'));
+                    console.log(tempData);
+                    const tempPanelHeader = this.panelHeader;
+                    const tempPanelContent = this.panelContent;
+                    tempPanelHeader.innerHTML = '';
+                    tempPanelContent.innerHTML = `<cod-loader data-color="color-1"></cod-loader>`;
+                    fetch(`https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0/query?where=building_id%3D%27${tempData.attributes.building_id}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=3&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json`)
+                    .then((resp) => resp.json()) // Transform the data into json
+                    .then(function(rentalData) {
+                        if(rentalData.features.length){
+                            console.log(rentalData);
+                            if(rentalData.features[0].attributes.cofc_records){
+                                tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.cofc_addresses}</div>`
+                                tempPanelContent.innerHTML = `
+                                <div class="group">
+                                    <span class="header">COMPLIANCE STATUS</span>
+                                    <p class="valid">
+                                    <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                                    </svg>
+                                    </span> APPROVED FOR RENTAL</p>
+                                    <p><strong>Certificate of Compliance</strong></p>
+                                    <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.cofc_records}</p>
+                                    <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_cofc_issued_date}</p>
+                                    <p><strong>Expiration:</strong> ${rentalData.features[0].current_cofc_expired_date}</p>
+
+                                    <p><strong>Rental Registration</strong></p>
+                                    <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.reg_records}</p>
+                                    <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
+                                    <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
+                                </div>
+                                `;
+                            }else{
+                                tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.reg_addresses}</div>`
+                                tempPanelContent.innerHTML = `
+                                <div class="group">
+                                    <span class="header">COMPLIANCE STATUS</span>
+                                    <p class="valid"><span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                                    </svg>
+                                    </span> Registered</p>
+                                    <p class="invalid"><span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                    </svg>
+                                    </span> Compliance</p>
+
+                                    <p><strong>Rental Registration</strong></p>
+                                    <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.reg_records}</p>
+                                    <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
+                                    <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
+                                </div>
+                                <p style="text-align:center">
+                                <cod-button
+                                variant="warning"
+                                size="large"
+                                href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
+                                >
+                                APPLY FOR RENTAL ESCROW PROGRAM
+                                </cod-button>
+                                </p>
+                                `;
+                            }
+                            
+                        }else{
+                            tempPanelHeader.innerHTML = `<div class="panel-title">${tempData.attributes.StAddr}</div>`
+                            tempPanelContent.innerHTML = `
+                            <div class="group">
+                            <span class="header">COMPLIANCE STATUS</span>
+                            <p>NOT APPROVED RENTAL</p>
+                            <p class="invalid"><span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                            </svg>
+                            </span> Registered</p>
+                            <p class="invalid"><span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                            </svg>
+                            </span> Compliance</p>
+                            </div>
+                            <p style="text-align:center">
+                                <cod-button
+                                variant="warning"
+                                size="large"
+                                href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
+                                >
+                                APPLY FOR RENTAL ESCROW PROGRAM
+                                </cod-button>
+                            </p>
+                            `;
+                        }
+                        app.map.setAttribute('data-location', JSON.stringify(tempData));
+                    });
+                    
+                }else{
+                    tempData = JSON.parse(this.getAttribute('data-panel-data'));
+                    if(tempData.properties.cofc_records){
                     this.panelHeader.innerHTML = `<div class="panel-title">${tempData.properties.cofc_addresses}</div>`;
-                    this.panelContent.innerHTML = `<p style="text-align:center"><cod-button
-  variant="danger"
-  size="large"
-  href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac"
->
-  SUBMIT RENTAL COMPLAINT
-</cod-button></p>
+                    this.panelContent.innerHTML = `
                     <div class="group">
                         <span class="header">COMPLIANCE STATUS</span>
                         <p class="valid">
@@ -243,44 +367,67 @@ export default class RentalMap extends HTMLElement {
                     .then((resp) => resp.json()) // Transform the data into json
                     .then(function(rentalData) {
                         if(rentalData.features.length){
-                            tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.cofc_addresses}</div>`
-                            tempPanelContent.innerHTML = `<p style="text-align:center"><cod-button
-  variant="danger"
-  size="large"
-  href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac"
->
-  SUBMIT RENTAL COMPLAINT
-</cod-button></p>
-                            <div class="group">
-                                <span class="header">COMPLIANCE STATUS</span>
-                                <p class="valid">
-                                <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
-                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                                <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
-                                </svg>
-                                </span> APPROVED FOR RENTAL</p>
-                                <p><strong>Certificate of Compliance</strong></p>
-                                <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.cofc_records}</p>
-                                <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_cofc_issued_date}</p>
-                                <p><strong>Expiration:</strong> ${rentalData.features[0].current_cofc_expired_date}</p>
+                            console.log(rentalData);
+                            if(rentalData.features[0].attributes.cofc_records){
+                                tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.cofc_addresses}</div>`
+                                tempPanelContent.innerHTML = `
+                                <div class="group">
+                                    <span class="header">COMPLIANCE STATUS</span>
+                                    <p class="valid">
+                                    <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                                    </svg>
+                                    </span> APPROVED FOR RENTAL</p>
+                                    <p><strong>Certificate of Compliance</strong></p>
+                                    <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.cofc_records}</p>
+                                    <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_cofc_issued_date}</p>
+                                    <p><strong>Expiration:</strong> ${rentalData.features[0].current_cofc_expired_date}</p>
 
-                                <p><strong>Rental Registration</strong></p>
-                                <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.reg_records}</p>
-                                <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
-                                <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
-                            </div>
-                            `;
+                                    <p><strong>Rental Registration</strong></p>
+                                    <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.reg_records}</p>
+                                    <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
+                                    <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
+                                </div>
+                                `;
+                            }else{
+                                tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.reg_addresses}</div>`
+                                tempPanelContent.innerHTML = `
+                                <div class="group">
+                                    <span class="header">COMPLIANCE STATUS</span>
+                                    <p class="valid"><span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                                    </svg>
+                                    </span> Registered</p>
+                                    <p class="invalid"><span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                    </svg></span> Compliance</p>
+
+                                    <p><strong>Rental Registration</strong></p>
+                                    <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.reg_records}</p>
+                                    <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
+                                    <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
+                                </div>
+                                <p style="text-align:center">
+                                <cod-button
+                                variant="warning"
+                                size="large"
+                                href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
+                                >
+                                APPLY FOR RENTAL ESCROW PROGRAM
+                                </cod-button>
+                                </p>
+                                `;
+                            }
+                            
                         }else{
                             tempPanelHeader.innerHTML = `<div class="panel-title">Building ID - ${tempData.properties.building_id}</div>`
                             tempPanelContent.innerHTML = `
-                            <p style="text-align:center"><cod-button
-  variant="danger"
-  size="large"
-  href="https://app.smartsheet.com/b/form/efa41296fdc646dcadc3cbca2d6fd6ac"
->
-  REPORT SUSPECTED RENTAL
-</cod-button></p>
                             <div class="group">
                             <span class="header">COMPLIANCE STATUS</span>
                             <p>NOT APPROVED RENTAL</p>
@@ -297,17 +444,21 @@ export default class RentalMap extends HTMLElement {
                             </svg>
                             </span> Compliance</p>
                             </div>
-                            <p style="text-align:center"><cod-button
-  variant="warning"
-  size="large"
-  href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
->
-  APPLY FOR RENTAL ESCROW PROGRAM
-</cod-button></p>
+                            <p style="text-align:center">
+                                <cod-button
+                                variant="warning"
+                                size="large"
+                                href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
+                                >
+                                APPLY FOR RENTAL ESCROW PROGRAM
+                                </cod-button>
+                            </p>
                             `;
                         }
                     });
                 }
+                }
+                
                 this.panel.setAttribute('open', 'true');
                 break;
 

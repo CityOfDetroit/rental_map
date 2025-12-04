@@ -52,6 +52,13 @@ cod-map {
     flex: 1;
 }
 
+#geocoder-box{
+    position: absolute;
+    background: rgba(255, 255, 255, 0.35);
+    top: 1em;
+    right: 1em;
+}
+
 #d6-map-nav {
     position: absolute;
     display: flex;
@@ -101,3 +108,4 @@ cod-map {
     max-width: 15em;
     margin: auto;
 }
+

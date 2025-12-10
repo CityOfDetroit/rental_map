@@ -288,15 +288,7 @@ export default class RentalMap extends HTMLElement {
                                     <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
                                 </div>
-                                <p style="text-align:center">
-                                <cod-button
-                                variant="warning"
-                                size="large"
-                                href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
-                                >
-                                APPLY FOR RENTAL ESCROW PROGRAM
-                                </cod-button>
-                                </p>
+                                <p>Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                                 `;
                             }
                             
@@ -319,15 +311,7 @@ export default class RentalMap extends HTMLElement {
                             </svg>
                             </span> Compliance</p>
                             </div>
-                            <p style="text-align:center">
-                                <cod-button
-                                variant="warning"
-                                size="large"
-                                href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
-                                >
-                                APPLY FOR RENTAL ESCROW PROGRAM
-                                </cod-button>
-                            </p>
+                            <p>Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                             `;
                         }
                         app.map.setAttribute('data-location', JSON.stringify(tempData));
@@ -413,15 +397,7 @@ export default class RentalMap extends HTMLElement {
                                     <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
                                 </div>
-                                <p style="text-align:center">
-                                <cod-button
-                                variant="warning"
-                                size="large"
-                                href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
-                                >
-                                APPLY FOR RENTAL ESCROW PROGRAM
-                                </cod-button>
-                                </p>
+                                <p>Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                                 `;
                             }
                             
@@ -444,15 +420,7 @@ export default class RentalMap extends HTMLElement {
                             </svg>
                             </span> Compliance</p>
                             </div>
-                            <p style="text-align:center">
-                                <cod-button
-                                variant="warning"
-                                size="large"
-                                href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow"
-                                >
-                                APPLY FOR RENTAL ESCROW PROGRAM
-                                </cod-button>
-                            </p>
+                            <p>There are no Current Certificates of Compliance found for this building. <a href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow">Click here for more information.</a></p>
                             `;
                         }
                     });

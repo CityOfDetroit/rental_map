@@ -256,6 +256,7 @@ export default class RentalMap extends HTMLElement {
                                     </span> APPROVED FOR RENTAL</p>
                                     <p><strong>Certificate of Compliance</strong></p>
                                     <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.cofc_records}</p>
+                                    <p><strong>Address:</strong> ${rentalData.features[0].attributes.cofc_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_cofc_issued_date}</p>
                                     <p><strong>Expiration:</strong> ${rentalData.features[0].current_cofc_expired_date}</p>
 
@@ -288,7 +289,7 @@ export default class RentalMap extends HTMLElement {
                                     <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
                                 </div>
-                                <p>Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
+                                <p style="font-size:1.25em">Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                                 `;
                             }
                             
@@ -311,7 +312,7 @@ export default class RentalMap extends HTMLElement {
                             </svg>
                             </span> Compliance</p>
                             </div>
-                            <p>Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
+                            <p style="font-size:1.25em">Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                             `;
                         }
                         app.map.setAttribute('data-location', JSON.stringify(tempData));
@@ -333,6 +334,7 @@ export default class RentalMap extends HTMLElement {
                         </span> APPROVED FOR RENTAL</p>
                         <p><strong>Certificate of Compliance</strong></p>
                         <p><strong>Record(s):</strong> ${tempData.properties.cofc_records}</p>
+                        <p><strong>Address:</strong> ${tempData.properties.cofc_addresses}</p>
                         <p><strong>Issued:</strong> ${tempData.properties.current_cofc_issued_date}</p>
                         <p><strong>Expiration:</strong> ${tempData.properties.current_cofc_expired_date}</p>
 
@@ -366,6 +368,7 @@ export default class RentalMap extends HTMLElement {
                                     </span> APPROVED FOR RENTAL</p>
                                     <p><strong>Certificate of Compliance</strong></p>
                                     <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.cofc_records}</p>
+                                    <p><strong>Address:</strong> ${rentalData.features[0].attributes.cofc_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_cofc_issued_date}</p>
                                     <p><strong>Expiration:</strong> ${rentalData.features[0].current_cofc_expired_date}</p>
 
@@ -397,7 +400,7 @@ export default class RentalMap extends HTMLElement {
                                     <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
                                 </div>
-                                <p>Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
+                                <p style="font-size:1.25em">Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                                 `;
                             }
                             

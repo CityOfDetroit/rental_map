@@ -81,7 +81,7 @@ export default class RentalMap extends HTMLElement {
         this.map.setAttribute('data-zoom', "11.5");
         this.map.setAttribute('data-popup-layers', JSON.stringify(popupLayers));
         this.map.setAttribute('data-popup-structure', JSON.stringify(popupStructure));
-        this.map.setAttribute('data-map-data', JSON.stringify(tempMainData));
+        // this.map.setAttribute('data-map-data', JSON.stringify(tempMainData));
         this.map.setAttribute('data-map-layers', JSON.stringify(this.layers.layers));
         this.map.setAttribute('data-location', this.getAttribute('data-location'));
         this.map.setAttribute('data-map-state', 'init');

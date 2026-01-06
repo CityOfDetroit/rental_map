@@ -32,6 +32,23 @@
             ],
             "sourceType": "vector",
             "source": "https://vectortileservices2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/BaseUnitFeatures_vector_tiles/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+        },
+        {
+            "name": "rentals",
+            "layers": [
+                {
+                    "name": "rentals",
+                    "clickable": true,
+                    "type":"circle",
+                    "radius":7,
+                    "color":"#004445",
+                    "active": true,
+                    "source": "rentals",
+                    "sourceLayer": "Building Rental Compliance"
+                }
+            ],
+            "sourceType": "vector",
+            "source": "https://vectortileservices2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Building_Rental_Compliance_Public_View_Vector_Tiles/VectorTileServer/tile/{z}/{y}/{x}.pbf"
         }
     ]
 }

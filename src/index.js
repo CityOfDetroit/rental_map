@@ -1,5 +1,3 @@
 'use strict';
-import App from './components/App';
-(function(){
-  let app = new App();
-})(window);
+import RentalMap from './components/RentalMap';
+customElements.define('rental-map', RentalMap);

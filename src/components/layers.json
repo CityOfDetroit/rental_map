@@ -1,0 +1,54 @@
+{
+    "layers": [
+        {
+            "name": "city-boundary",
+            "layers": [
+                {
+                    "name": "city-boundary",
+                    "type": "line",
+                    "color": "#004445",
+                    "opacity": null,
+                    "width": 3,
+                    "active": true,
+                    "source": "city-boundary"
+                }
+            ],
+            "source": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/City_of_Detroit_Boundary/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&returnEnvelope=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson&token="
+        },
+        {
+            "name": "buildingUnit",
+            "layers": [
+                {
+                    "name": "building-fill",
+                    "clickable": true,
+                    "type": "fill",
+                    "color": "#004445",
+                    "opacity": 0.1,
+                    "width": null,
+                    "active": true,
+                    "source": "buildingUnit",
+                    "sourceLayer": "buildings"
+                }
+            ],
+            "sourceType": "vector",
+            "source": "https://vectortileservices2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/BaseUnitFeatures_vector_tiles/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+        },
+        {
+            "name": "rentals",
+            "layers": [
+                {
+                    "name": "rentals",
+                    "clickable": true,
+                    "type":"circle",
+                    "radius":7,
+                    "color":"#004445",
+                    "active": true,
+                    "source": "rentals",
+                    "sourceLayer": "Building Rental Compliance"
+                }
+            ],
+            "sourceType": "vector",
+            "source": "https://vectortileservices2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Building_Rental_Compliance_Public_View_Vector_Tiles/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+        }
+    ]
+}

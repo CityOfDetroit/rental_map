@@ -227,12 +227,12 @@ export default class RentalMap extends HTMLElement {
                 break;
             case 'active-panel':
                 let currentInteraction = this.getAttribute('data-current-interaction');
-                console.log(JSON.parse(this.getAttribute('data-parcel-id')));
+                //console.log(JSON.parse(this.getAttribute('data-parcel-id')));
                 let tempData = null;
-                console.log(tempData);
+                //console.log(tempData);
                 if(currentInteraction == 'geocoder'){
                     tempData = JSON.parse(this.getAttribute('data-parcel-id'));
-                    console.log(tempData);
+                    //console.log(tempData);
                     const tempPanelHeader = this.panelHeader;
                     const tempPanelContent = this.panelContent;
                     tempPanelHeader.innerHTML = '';
@@ -241,9 +241,9 @@ export default class RentalMap extends HTMLElement {
                     .then((resp) => resp.json()) // Transform the data into json
                     .then(function(rentalData) {
                         if(rentalData.features.length){
-                            console.log(rentalData);
+                            //console.log(rentalData);
                             if(rentalData.features[0].attributes.cofc_records){
-                                tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.cofc_addresses}</div>`
+                                tempPanelHeader.innerHTML = `<div class="panel-title">${tempData.attributes.StAddr}</div>`
                                 tempPanelContent.innerHTML = `
                                 <div class="group">
                                     <span class="header">COMPLIANCE STATUS</span>
@@ -267,7 +267,7 @@ export default class RentalMap extends HTMLElement {
                                 </div>
                                 `;
                             }else{
-                                tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.reg_addresses}</div>`
+                                tempPanelHeader.innerHTML = `<div class="panel-title">${tempData.attributes.StAddr}</div>`
                                 tempPanelContent.innerHTML = `
                                 <div class="group">
                                     <span class="header">COMPLIANCE STATUS</span>
@@ -353,7 +353,7 @@ export default class RentalMap extends HTMLElement {
                     .then((resp) => resp.json()) // Transform the data into json
                     .then(function(rentalData) {
                         if(rentalData.features.length){
-                            console.log(rentalData);
+                            //console.log(rentalData);
                             if(rentalData.features[0].attributes.cofc_records){
                                 tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.cofc_addresses}</div>`
                                 tempPanelContent.innerHTML = `

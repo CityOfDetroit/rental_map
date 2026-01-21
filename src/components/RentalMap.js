@@ -370,7 +370,7 @@ export default class RentalMap extends HTMLElement {
                                     <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.cofc_records}</p>
                                     <p><strong>Address:</strong> ${rentalData.features[0].attributes.cofc_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_cofc_issued_date}</p>
-                                    <p><strong>Expiration:</strong> ${rentalData.features[0].current_cofc_expired_date}</p>
+                                    <p><strong>Expiration:</strong> ${rentalData.features[0].attributes.current_cofc_expired_date}</p>
 
                                     <p><strong>Rental Registration</strong></p>
                                     <p><strong>Record(s):</strong> ${rentalData.features[0].attributes.reg_records}</p>

@@ -78,7 +78,7 @@ export default class RentalMap extends HTMLElement {
         this.map.setAttribute('data-parent-component', 'rental-map');
         this.map.setAttribute('data-map-mode', 'map-panel');
         this.map.setAttribute('data-center', "-83.103111,42.31103400000001");
-        this.map.setAttribute('data-zoom', "11.5");
+        this.map.setAttribute('data-zoom', "16");
         this.map.setAttribute('data-popup-layers', JSON.stringify(popupLayers));
         this.map.setAttribute('data-popup-structure', JSON.stringify(popupStructure));
         // this.map.setAttribute('data-map-data', JSON.stringify(tempMainData));
@@ -240,7 +240,8 @@ export default class RentalMap extends HTMLElement {
                     fetch(`https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0/query?where=building_id%3D%27${tempData.attributes.building_id}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=3&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json`)
                     .then((resp) => resp.json()) // Transform the data into json
                     .then(function(rentalData) {
-                        if(rentalData.features.length){
+                        try {
+                            if(rentalData.features.length){
                             //console.log(rentalData);
                             if(rentalData.features[0].attributes.cofc_records){
                                 tempPanelHeader.innerHTML = `<div class="panel-title">${tempData.attributes.StAddr}</div>`
@@ -289,7 +290,6 @@ export default class RentalMap extends HTMLElement {
                                     <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
                                 </div>
-                                <p style="font-size:1.25em">Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                                 `;
                             }
                             
@@ -312,10 +312,12 @@ export default class RentalMap extends HTMLElement {
                             </svg>
                             </span> Compliance</p>
                             </div>
-                            <p style="font-size:1.25em">Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                             `;
                         }
                         app.map.setAttribute('data-location', JSON.stringify(tempData));
+                        } catch (error) {
+                            // console.log(error);
+                        }
                     });
                     
                 }else{
@@ -352,7 +354,8 @@ export default class RentalMap extends HTMLElement {
                     fetch(`https://services2.arcgis.com/qvkbeam7Wirps6zC/ArcGIS/rest/services/bseed_building_rental_compliance_public_view/FeatureServer/0/query?where=building_id%3D%27${tempData.properties.building_id}%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=3&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=json`)
                     .then((resp) => resp.json()) // Transform the data into json
                     .then(function(rentalData) {
-                        if(rentalData.features.length){
+                        try {
+                            if(rentalData.features.length){
                             //console.log(rentalData);
                             if(rentalData.features[0].attributes.cofc_records){
                                 tempPanelHeader.innerHTML = `<div class="panel-title">${rentalData.features[0].attributes.cofc_addresses}</div>`
@@ -400,7 +403,6 @@ export default class RentalMap extends HTMLElement {
                                     <p><strong>Address:</strong> ${rentalData.features[0].attributes.reg_addresses}</p>
                                     <p><strong>Issued:</strong> ${rentalData.features[0].attributes.current_reg_issued_date}</p>
                                 </div>
-                                <p style="font-size:1.25em">Apply for rental escrow program by calling <a href="tel:8663132520">866-313-2520</a></p>
                                 `;
                             }
                             
@@ -423,9 +425,13 @@ export default class RentalMap extends HTMLElement {
                             </svg>
                             </span> Compliance</p>
                             </div>
-                            <p>There are no Current Certificates of Compliance found for this building. <a href="https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department/bseed-divisions/property-maintenance/rental-property-information/rental-property-escrow">Click here for more information.</a></p>
+                            <p>There are no Current Certificates of Compliance found for this building.</p>
                             `;
                         }
+                        } catch (error) {
+                        //    console.log(error); 
+                        }
+                        
                     });
                 }
                 }
